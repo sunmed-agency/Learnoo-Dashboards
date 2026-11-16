@@ -1296,6 +1296,10 @@
       "reviewQuestionBadge": "السؤال {n}",
       "reviewMultipleType": "اختيار من متعدد",
       "reviewNoAnswerOptions": "لا توجد خيارات إجابة مدرجة لهذا السؤال.",
+      "reviewYourAnswer": "إجابتك",
+      "reviewYourAnswerCorrect": "إجابتك (صحيحة)",
+      "reviewCorrectAnswer": "الإجابة الصحيحة",
+      "reviewNoAnswer": "لم تتم الإجابة",
       "feedbackLabel": "توضيح الإجابة"
     },
     "studentExamsPage": {

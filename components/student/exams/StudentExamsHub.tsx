@@ -44,6 +44,7 @@ import {
   hubQuizPassMarks,
   hubQuizQuestionCount,
   hubQuizTitle,
+  hubQuizCourseTitles,
   hubQuizIsInStudentCourses,
   hubQuizTypeLabel,
   readHubQuizCourseIds,
@@ -252,10 +253,7 @@ export default function StudentExamsHub({ locale }: { locale: string }) {
     const chapterName = hubQuizChapterTitle(row);
     const attrs = hubQuizAttrs(row);
 
-    const coursesData = Array.isArray(attrs.courses) ? attrs.courses : [];
-    const courseTitles = coursesData
-      .map((c: any) => c?.attributes?.title)
-      .filter((t: unknown) => typeof t === 'string' && t.trim() !== '') as string[];
+    const courseTitles = hubQuizCourseTitles(row);
 
     let topHeading: string | null = null;
     if (courseTitles.length > 0 && chapterName) {

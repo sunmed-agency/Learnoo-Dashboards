@@ -81,6 +81,8 @@ export type ExamQuestionScreenProps = {
   awaitingGradingLabel?: string;
   articleFooter: ReactNode;
   belowArticle?: ReactNode;
+  /** Review-only: shown under the options (the student's answer and, when wrong, the right one). */
+  reviewAnswerSummary?: ReactNode;
 };
 
 export function ExamQuestionScreen({
@@ -110,6 +112,7 @@ export function ExamQuestionScreen({
   awaitingGradingLabel,
   articleFooter,
   belowArticle,
+  reviewAnswerSummary,
 }: ExamQuestionScreenProps) {
   const qNum = currentQuestionNumber;
   const copyGuardActive = mode === 'take' || mode === 'review';
@@ -394,6 +397,7 @@ export function ExamQuestionScreen({
                         );
                       })
                     )}
+                    {reviewAnswerSummary}
                   </div>
                 )}
 

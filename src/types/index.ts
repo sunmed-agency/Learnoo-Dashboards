@@ -4395,6 +4395,8 @@ export interface QuizUserAnswerAttributes {
 
 
 
+  /** On `/v1/quiz-attempts/{id}/result`: the options the server read out of `answer_text` and graded. */
+  selected_answer_ids?: Array<number | string>;
   /** Eager-loaded on `/v1/quiz-attempts/{id}/result`. */
   quiz_question?: {
     id: number | string;

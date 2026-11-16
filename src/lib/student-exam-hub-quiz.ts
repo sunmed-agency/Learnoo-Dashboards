@@ -169,6 +169,21 @@ export function hubQuizChapterTitle(row: HubQuizListRow): string | null {
   return typeof title === 'string' && title.trim() ? title.trim() : null;
 }
 
+/**
+ * The course names for an exam card: the courses the exam is shared with, else the backend's
+ * `course_title` (an exam linked to one course by its own `course_id` has no `courses`).
+ */
+export function hubQuizCourseTitles(row: HubQuizListRow): string[] {
+  const attrs = hubQuizAttrs(row);
+  const shared = (Array.isArray(attrs.courses) ? attrs.courses : [])
+    .map((course) => (course as { attributes?: { title?: unknown } } | null)?.attributes?.title)
+    .filter((title): title is string => typeof title === 'string' && title.trim() !== '')
+    .map((title) => title.trim());
+  if (shared.length > 0) return shared;
+  const own = attrs.course_title;
+  return typeof own === 'string' && own.trim() !== '' ? [own.trim()] : [];
+}
+
 export function hubQuizTypeLabel(
   row: HubQuizListRow,
   t: (key: string, values?: Record<string, string | number>) => string,

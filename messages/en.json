@@ -1252,6 +1252,10 @@
       "reviewQuestionBadge": "Question {n}",
       "reviewMultipleType": "Multiple choice",
       "reviewNoAnswerOptions": "This question has no listed answer options.",
+      "reviewYourAnswer": "Your answer",
+      "reviewYourAnswerCorrect": "Your answer (correct)",
+      "reviewCorrectAnswer": "Correct answer",
+      "reviewNoAnswer": "No answer provided",
       "feedbackLabel": "Explanation"
     },
     "studentExamsPage": {

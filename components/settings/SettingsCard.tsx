@@ -10,6 +10,7 @@ import {
   FileText,
   Image,
   User,
+  Smartphone,
   ChevronRight 
 } from 'lucide-react';
 
@@ -21,6 +22,7 @@ const iconMap = {
   FileText,
   Image,
   User,
+  Smartphone,
 };
 
 type IconName = keyof typeof iconMap;

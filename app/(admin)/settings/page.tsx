@@ -59,6 +59,12 @@ export default function PlatformSettingsPage() {
       titleKey: 'watermark',
       href: '/settings/watermark',
       adminOnly: true
+    },
+    {
+      icon: 'Smartphone' as const,
+      titleKey: 'appUpdate',
+      href: '/settings/app-update',
+      adminOnly: true
     }
   ];
 

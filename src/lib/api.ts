@@ -102,6 +102,7 @@ import type {
   StudentViewData,
   StudentQuestion,
 } from '@/src/types';
+import type { AppUpdateSettings } from './app-update-settings';
 import type {
   StudentNotificationCountResponse,
   StudentNotificationListResponse,
@@ -1362,6 +1363,15 @@ export const platformFeatureApi = {
 
 
 // ============================================
+// Forced app update (minimum app version per store)
+// ============================================
+
+export const appUpdateApi = {
+  get: () => get<{ data: AppUpdateSettings }>('/v1/app-update'),
+  update: (data: AppUpdateSettings) => put<{ data: AppUpdateSettings }>('/v1/app-update', data),
+};
+
+// ============================================
 // Admin API
 // ============================================
 
@@ -1640,6 +1650,7 @@ export const api = {
   search: searchApi,
   dashboard: dashboardApi,
   platformFeature: platformFeatureApi,
+  appUpdate: appUpdateApi,
   socialLinks: socialLinksApi,
   appVersions: appVersionsApi,
   admin: adminApi,

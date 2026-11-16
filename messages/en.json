@@ -1,4 +1,27 @@
 {
+  "appUpdateSettings": {
+    "title": "App Update",
+    "description": "Stop old app versions from opening until the student updates from the store.",
+    "enabledTitle": "Required update",
+    "enabledLabel": "Require the update",
+    "enabledDescription": "When on, an app older than the minimum version below shows only an \"Update required\" screen with a button to the store. If the app cannot reach the server it opens normally.",
+    "platforms": {
+      "android": "Android (Google Play)",
+      "huawei": "Huawei (AppGallery)",
+      "ios": "iPhone (App Store)"
+    },
+    "minVersion": "Minimum app version",
+    "minVersionHelp": "Version from the store listing, optionally with the build number: 1.0.3 or 1.0.3+12. Leave empty for no minimum on this store.",
+    "minVersionInvalid": "Use numbers and dots, optionally + build number, like 1.0.3 or 1.0.3+12.",
+    "storeUrl": "Store link",
+    "storeUrlInvalid": "Enter a full https:// link to the app's store page.",
+    "invalid": "Check the highlighted fields.",
+    "saved": "App update settings saved.",
+    "saveFailed": "Could not save the app update settings.",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel"
+  },
   "videoSleepSettings": {
     "label": "Video screen sleep interval (minutes)",
     "description": "Screen sleep interval for the mobile video player, in minutes.",
@@ -2862,6 +2885,10 @@
     "watermark": {
       "title": "Watermark Settings",
       "description": "Configure watermarks for chapters, exams, and library content."
+    },
+    "appUpdate": {
+      "title": "App Update",
+      "description": "Minimum app version per store and the store links."
     },
     "soon": "Soon"
   },

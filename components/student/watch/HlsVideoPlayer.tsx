@@ -12,6 +12,15 @@ import {
 } from 'react';
 import Hls, { type ErrorData, ErrorDetails, Events, type HlsConfig } from 'hls.js';
 import { toProxiedLearnooHlsUrl } from '@/src/lib/learnoo-hls-proxy';
+import {
+  choosePlayerFullscreenMode,
+  currentFullscreenElement,
+  elementFullscreenRequest,
+  isNativeVideoPresentation,
+  leaveNativeVideoPresentation,
+  type NativeVideoPresentation,
+  requestElementFullscreenWithFallback,
+} from '@/src/lib/player-fullscreen';
 import type { WatermarkResolution } from '@/src/lib/watermark-from-features';
 import {
   isHlsStreamUrl,
@@ -477,6 +486,12 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
     const [autoQualityEnabled, setAutoQualityEnabled] = useState(true);
     const [showPlaybackSwitching, setShowPlaybackSwitching] = useState(false);
     /**
+     * Fullscreen inside the page (the shell covers the viewport). Used where the
+     * browser cannot fullscreen an element — iPhone Safari only offers its
+     * native video player, which shows the video without the watermark.
+     */
+    const [inPageFullscreen, setInPageFullscreen] = useState(false);
+    /**
      * Tracks whether native HLS is being used (iOS). When true, we must NOT
      * set `crossOrigin="anonymous"` on the `<video>` element because it
      * breaks Safari's internal HLS player entirely.
@@ -598,45 +613,56 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
       const wrapper = videoWrapperRef.current;
       if (!video || !wrapper || typeof document === 'undefined') return;
 
-      const requestWrapperFullscreen = () => {
-        const wrapperEl = wrapper as any;
+      /** Show the shell (video + watermark + controls) fullscreen instead. */
+      const fullscreenShellInstead = () => {
         const req =
-          wrapperEl?.requestFullscreen?.bind(wrapperEl) ??
-          wrapperEl?.webkitRequestFullscreen?.bind(wrapperEl) ??
-          wrapperEl?.mozRequestFullScreen?.bind(wrapperEl) ??
-          wrapperEl?.msRequestFullscreen?.bind(wrapperEl);
-        if (!req) return;
-        try {
-          const p = req();
-          if (p != null && typeof (p as Promise<void>).catch === 'function') {
-            void (p as Promise<void>).catch(() => { });
+          choosePlayerFullscreenMode(wrapper, document) === 'element'
+            ? elementFullscreenRequest(wrapper)
+            : null;
+        if (!req) {
+          setInPageFullscreen(true);
+          return;
+        }
+        requestElementFullscreenWithFallback(req, {
+          enterInPage: () => setInPageFullscreen(true),
+          leaveInPage: () => setInPageFullscreen(false),
+          isElementFullscreen: () => {
+            const fs = currentFullscreenElement(document) as Node | null;
+            return Boolean(fs && (fs === wrapper || wrapper.contains(fs)));
+          },
+        });
+      };
+
+      // The <video> itself went fullscreen (browser shortcut / gesture): that
+      // view has no watermark, so leave it and fullscreen the shell.
+      const redirectVideoFullscreen = () => {
+        if (currentFullscreenElement(document) !== video) return;
+        const doc = document as any;
+        if (typeof document.exitFullscreen === 'function') {
+          void document
+            .exitFullscreen()
+            .then(fullscreenShellInstead)
+            .catch(() => setInPageFullscreen(true));
+        } else if (typeof doc.webkitExitFullscreen === 'function') {
+          try {
+            doc.webkitExitFullscreen();
+          } catch {
+            /* ignore */
           }
-        } catch {
-          /* ignore */
+          fullscreenShellInstead();
         }
       };
 
-      const redirectVideoFullscreen = () => {
-        const doc = document as any;
-        const fs =
-          document.fullscreenElement ||
-          doc.webkitFullscreenElement ||
-          doc.mozFullScreenElement ||
-          doc.msFullscreenElement;
-        if (fs === video) {
-          if (typeof document.exitFullscreen === 'function') {
-            void document.exitFullscreen().then(() => {
-              requestWrapperFullscreen();
-            }).catch(() => {});
-          } else if (typeof doc.webkitExitFullscreen === 'function') {
-            try {
-              doc.webkitExitFullscreen();
-              requestWrapperFullscreen();
-            } catch {
-              /* ignore */
-            }
-          }
-        }
+      // iPhone native player (pinch-out, native button) or Safari picture-in-picture:
+      // both hide the watermark. Bring the video back inline at once; a
+      // fullscreen attempt becomes the in-page fullscreen.
+      const blockNativePresentation = () => {
+        const native = video as HTMLVideoElement & NativeVideoPresentation;
+        if (!isNativeVideoPresentation(native)) return;
+        const wantedFullscreen =
+          native.webkitDisplayingFullscreen || native.webkitPresentationMode === 'fullscreen';
+        leaveNativeVideoPresentation(native);
+        if (wantedFullscreen) setInPageFullscreen(true);
       };
 
       const onDblClick = (e: MouseEvent) => {
@@ -646,14 +672,38 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
 
       document.addEventListener('fullscreenchange', redirectVideoFullscreen);
       document.addEventListener('webkitfullscreenchange', redirectVideoFullscreen);
+      video.addEventListener('webkitbeginfullscreen', blockNativePresentation);
+      video.addEventListener('webkitpresentationmodechanged', blockNativePresentation);
       video.addEventListener('dblclick', onDblClick);
 
       return () => {
         document.removeEventListener('fullscreenchange', redirectVideoFullscreen);
         document.removeEventListener('webkitfullscreenchange', redirectVideoFullscreen);
+        video.removeEventListener('webkitbeginfullscreen', blockNativePresentation);
+        video.removeEventListener('webkitpresentationmodechanged', blockNativePresentation);
         video.removeEventListener('dblclick', onDblClick);
       };
     }, [showCustomControls]);
+
+    // In-page fullscreen: stop the page behind from scrolling; Escape leaves.
+    useEffect(() => {
+      if (!inPageFullscreen || typeof document === 'undefined') return;
+      const html = document.documentElement;
+      const body = document.body;
+      const prevHtml = html.style.overflow;
+      const prevBody = body.style.overflow;
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setInPageFullscreen(false);
+      };
+      document.addEventListener('keydown', onKey);
+      return () => {
+        html.style.overflow = prevHtml;
+        body.style.overflow = prevBody;
+        document.removeEventListener('keydown', onKey);
+      };
+    }, [inPageFullscreen]);
 
     useEffect(() => {
       const video = localRef.current;
@@ -1348,7 +1398,9 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
 
     const wrapperClass = showCustomControls
       ? [
-        'relative flex min-h-0 min-w-0 w-full overflow-hidden bg-black',
+        inPageFullscreen
+          ? 'fixed inset-0 z-[9000] flex h-[100dvh] w-screen max-w-none min-h-0 min-w-0 overflow-hidden bg-black'
+          : 'relative flex min-h-0 min-w-0 w-full overflow-hidden bg-black',
         hasWatchPanel ? 'flex-col md:flex-row items-stretch gap-0' : 'flex-col',
         '[&:fullscreen]:flex [&:fullscreen]:h-full [&:fullscreen]:max-h-none [&:fullscreen]:w-full',
         hasWatchPanel ? 'md:[&:fullscreen]:flex-row [&:fullscreen]:flex-col [&:fullscreen]:items-stretch' : '',
@@ -1364,6 +1416,7 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
           hasWatchPanel
             ? 'w-full md:w-1/2 min-w-0 md:flex-[1_1_50%] md:basis-1/2'
             : 'w-full min-h-0 flex-1',
+          inPageFullscreen ? 'min-h-0 flex-1' : '',
           hasWatchPanel
             ? '[&:fullscreen]:min-w-0 md:[&:fullscreen]:w-1/2 md:[&:fullscreen]:flex-[1_1_50%] md:[&:fullscreen]:basis-1/2 [&:fullscreen]:w-full'
             : '[&:fullscreen]:w-full [&:fullscreen]:flex-1',
@@ -1371,7 +1424,11 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
       >
         <div
           ref={setContainerRef}
-          className={`group relative w-full shrink-0 overflow-visible bg-black ${viewportClass}`}
+          className={
+            inPageFullscreen
+              ? 'group relative w-full min-h-0 flex-1 overflow-visible bg-black'
+              : `group relative w-full shrink-0 overflow-visible bg-black ${viewportClass}`
+          }
           onMouseMove={revealControls}
           onMouseEnter={revealControls}
           onTouchStart={revealControls}
@@ -1395,6 +1452,8 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
               chapterInfoTitle={chapterInfoTitle}
               theaterMode={theaterMode}
               onToggleTheater={onToggleTheater}
+              inPageFullscreen={inPageFullscreen}
+              onInPageFullscreenChange={setInPageFullscreen}
             />
           ) : null}
         </div>
@@ -1406,7 +1465,7 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
       <div ref={videoWrapperRef} className={wrapperClass}>
         {videoColumn}
         {watchPanel ? (
-          <div className="watch-pdf-shell relative z-40 flex min-h-0 w-full md:w-1/2 min-w-0 md:flex-[1_1_50%] md:basis-1/2 flex-col overflow-hidden border-t md:border-t-0 md:border-s border-slate-600/90 bg-[#f1f5f9] h-[520px] sm:h-[600px] md:h-auto md:aspect-video [&:fullscreen]:h-full [&:fullscreen]:max-h-none [&:fullscreen]:min-h-0 [&:fullscreen]:min-w-0 md:[&:fullscreen]:w-1/2 md:[&:fullscreen]:flex-[1_1_50%] md:[&:fullscreen]:basis-1/2 [&:fullscreen]:w-full md:[&:fullscreen]:border-t-0 md:[&:fullscreen]:border-s [&_.watch-pdf-scroll]:min-h-0 [&_.watch-pdf-scroll]:flex-1 [&_.watch-pdf-scroll]:overflow-y-auto">
+          <div className={`watch-pdf-shell relative z-40 flex min-h-0 w-full md:w-1/2 min-w-0 md:flex-[1_1_50%] md:basis-1/2 flex-col overflow-hidden border-t md:border-t-0 md:border-s border-slate-600/90 bg-[#f1f5f9] ${inPageFullscreen ? 'h-1/2 md:h-full' : 'h-[520px] sm:h-[600px] md:h-auto md:aspect-video'} [&:fullscreen]:h-full [&:fullscreen]:max-h-none [&:fullscreen]:min-h-0 [&:fullscreen]:min-w-0 md:[&:fullscreen]:w-1/2 md:[&:fullscreen]:flex-[1_1_50%] md:[&:fullscreen]:basis-1/2 [&:fullscreen]:w-full md:[&:fullscreen]:border-t-0 md:[&:fullscreen]:border-s [&_.watch-pdf-scroll]:min-h-0 [&_.watch-pdf-scroll]:flex-1 [&_.watch-pdf-scroll]:overflow-y-auto`}>
             {watchPanel}
           </div>
         ) : null}

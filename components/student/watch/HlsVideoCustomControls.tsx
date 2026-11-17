@@ -23,6 +23,11 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
+import {
+  choosePlayerFullscreenMode,
+  elementFullscreenRequest,
+  requestElementFullscreenWithFallback,
+} from '@/src/lib/player-fullscreen';
 
 function formatClock(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
@@ -70,9 +75,12 @@ export type HlsVideoCustomControlsProps = {
    *  its auto-hide timer — otherwise the control bar (and this menu with it) can
    *  disappear mid-interaction while the viewer is still reading the options. */
   onSettingsOpenChange?: (open: boolean) => void;
+  /** True while the shell covers the page because the browser has no element fullscreen (iPhone Safari). */
+  inPageFullscreen?: boolean;
+  onInPageFullscreenChange?: (on: boolean) => void;
 };
 
-function isShellFullscreen(shell: HTMLDivElement | null, video?: HTMLVideoElement | null): boolean {
+function isShellFullscreen(shell: HTMLDivElement | null): boolean {
   if (typeof document === 'undefined') return false;
   const doc = document as any;
   const fs =
@@ -82,9 +90,6 @@ function isShellFullscreen(shell: HTMLDivElement | null, video?: HTMLVideoElemen
     doc.msFullscreenElement;
   if (fs) {
     return shell ? fs === shell || shell.contains(fs) : true;
-  }
-  if (video && (video as any).webkitDisplayingFullscreen) {
-    return true;
   }
   return false;
 }
@@ -105,6 +110,8 @@ export function HlsVideoCustomControls({
   theaterMode = false,
   onToggleTheater,
   onSettingsOpenChange,
+  inPageFullscreen = false,
+  onInPageFullscreenChange,
 }: HlsVideoCustomControlsProps) {
   const t = useTranslations('courses.studentWatch');
 
@@ -113,7 +120,8 @@ export function HlsVideoCustomControls({
   const [duration, setDuration] = useState(0);
   const [bufferedEnd, setBufferedEnd] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isElementFullscreen, setIsFullscreen] = useState(false);
+  const isFullscreen = isElementFullscreen || inPageFullscreen;
   const [playbackSpeed, setPlaybackSpeed] = useState<SpeedValue>(1);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [subMenu, setSubMenu] = useState<SettingsSubMenu>(null);
@@ -196,7 +204,7 @@ export function HlsVideoCustomControls({
 
   useEffect(() => {
     const video = videoRef.current;
-    const sync = () => setIsFullscreen(isShellFullscreen(shellRef.current, videoRef.current));
+    const sync = () => setIsFullscreen(isShellFullscreen(shellRef.current));
     sync();
 
     const events = [
@@ -276,12 +284,14 @@ export function HlsVideoCustomControls({
 
   const toggleShellFullscreen = useCallback(() => {
     const shell = shellRef.current;
-    const video = videoRef.current;
     if (typeof document === 'undefined') return;
 
-    const isFs = isShellFullscreen(shell, video);
+    if (inPageFullscreen) {
+      onInPageFullscreenChange?.(false);
+      return;
+    }
 
-    if (isFs) {
+    if (isShellFullscreen(shell)) {
       const doc = document as any;
       if (typeof document.exitFullscreen === 'function') {
         void document.exitFullscreen().catch(() => {});
@@ -305,18 +315,6 @@ export function HlsVideoCustomControls({
         }
       }
 
-      if (
-        video &&
-        (video as any).webkitDisplayingFullscreen &&
-        typeof (video as any).webkitExitFullscreen === 'function'
-      ) {
-        try {
-          (video as any).webkitExitFullscreen();
-        } catch {
-          /* ignore */
-        }
-      }
-
       // Unlock screen orientation on mobile
       try {
         if (
@@ -332,59 +330,39 @@ export function HlsVideoCustomControls({
       return;
     }
 
-    // Try HTML5 Fullscreen API on shell first (keeps watermarks and custom controls visible)
-    const shellEl = shell as any;
+    // Never fullscreen the <video> itself (iPhone native player): that view has
+    // no watermark. The shell goes fullscreen, or covers the page when the
+    // browser cannot fullscreen an element (iPhone Safari).
+    const enterInPage = () => onInPageFullscreenChange?.(true);
     const req =
-      shellEl?.requestFullscreen?.bind(shellEl) ??
-      shellEl?.webkitRequestFullscreen?.bind(shellEl) ??
-      shellEl?.mozRequestFullScreen?.bind(shellEl) ??
-      shellEl?.msRequestFullscreen?.bind(shellEl);
+      choosePlayerFullscreenMode(shell, document) === 'element'
+        ? elementFullscreenRequest(shell)
+        : null;
+    if (!req) {
+      enterInPage();
+      return;
+    }
 
-    if (req) {
-      try {
-        const p = req();
-        if (p != null && typeof (p as Promise<void>).catch === 'function') {
-          void (p as Promise<void>)
-            .then(() => {
-              // Try locking orientation to landscape on mobile devices
-              try {
-                if (
-                  typeof screen !== 'undefined' &&
-                  screen.orientation &&
-                  typeof (screen.orientation as any).lock === 'function'
-                ) {
-                  void (screen.orientation as any).lock('landscape').catch(() => {});
-                }
-              } catch {
-                /* ignore */
-              }
-            })
-            .catch(() => {
-              // Fallback to video element on mobile if shell fullscreen was rejected (e.g. iOS)
-              if (video && typeof (video as any).webkitEnterFullscreen === 'function') {
-                try {
-                  (video as any).webkitEnterFullscreen();
-                } catch {
-                  /* ignore */
-                }
-              }
-            });
-          return;
+    requestElementFullscreenWithFallback(req, {
+      enterInPage,
+      leaveInPage: () => onInPageFullscreenChange?.(false),
+      isElementFullscreen: () => isShellFullscreen(shellRef.current),
+      onEntered: () => {
+        // Try locking orientation to landscape on mobile devices
+        try {
+          if (
+            typeof screen !== 'undefined' &&
+            screen.orientation &&
+            typeof (screen.orientation as any).lock === 'function'
+          ) {
+            void (screen.orientation as any).lock('landscape').catch(() => {});
+          }
+        } catch {
+          /* ignore */
         }
-      } catch {
-        /* fall through to video element */
-      }
-    }
-
-    // Fallback for iOS Safari (iPhone) where div.requestFullscreen is not supported
-    if (video && typeof (video as any).webkitEnterFullscreen === 'function') {
-      try {
-        (video as any).webkitEnterFullscreen();
-      } catch {
-        /* ignore */
-      }
-    }
-  }, [shellRef, videoRef]);
+      },
+    });
+  }, [shellRef, inPageFullscreen, onInPageFullscreenChange]);
 
   const onSeekInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

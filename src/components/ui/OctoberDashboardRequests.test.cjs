@@ -225,6 +225,7 @@ test('student community renders replies of every accepted post type only for the
     '@/components/student/AuthorRoleBadge': { AuthorRoleBadge: () => null },
     '@/src/hooks/useComments': { useComments: () => ({ data: [reply(1, 'post', 104), reply(2, 'question', 104), reply(3, 'summary', 104), reply(4, 'post', 105), reply(5, 'post', null)] }), useDeleteComment: () => ({}) },
     '@/src/hooks/usePosts': { useReactToPost: () => ({}) },
+    '@/src/lib/community-comment-order': load('src/lib/community-comment-order.ts'),
     '@/src/stores/authStore': { useAuth: () => ({ user: null }) },
   });
   const markup = renderToStaticMarkup(React.createElement(Comments, { postId: 104, commentsCount: 3 }));

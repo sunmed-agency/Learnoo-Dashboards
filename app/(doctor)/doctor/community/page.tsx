@@ -430,6 +430,8 @@ export default function CommunityModerationPage() {
 
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
   const [replyForms, setReplyForms] = useState<Record<string, string>>({});
+  /** Per post: the comment just posted from its composer, so the list can show it. */
+  const [postedCommentIds, setPostedCommentIds] = useState<Record<string, string>>({});
 
   const toggleComments = (postId: string) => {
     setExpandedComments(prev => {
@@ -447,9 +449,11 @@ export default function CommunityModerationPage() {
     const reply = replyForms[postId];
     if (!reply?.trim()) return;
     try {
-      await createComment(parseInt(postId), { parent_id: parseInt(postId), content: reply });
+      const created = await createComment(parseInt(postId), { parent_id: parseInt(postId), content: reply });
       setReplyForms(prev => ({ ...prev, [postId]: '' }));
       await refetch();
+      const createdId = (created as { id?: string | number } | null)?.id;
+      if (createdId != null) setPostedCommentIds(prev => ({ ...prev, [postId]: String(createdId) }));
     } catch {
       await refetch();
     }
@@ -978,7 +982,8 @@ export default function CommunityModerationPage() {
 
       {/* Posts List */}
       <div className="flex flex-col gap-5 mt-2">
-        {isLoading && (
+        {/* Spinner on the first load only, so a refresh does not push the posts down. */}
+        {isLoading && !postsData && (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[#2137D6]" />
           </div>
@@ -1109,6 +1114,7 @@ export default function CommunityModerationPage() {
                 expanded={expandedComments.has(post.id)}
                 onToggleExpanded={() => toggleComments(post.id)}
                 onRefresh={() => { void refetch(); }}
+                revealCommentId={postedCommentIds[post.id] ?? null}
               />
               {expandedComments.has(post.id) && (
                 <div className="mt-4 flex flex-col gap-4">

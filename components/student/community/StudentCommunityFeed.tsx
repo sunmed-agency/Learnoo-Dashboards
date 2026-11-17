@@ -173,6 +173,8 @@ export default function StudentCommunityFeed({
   const [modalOpen, setModalOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState<Post | null>(null);
   const [reactingId, setReactingId] = useState<string | null>(null);
+  /** Per post: the comment the student just posted, so its list can show it. */
+  const [postedCommentIds, setPostedCommentIds] = useState<Record<string, string>>({});
 
   const socialLinks = socialLinksFromCourse ?? [];
 
@@ -250,7 +252,7 @@ export default function StudentCommunityFeed({
         return;
       }
       try {
-        await createComment(pid, {
+        const created = await createComment(pid, {
           content: payload.content,
           ...(payload.tags?.length ? { tags: payload.tags } : {}),
         });
@@ -258,6 +260,10 @@ export default function StudentCommunityFeed({
         setReplyTarget(null);
         toast.success(tPage('toastReplyCreated'));
         await refetchPosts();
+        const createdId = (created as { id?: string | number } | null)?.id;
+        if (createdId != null) {
+          setPostedCommentIds((prev) => ({ ...prev, [parentId]: String(createdId) }));
+        }
       } catch {
         toast.error(tPage('toastReplyFailed'));
       }
@@ -372,7 +378,9 @@ export default function StudentCommunityFeed({
         <p className="mb-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">{tPage('postsError')}</p>
       ) : null}
 
-      {postsLoading ? (
+      {/* Spinner on the first load only: refreshing after a comment or a like
+          keeps the posts (and the reader's place on the page) where they are. */}
+      {postsLoading && !postsRaw ? (
         <div className="flex justify-center py-16">
           <Loader2 className="size-10 animate-spin text-[#2137D6]" />
         </div>
@@ -511,6 +519,7 @@ export default function StudentCommunityFeed({
                       commentsCount={comments}
                       readOnly={readOnly}
                       onRefresh={refetchPosts}
+                      revealCommentId={postedCommentIds[String(post.id)] ?? null}
                     />
                   </div>
                 </div>

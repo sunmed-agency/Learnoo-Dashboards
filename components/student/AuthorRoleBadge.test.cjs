@@ -82,6 +82,7 @@ for (const locale of ['ar', 'en']) {
       'next-intl': intl, '@/components/student/AuthorRoleBadge': { AuthorRoleBadge },
       '@/src/hooks/useComments': { useComments: () => ({ data: authors(), refetch() {} }), useDeleteComment: () => ({}) },
       '@/src/hooks/usePosts': { useReactToPost: () => ({}) }, '@/src/stores/authStore': { useAuth: () => ({ user: { id: 'viewer' } }) },
+      '@/src/lib/community-comment-order': load('src/lib/community-comment-order.ts'),
     }).default;
     const html = renderToStaticMarkup(React.createElement(Comments, { postId: 90, commentsCount: 4 }));
     assertRoles(html, intl.messages.common.authorRoles);

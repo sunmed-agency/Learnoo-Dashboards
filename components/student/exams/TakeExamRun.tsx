@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { AlertTriangle, ChevronRight, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { ExamQuestionScreen } from '@/components/student/exams/ExamQuestionScreen';
 import toast from 'react-hot-toast';
 import type { FinishQuizAttemptResponse } from '@/src/types';
@@ -255,6 +255,25 @@ export default function TakeExamRun({
     }
   };
 
+  const goPrevious = async () => {
+    if (!current || currentIndex === 0 || isGoingNext || finishing) return;
+    setIsGoingNext(true);
+
+    try {
+      // Keep what the student picked here; the attempt is re-graded from the saved answers when it ends.
+      if (isQuestionAnswered(current, selectedForCurrent, currentShortText)) {
+        const saved = await flushCurrentAnswer(String(current.id));
+        if (!saved) {
+          toast.error(t('answerSaveFailed'));
+          return;
+        }
+      }
+      setCurrentIndex((i) => Math.max(i - 1, 0));
+    } finally {
+      setIsGoingNext(false);
+    }
+  };
+
   const autoSubmit = useCallback(async () => {
     if (!quiz || !attemptId || isFinished.current) return;
     isFinished.current = true;
@@ -381,36 +400,40 @@ export default function TakeExamRun({
       articleFooter={
         <>
           <p className="text-xs text-[#94A3B8] sm:text-[13px]">{isShort ? t('shortAnswerHint', { fallback: 'Type a free-text answer.' }) : multi ? t('selectMultipleHint') : t('selectAnswerHint')}</p>
-          {!isLast ? (
-            <button
-              type="button"
-              onClick={() => void goNext()}
-              disabled={!answered || isGoingNext}
-              className="inline-flex h-10 items-center justify-center gap-1.5 self-stretch rounded-lg bg-[#2D46D9] px-5 text-xs font-bold text-white transition-colors hover:bg-[#2438c4] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-white sm:h-11 sm:self-auto sm:rounded-xl sm:px-6 sm:text-sm"
-            >
-              {t('nextQuestion')}
-              <ChevronRight className="size-4 shrink-0 rtl:rotate-180" aria-hidden />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => void handleFinish()}
-              disabled={!answered || finishing || isGoingNext}
-              className="inline-flex h-10 items-center justify-center gap-1.5 self-stretch rounded-lg bg-[#2D46D9] px-5 text-xs font-bold text-white transition-colors hover:bg-[#2438c4] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-white sm:h-11 sm:self-auto sm:rounded-xl sm:px-6 sm:text-sm"
-            >
-              {t('finishExam')}
-            </button>
-          )}
+          <div className="flex gap-2 self-stretch sm:self-auto">
+            {currentIndex > 0 ? (
+              <button
+                type="button"
+                onClick={() => void goPrevious()}
+                disabled={isGoingNext || finishing}
+                className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[#CBD5E1] bg-white px-5 text-xs font-bold text-[#334155] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:h-11 sm:flex-none sm:rounded-xl sm:px-6 sm:text-sm"
+              >
+                <ChevronLeft className="size-4 shrink-0 rtl:rotate-180" aria-hidden />
+                {t('previousQuestion')}
+              </button>
+            ) : null}
+            {!isLast ? (
+              <button
+                type="button"
+                onClick={() => void goNext()}
+                disabled={!answered || isGoingNext}
+                className="inline-flex h-10 items-center justify-center gap-1.5 flex-1 rounded-lg bg-[#2D46D9] px-5 text-xs font-bold text-white transition-colors hover:bg-[#2438c4] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-white sm:h-11 sm:flex-none sm:rounded-xl sm:px-6 sm:text-sm"
+              >
+                {t('nextQuestion')}
+                <ChevronRight className="size-4 shrink-0 rtl:rotate-180" aria-hidden />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void handleFinish()}
+                disabled={!answered || finishing || isGoingNext}
+                className="inline-flex h-10 items-center justify-center gap-1.5 flex-1 rounded-lg bg-[#2D46D9] px-5 text-xs font-bold text-white transition-colors hover:bg-[#2438c4] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-white sm:h-11 sm:flex-none sm:rounded-xl sm:px-6 sm:text-sm"
+              >
+                {t('finishExam')}
+              </button>
+            )}
+          </div>
         </>
-      }
-      belowArticle={
-        <div
-          className="flex gap-2 rounded-lg border border-amber-200/90 bg-amber-50 px-3 py-2.5 sm:gap-3 sm:rounded-xl sm:px-4 sm:py-3"
-          role="status"
-        >
-          <AlertTriangle className="size-4 shrink-0 text-amber-600 sm:size-5" strokeWidth={2} aria-hidden />
-          <p className="text-xs font-medium leading-snug text-amber-950 sm:text-[13px] sm:leading-relaxed">{t('noReturnWarning')}</p>
-        </div>
       }
     />
   );

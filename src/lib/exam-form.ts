@@ -131,6 +131,11 @@ export function getQuizCourseIds(
   return [];
 }
 
+/** Exam title suggested by an imported file: its name without the extension, `_` read as a space. */
+export function examTitleFromFileName(name: string): string {
+  return name.replace(/\.[^/.]+$/, '').replace(/_+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function isObjectUrl(value?: string): value is string {
   return typeof value === 'string' && value.startsWith('blob:');
 }

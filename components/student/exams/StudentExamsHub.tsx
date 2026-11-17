@@ -5,6 +5,7 @@ import { ScheduledCountdown } from "@/components/student/ScheduledCountdown";
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PaginationMeta } from '@/src/types';
+import { formatPercent } from '@/src/lib/student-exam-score';
 import { useTranslations } from 'next-intl';
 import {
   BookOpen,
@@ -549,7 +550,7 @@ export default function StudentExamsHub({ locale }: { locale: string }) {
                       {pct != null ? (
                         <div className={`flex shrink-0 items-center gap-1 ${pctColor}`}>
                           <PctIcon className="size-5 shrink-0" strokeWidth={2} aria-hidden />
-                          <span className="text-base font-bold tabular-nums">{pct}%</span>
+                          <span className="text-base font-bold tabular-nums">{formatPercent(pct)}</span>
                         </div>
                       ) : null}
                     </div>

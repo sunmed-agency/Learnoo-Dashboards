@@ -519,8 +519,9 @@ function StudentsNeedingAttention({ data: students, t }: { data: any; t: ReturnT
               <p className="text-sm font-semibold text-[#1E293B]">{student.full_name}</p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#64748B]">{student.progress.toFixed(1)}% {t('activity.progress')}</span>
+              <div className="flex items-center justify-between gap-2 text-xs text-[#64748B]">
+                <span>{t('activity.lessonsWatched', { watched: student.watched_lessons, total: student.total_lessons })}</span>
+                <span className="tabular-nums">{student.progress.toFixed(1)}%</span>
               </div>
               <div className="h-1.5 bg-[#FECACA] rounded-full overflow-hidden">
                 <div 

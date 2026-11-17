@@ -105,14 +105,17 @@ export function parseWordExam(xml: string): ImportedExam {
     } else {
       if (pending.length > 1) contexts.push(pending.slice(0, -1).join("\n"));
       const stem = pending.at(-1) ?? "";
-      const answers = cells.map(cell => {
-        const shaded = Array.from(cell.getElementsByTagNameNS(WORD_NS, "shd")).some(shade => {
-          const fill = shade.getAttributeNS(WORD_NS, "fill")?.toUpperCase();
-          return fill && !["AUTO", "FFFFFF", "000000"].includes(fill);
-        });
-        const highlighted = Array.from(cell.getElementsByTagNameNS(WORD_NS, "highlight")).some(mark => !["none", "white"].includes(mark.getAttributeNS(WORD_NS, "val") ?? "none"));
-        return { text: text(cell, true).replace(OPTION, ""), isCorrect: shaded || highlighted, reason: explanation(cell) || pendingReasons.at(-1) || "" };
-      });
+      const highlighted = cells.map(cell => Array.from(cell.getElementsByTagNameNS(WORD_NS, "highlight")).some(mark => !["none", "white"].includes(mark.getAttributeNS(WORD_NS, "val") ?? "none")));
+      const fills = cells.map(cell => Array.from(new Set(Array.from(cell.getElementsByTagNameNS(WORD_NS, "shd"))
+        .map(shade => shade.getAttributeNS(WORD_NS, "fill")?.toUpperCase() ?? "")
+        .filter(fill => fill && !["AUTO", "FFFFFF", "000000"].includes(fill)))).sort().join(","));
+      // A fill every option shares (e.g. a table style) is the table's background, not an answer mark.
+      const background = fills.reduce((common, fill) => {
+        const count = (value: string) => fills.filter(other => other === value).length;
+        return count(fill) > count(common) ? fill : common;
+      }, "");
+      const marked = highlighted.some(Boolean) ? highlighted : fills.map(fill => fill !== "" && fill !== background);
+      const answers = cells.map((cell, ci) => ({ text: text(cell, true).replace(OPTION, ""), isCorrect: marked[ci], reason: explanation(cell) || pendingReasons.at(-1) || "" }));
       if (answers.some(answer => answer.text) && pending.length) questions.push(importedQuestion(stem, "single_choice", answers));
     }
     pending = [];

@@ -95,6 +95,7 @@ import {
 } from "lucide-react";
 
 import { DeleteModal } from "@/src/components/ui/DeleteModal";
+import LessonViewers from "@/components/dashboard/LessonViewers";
 import { CourseTreeSelect } from "@/src/components/admin/CourseTreeSelect";
 import { InstructorSelect } from "@/src/components/admin/InstructorSelect";
 
@@ -1266,6 +1267,14 @@ export default function DepartmentsPage() {
 
   const openViewers = async (node: TreeNode | null, page = 1) => {
     if (!node) return;
+    // A lesson's viewers come from GET /v1/chapter/{id}/viewers, which
+    // <LessonViewers> loads and pages itself (as on the admin dashboard).
+    // The lesson response no longer lists who watched it.
+    if (node.type !== "course") {
+      setViewNode(node);
+      setViewersModalOpen(true);
+      return;
+    }
     try {
       setViewNode(node);
       setViewersLoading(true);
@@ -1282,13 +1291,8 @@ export default function DepartmentsPage() {
         return;
       }
 
-      const res: any = node.type === "course"
-        ? await api.courses.subscribers(chapterId, page)
-        : await api.chapters.get(chapterId, { skipAuthRedirect: true } as any);
-
-      const users = node.type === "course"
-        ? res.data.map((user: any) => ({ id: user.id, user }))
-        : res?.data?.attributes?.userViews || [];
+      const res: any = await api.courses.subscribers(chapterId, page);
+      const users = res.data.map((user: any) => ({ id: user.id, user }));
       setSubscriberLastPage(res.last_page || 1);
 
       setViewersList(users);
@@ -2986,15 +2990,14 @@ export default function DepartmentsPage() {
             </div>
 
             <div className="space-y-2">
-              {viewersLoading ? (
+              {viewNode.type === "chapter" ? <LessonViewers key={viewNode.id} chapterId={Number(viewNode.data.id)} /> : viewersLoading ? (
                 <div className="py-6 flex items-center justify-center">
                   <Loader2 className="w-5 h-5 animate-spin text-gray-500" />
                 </div>
               ) : !viewersList || viewersList.length === 0 ? (
-                <p className="text-sm text-gray-400">{viewNode.type === "course" ? (ar ? "لا يوجد طلاب مشتركون في هذه الدورة." : "No subscribers in this course.") : (ar ? "لا توجد مشاهدات مسجلة لهذه المحاضرة." : "No viewers recorded for this lesson.")}</p>
+                <p className="text-sm text-gray-400">{ar ? "لا يوجد طلاب مشتركون في هذه الدورة." : "No subscribers in this course."}</p>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {viewNode.type === "chapter" && <p className="py-3 text-sm text-gray-600">{t("departments.viewerExplanation", { count: viewersList.length })}</p>}
                   {viewersList.map((uv: any) => (
                     <div key={uv.id} className="flex items-center justify-between py-3">
                       <div>
@@ -3002,14 +3005,10 @@ export default function DepartmentsPage() {
                           {uv.user ? `${uv.user.first_name || ''} ${uv.user.last_name || ''}`.trim() : uv.user_id}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {viewNode.type === 'course' ? <a dir="ltr" href={`tel:${uv.user?.phone || ''}`}>{uv.user?.phone || '—'}</a> : (uv.user?.email || uv.user?.student_code || '')}
+                          <a dir="ltr" href={`tel:${uv.user?.phone || ''}`}>{uv.user?.phone || '—'}</a>
                         </div>
                       </div>
 
-                      {viewNode.type === "chapter" && <div className="text-right">
-                        <div className="text-sm text-gray-700">{t("departments.recordedViews")}: <span className="font-medium">{uv.count}</span></div>
-                        <div className="text-xs text-gray-400">{uv.created_at ? new Date(uv.created_at).toLocaleString() : ''}</div>
-                      </div>}
                     </div>
                   ))}
                 </div>

@@ -3738,6 +3738,9 @@ export interface QuizAttributes {
   course_ids?: number[];
   courses?: Course[];
 
+  /** Exam banner image URL (shown at the top of the exam), or null. */
+  banner?: string | null;
+
 
 
   title: string;
@@ -4395,6 +4398,8 @@ export interface QuizUserAnswerAttributes {
 
 
 
+  /** On `/v1/quiz-attempts/{id}/result`: the options the server read out of `answer_text` and graded. */
+  selected_answer_ids?: Array<number | string>;
   /** Eager-loaded on `/v1/quiz-attempts/{id}/result`. */
   quiz_question?: {
     id: number | string;

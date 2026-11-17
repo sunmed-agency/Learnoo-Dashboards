@@ -10,6 +10,7 @@ import {
   type WatermarkResolution,
 } from '@/src/lib/watermark-from-features';
 import { buildWatermarkText } from '@/src/lib/watermark-text';
+import { PDF_WATERMARKED_HEADER } from '@/src/types/watermark-config';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -81,6 +82,8 @@ function PdfPreviewContent({
   const [pageWidth, setPageWidth] = useState(720);
   const [totalPages, setTotalPages] = useState(0);
   const [pdfData, setPdfData] = useState<Blob | null>(null);
+  /** The proxy already burned the watermark into the pages; a second one on top only clutters them. */
+  const [pagesWatermarked, setPagesWatermarked] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [visiblePages, setVisiblePages] = useState(() => new Set([1]));
   const [pageRatios, setPageRatios] = useState<Record<number, number>>({});
@@ -100,10 +103,12 @@ function PdfPreviewContent({
 
     setPdfData(null);
     setLoadError(null);
+    setPagesWatermarked(false);
 
     fetch(proxiedPdfUrl, { cache: 'no-store', signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        setPagesWatermarked(response.headers.get(PDF_WATERMARKED_HEADER) === '1');
         return response.blob();
       })
       .then(setPdfData)
@@ -195,7 +200,7 @@ function PdfPreviewContent({
                 className="[&_canvas]:!h-auto [&_canvas]:!w-full"
               />}
 
-              {watermarkText ? (
+              {watermarkText && !pagesWatermarked ? (
                 <div
                   className="pointer-events-none absolute inset-0 z-10 select-none overflow-hidden"
                   aria-hidden

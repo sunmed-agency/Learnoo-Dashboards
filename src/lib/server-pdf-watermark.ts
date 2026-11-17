@@ -21,7 +21,14 @@ export async function addWatermarkToPdf(
     return pdfBuffer;
   }
 
-  const pdfDoc = await PDFDocument.load(Buffer.from(pdfBuffer));
+  // The pages go into a fresh document instead of being saved back in place:
+  // pdf-lib writes a wrong cross-reference stream for a file that has an
+  // object of a generation other than 0 (an incrementally saved PDF, such as
+  // `5 1 obj`). The viewer then cannot find the embedded font and draws the
+  // page without the watermark. A fresh document numbers every object anew.
+  const source = await PDFDocument.load(Buffer.from(pdfBuffer));
+  const pdfDoc = await PDFDocument.create();
+  for (const page of await pdfDoc.copyPages(source, source.getPageIndices())) pdfDoc.addPage(page);
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(
     await readFile(path.join(process.cwd(), 'node_modules/dejavu-fonts-ttf/ttf/DejaVuSans.ttf'))

@@ -46,6 +46,9 @@ export interface WatermarkConfig {
   voiceInterval: number;
 }
 
+/** Set by `/api/pdf-proxy` on a PDF whose pages it has already watermarked. */
+export const PDF_WATERMARKED_HEADER = 'X-PDF-Watermarked';
+
 export const DEFAULT_WATERMARK_CONFIG: WatermarkConfig = {
   enabled: false,
   text: 'Learnoo',

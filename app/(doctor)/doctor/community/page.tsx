@@ -8,6 +8,7 @@ import { usePosts, useDeletePost, useUpdatePost, useCreatePost } from '@/src/hoo
 import { useCreateComment, useDeleteComment } from '@/src/hooks/useComments';
 import { useSocialLinks, useCreateSocialLink, useUpdateSocialLink, useDeleteSocialLink } from '@/src/hooks/useSocialLinks';
 import ModeratorPostComments from '@/src/components/admin/community/ModeratorPostComments';
+import FormModal from '@/components/ui/FormModal';
 import { useCourses } from '@/src/hooks/useCourses';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import { getApiErrorMessage } from '@/src/lib/api';
@@ -429,6 +430,8 @@ export default function CommunityModerationPage() {
 
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
   const [replyForms, setReplyForms] = useState<Record<string, string>>({});
+  /** Per post: the comment just posted from its composer, so the list can show it. */
+  const [postedCommentIds, setPostedCommentIds] = useState<Record<string, string>>({});
 
   const toggleComments = (postId: string) => {
     setExpandedComments(prev => {
@@ -446,9 +449,11 @@ export default function CommunityModerationPage() {
     const reply = replyForms[postId];
     if (!reply?.trim()) return;
     try {
-      await createComment(parseInt(postId), { parent_id: parseInt(postId), content: reply });
+      const created = await createComment(parseInt(postId), { parent_id: parseInt(postId), content: reply });
       setReplyForms(prev => ({ ...prev, [postId]: '' }));
       await refetch();
+      const createdId = (created as { id?: string | number } | null)?.id;
+      if (createdId != null) setPostedCommentIds(prev => ({ ...prev, [postId]: String(createdId) }));
     } catch {
       await refetch();
     }
@@ -977,7 +982,8 @@ export default function CommunityModerationPage() {
 
       {/* Posts List */}
       <div className="flex flex-col gap-5 mt-2">
-        {isLoading && (
+        {/* Spinner on the first load only, so a refresh does not push the posts down. */}
+        {isLoading && !postsData && (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[#2137D6]" />
           </div>
@@ -1108,6 +1114,7 @@ export default function CommunityModerationPage() {
                 expanded={expandedComments.has(post.id)}
                 onToggleExpanded={() => toggleComments(post.id)}
                 onRefresh={() => { void refetch(); }}
+                revealCommentId={postedCommentIds[post.id] ?? null}
               />
               {expandedComments.has(post.id) && (
                 <div className="mt-4 flex flex-col gap-4">
@@ -1137,17 +1144,30 @@ export default function CommunityModerationPage() {
 
       {/* Social Link Modal */}
       {isSocialModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-[#1E293B]">
-                {editingSocialLink ? t('community.socialLinks.modal.edit') : t('community.socialLinks.modal.add')}
-              </h2>
-              <button onClick={closeSocialModal} className="text-[#94A3B8] hover:text-[#475569]">
-                <X className="w-6 h-6" />
+        <FormModal
+          title={editingSocialLink ? t('community.socialLinks.modal.edit') : t('community.socialLinks.modal.add')}
+          onClose={closeSocialModal}
+          closeLabel={t('community.socialLinks.modal.cancel')}
+          footer={(
+            <div className="flex gap-3">
+              <button
+                onClick={handleSaveSocialLink}
+                disabled={isCreatingSocial || isUpdatingSocial}
+                className="flex-1 px-4 py-2 bg-[#2137D6] hover:bg-[#1a2bb3] disabled:bg-[#94A3B8] text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+              >
+                {(isCreatingSocial || isUpdatingSocial) && <Loader2 className="w-4 h-4 animate-spin" />}
+                {editingSocialLink ? t('community.socialLinks.modal.update') : t('community.socialLinks.modal.create')}
+              </button>
+              <button
+                onClick={closeSocialModal}
+                disabled={isCreatingSocial || isUpdatingSocial}
+                className="flex-1 px-4 py-2 border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] disabled:opacity-50 rounded-xl text-sm font-bold transition-all"
+              >
+                {t('community.socialLinks.modal.cancel')}
               </button>
             </div>
-
+          )}
+        >
             <div className="flex flex-col gap-4">
               <div>
                 <label className="block text-sm font-semibold text-[#475569] mb-1">{t('community.socialLinks.modal.course')}</label>
@@ -1293,46 +1313,37 @@ export default function CommunityModerationPage() {
                   <option value="false">Free</option>
                 </select>
               </div>
-
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={handleSaveSocialLink}
-                  disabled={isCreatingSocial || isUpdatingSocial}
-                  className="flex-1 px-4 py-2 bg-[#2137D6] hover:bg-[#1a2bb3] disabled:bg-[#94A3B8] text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  {(isCreatingSocial || isUpdatingSocial) && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {editingSocialLink ? t('community.socialLinks.modal.update') : t('community.socialLinks.modal.create')}
-                </button>
-                <button
-                  onClick={closeSocialModal}
-                  disabled={isCreatingSocial || isUpdatingSocial}
-                  className="flex-1 px-4 py-2 border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] disabled:opacity-50 rounded-xl text-sm font-bold transition-all"
-                >
-                  {t('community.socialLinks.modal.cancel')}
-                </button>
-              </div>
             </div>
-          </div>
-        </div>
+        </FormModal>
       )}
 
       {/* Create Post Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-[#E2E8F0]">
-              <h3 className="text-lg font-bold text-[#1E293B]">
-                {editingPost ? t('community.posts.actions.edit') : t('community.createPost.title')}
-              </h3>
+        <FormModal
+          title={editingPost ? t('community.posts.actions.edit') : t('community.createPost.title')}
+          onClose={cancelEdit}
+          closeLabel={t('community.createPost.cancel')}
+          widthClassName="max-w-2xl"
+          footer={(
+            <div className="flex gap-3">
+              <button
+                onClick={handleCreatePost}
+                disabled={isCreating || isUpdating}
+                className="flex-1 px-4 py-2 bg-[#2137D6] hover:bg-[#1a2bb3] text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {(isCreating || isUpdating) && <Loader2 className="w-4 h-4 animate-spin" />}
+                {editingPost ? t('community.posts.actions.edit') : t('community.createPost.submit')}
+              </button>
               <button
                 onClick={cancelEdit}
-                className="p-2 hover:bg-[#F8FAFC] rounded-xl transition-colors"
+                className="flex-1 px-4 py-2 border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] rounded-xl text-sm font-bold transition-all"
               >
-                <X className="w-5 h-5 text-[#64748B]" />
+                {t('community.createPost.cancel')}
               </button>
             </div>
-
-            <div className="p-6 space-y-4">
+          )}
+        >
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-[#475569] mb-1">
                   {t('community.createPost.titleLabel')}
@@ -1421,26 +1432,8 @@ export default function CommunityModerationPage() {
                   className="w-full text-sm text-[#475569] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#EEF2FF] file:text-[#2137D6] hover:file:bg-[#DBEAFE]"
                 />
               </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={handleCreatePost}
-                  disabled={isCreating || isUpdating}
-                  className="flex-1 px-4 py-2 bg-[#2137D6] hover:bg-[#1a2bb3] text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {(isCreating || isUpdating) && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {editingPost ? t('community.posts.actions.edit') : t('community.createPost.submit')}
-                </button>
-                <button
-                  onClick={cancelEdit}
-                  className="flex-1 px-4 py-2 border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] rounded-xl text-sm font-bold transition-all"
-                >
-                  {t('community.createPost.cancel')}
-                </button>
-              </div>
             </div>
-          </div>
-        </div>
+        </FormModal>
       )}
     </div>
   );

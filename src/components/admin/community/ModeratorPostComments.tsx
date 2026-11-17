@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MessageSquare, ThumbsUp as LikeIcon, Trash2, Edit2, Loader2, Check, X } from 'lucide-react';
 import { useComments, useDeleteComment } from '@/src/hooks/useComments';
 import { useReactToPost, useUpdatePost } from '@/src/hooks/usePosts';
 import { useAuth } from '@/src/stores/authStore';
+import { sortCommentsOldestFirst } from '@/src/lib/community-comment-order';
 
 interface ModeratorPostCommentsProps {
     postId: string | number;
@@ -14,6 +15,11 @@ interface ModeratorPostCommentsProps {
     onRefresh?: () => void | Promise<void>;
     expanded: boolean;
     onToggleExpanded: () => void;
+    /**
+     * Id of a comment just posted from the page's composer under this post.
+     * When it changes the list reloads and brings that comment into view.
+     */
+    revealCommentId?: string | null;
 }
 
 function isLikelyInstructorRole(role: string | undefined): boolean {
@@ -35,6 +41,7 @@ export default function ModeratorPostComments({
     onRefresh,
     expanded,
     onToggleExpanded,
+    revealCommentId = null,
 }: ModeratorPostCommentsProps) {
     const t = useTranslations('courses.studentCommunity');
     const tActions = useTranslations('community.posts.actions');
@@ -50,6 +57,26 @@ export default function ModeratorPostComments({
         typeof postId === 'string' ? parseInt(postId, 10) : postId,
         { enabled: expanded }
     );
+
+    const revealedRef = useRef(revealCommentId);
+    const pendingRevealRef = useRef<string | null>(null);
+    useEffect(() => {
+        if (!revealCommentId || revealCommentId === revealedRef.current) return;
+        revealedRef.current = revealCommentId;
+        pendingRevealRef.current = revealCommentId;
+        if (expanded) refetchComments().catch(() => {});
+        else onToggleExpanded();
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only a new comment id triggers this
+    }, [revealCommentId]);
+
+    useEffect(() => {
+        const id = pendingRevealRef.current;
+        if (!id || commentsLoading) return;
+        const el = document.getElementById(`comment-${id}`);
+        if (!el) return;
+        pendingRevealRef.current = null;
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }, [commentsResponse, commentsLoading]);
 
     const handleDelete = async (commentId: number) => {
         if (isDeleting) return;
@@ -67,11 +94,13 @@ export default function ModeratorPostComments({
         ? commentsResponse
         : (commentsResponse as any)?.data ?? [];
 
-    const displayComments = commentsArray.filter(
-        (c: any) =>
-            c.attributes?.type === 'post' &&
-            c.attributes?.parent_id != null &&
-            String(c.attributes.parent_id) === String(postId)
+    const displayComments = sortCommentsOldestFirst(
+        commentsArray.filter(
+            (c: any) =>
+                c.attributes?.type === 'post' &&
+                c.attributes?.parent_id != null &&
+                String(c.attributes.parent_id) === String(postId)
+        )
     );
 
     return (
@@ -91,7 +120,8 @@ export default function ModeratorPostComments({
             {/* Comments list */}
             {expanded && (
                 <div className="space-y-4">
-                    {commentsLoading ? (
+                    {/* Spinner on the first load only: a reload keeps the list in place. */}
+                    {commentsLoading && !commentsResponse ? (
                         <div className="flex items-center justify-center py-4">
                             <Loader2 className="size-5 animate-spin text-[#2137D6]" />
                         </div>
@@ -128,6 +158,7 @@ export default function ModeratorPostComments({
                                 const displayElement = (
                                     <div
                                         key={comment.id}
+                                        id={`comment-${comment.id}`}
                                         className={`group flex gap-4 rounded-xl p-4 transition-colors border ${instructor
                                             ? 'bg-[#F0F9FF] border-[#E0F2FE]'
                                             : 'bg-[#F8FAFC] border-[#F1F5F9]'

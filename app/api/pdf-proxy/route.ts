@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { parseWatermarkConfigFromFeatures } from '@/src/lib/watermark-from-features';
 import { addWatermarkToPdf } from '@/src/lib/server-pdf-watermark';
 import type { User } from '@/src/types';
-import type { WatermarkContentType } from '@/src/types/watermark-config';
+import { PDF_WATERMARKED_HEADER, type WatermarkContentType } from '@/src/types/watermark-config';
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'https://api.learnoo.app').replace(/\/$/, '');
 
@@ -62,6 +62,7 @@ export async function GET(req: NextRequest) {
     }
 
     let pdfBuffer = await response.arrayBuffer();
+    let watermarked = false;
 
     if (!unprotected) {
       const watermarkConfig = parseWatermarkConfigFromFeatures(
@@ -73,6 +74,7 @@ export async function GET(req: NextRequest) {
         const user = { attributes: JSON.parse(Buffer.from(viewer, 'base64').toString()) } as User;
         const studentCode = String(user.attributes?.student_code ?? '').trim() || undefined;
         pdfBuffer = await addWatermarkToPdf(pdfBuffer, watermarkConfig, user, studentCode);
+        watermarked = true;
       }
     }
 
@@ -83,6 +85,8 @@ export async function GET(req: NextRequest) {
         'Content-Disposition': 'inline; filename="document.pdf"',
         'X-Frame-Options': 'SAMEORIGIN',
         'X-Content-Type-Options': 'nosniff',
+        // Tells the viewer the pages already carry the watermark, so it does not draw a second one.
+        ...(watermarked ? { [PDF_WATERMARKED_HEADER]: '1' } : {}),
       },
     });
   } catch (error) {

@@ -92,3 +92,49 @@ test('Word preserves all mixed questions and red feedback, including English tab
     assert.equal(english[2].text, 'Compare between\nFirst and second');
   } finally { global.DOMParser = previous; }
 });
+
+test('Word choice tables: a fill shared by every option is background, the highlighted or differently filled option is the answer', () => {
+  const node = (localName, children = [], attributes = {}, value = '') => ({
+    localName, children, get textContent() { return value + children.map(child => child.textContent).join(''); },
+    getAttributeNS: (_ns, name) => attributes[name] ?? null,
+    getElementsByTagNameNS: (_ns, name) => children.flatMap(child => [
+      ...(child.localName === name ? [child] : []), ...child.getElementsByTagNameNS(_ns, name),
+    ]),
+  });
+  const p = value => node('p', [node('r', [node('t', [], {}, value)])]);
+  // fill = cell shading (tcPr/shd), mark = yellow highlight on the option's run, para = paragraph shading (pPr/shd)
+  const cell = (value, { fill, mark = false, para } = {}) => node('tc', [
+    node('tcPr', fill ? [node('shd', [], { fill })] : []),
+    node('p', [node('pPr', para ? [node('shd', [], { fill: para })] : []),
+      node('r', [node('rPr', mark ? [node('highlight', [], { val: 'yellow' })] : []), node('t', [], {}, value)])]),
+  ]);
+  const table = cells => node('tbl', [node('tr', cells.slice(0, 2)), node('tr', cells.slice(2))]);
+  const options = (correct, style) => ['أ) الأول', 'ب) الثاني', 'ج) الثالث', 'د) الرابع'].map((value, i) => cell(value, style(i === correct)));
+  let body;
+  const previous = global.DOMParser;
+  global.DOMParser = class {
+    parseFromString() { return { getElementsByTagName: () => [], getElementsByTagNameNS: () => [body] }; }
+  };
+  try {
+    body = node('body', [
+      // Doctor's file 00000021, odd questions: every option cell filled F6F9FA by the table style, answer highlighted.
+      p('سؤال مظلل؟'), table(options(1, mark => ({ fill: 'F6F9FA', mark }))),
+      // Even questions: no cell fill, answer highlighted.
+      p('سؤال بدون تظليل؟'), table(options(2, mark => ({ mark }))),
+      // Doctor's file 00000020: answer cell filled white, the rest F6F9FA, white paragraph shading everywhere.
+      p('سؤال الخلية البيضاء؟'), table(options(3, mark => ({ fill: mark ? 'FFFFFF' : 'F6F9FA', mark, para: 'FFFFFF' }))),
+      // Answer marked only by its own cell colour (no highlight anywhere).
+      p('سؤال بلون الخلية؟'), table(options(0, mark => (mark ? { fill: 'C6EFCE' } : {}))),
+      p('سؤال بلون مختلف فوق خلفية؟'), table(options(3, mark => ({ fill: mark ? 'C6EFCE' : 'F6F9FA' }))),
+      // Two highlighted options stay ambiguous and must be reviewed, never guessed.
+      p('سؤال بإجابتين؟'), table(['أ) 1', 'ب) 2', 'ج) 3', 'د) 4'].map((value, i) => cell(value, { fill: 'F6F9FA', mark: i < 2 }))),
+      // Every option filled and nothing else marks one: no answer, review.
+      p('سؤال بلا علامة؟'), table(options(-1, () => ({ fill: 'F6F9FA' }))),
+    ]);
+    const exam = parseWordExam('fixture');
+    assert.equal(exam.questions.length, 7);
+    assert.deepEqual(exam.questions.map(question => question.answers.flatMap((answer, i) => answer.isCorrect ? [i] : [])), [[1], [2], [3], [0], [3], [0, 1], []]);
+    assert.deepEqual(exam.questions[0].answers.map(answer => answer.text), ['الأول', 'الثاني', 'الثالث', 'الرابع']);
+    assert.deepEqual(exam.review, [6, 7]);
+  } finally { global.DOMParser = previous; }
+});

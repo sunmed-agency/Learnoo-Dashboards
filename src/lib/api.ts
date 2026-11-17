@@ -102,6 +102,8 @@ import type {
   StudentViewData,
   StudentQuestion,
 } from '@/src/types';
+import type { AppUpdateSettings } from './app-update-settings';
+import type { EditedSnapshot, ExamActivitySnapshot, LiveSessionActivitySnapshot, NotificationActivity } from './staff-activity';
 import type {
   StudentNotificationCountResponse,
   StudentNotificationListResponse,
@@ -1362,6 +1364,15 @@ export const platformFeatureApi = {
 
 
 // ============================================
+// Forced app update (minimum app version per store)
+// ============================================
+
+export const appUpdateApi = {
+  get: () => get<{ data: AppUpdateSettings }>('/v1/app-update'),
+  update: (data: AppUpdateSettings) => put<{ data: AppUpdateSettings }>('/v1/app-update', data),
+};
+
+// ============================================
 // Admin API
 // ============================================
 
@@ -1575,6 +1586,10 @@ export interface StaffActivity {
       item: { id: number; title: string; type: 'course' | 'chapter' | 'library' | 'category' | 'quiz' };
       total_phones: number; activated: number; pending: number; skipped: number;
     };
+    pre_activation?: { phone: string; item: { id: number; title: string | null; type: 'course' | 'chapter' | 'library' | 'category' | 'quiz' } };
+    notification?: NotificationActivity;
+    exam?: EditedSnapshot<ExamActivitySnapshot>;
+    live_session?: EditedSnapshot<LiveSessionActivitySnapshot>;
     before?: ContentAuditSnapshot; after?: ContentAuditSnapshot | null;
     view_history?: { student_id: string; name: string; count: number }[];
   } | null;
@@ -1640,6 +1655,7 @@ export const api = {
   search: searchApi,
   dashboard: dashboardApi,
   platformFeature: platformFeatureApi,
+  appUpdate: appUpdateApi,
   socialLinks: socialLinksApi,
   appVersions: appVersionsApi,
   admin: adminApi,

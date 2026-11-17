@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { usePost, useUpdatePost, useDeletePost } from '@/src/hooks/usePosts';
 import { useCreateComment, useDeleteComment } from '@/src/hooks/useComments';
+import { sortCommentsOldestFirst } from '@/src/lib/community-comment-order';
 import type { Post } from '@/src/types';
 
 function getTimeAgo(dateString: string, t: (key: string, params?: Record<string, string | number>) => string): string {
@@ -54,8 +55,8 @@ export default function PostDetailsPage() {
   const { mutate: createComment } = useCreateComment();
   const { mutate: deleteComment, isLoading: isDeletingComment } = useDeleteComment();
 
-  // Get comments from post's children (nested comments)
-  const comments = post?.attributes.children || [];
+  // The post's comments (its children), oldest first like a conversation.
+  const comments = sortCommentsOldestFirst(post?.attributes.children);
 
   const [reply, setReply] = useState('');
   const [isEditing, setIsEditing] = useState(false);

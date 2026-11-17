@@ -8,10 +8,12 @@ import { ExamQuestionScreen } from '@/components/student/exams/ExamQuestionScree
 import {
   isMultipleChoice,
   isQuestionCorrect,
+  isShortAnswer,
   normalizeQuestions,
   questionAnswers,
 } from '@/src/lib/student-exam-question-utils';
 import { useExamCopyGuard } from '@/src/hooks/useExamCopyGuard';
+import { reviewAnswerSummary, reviewSelectedIds } from '@/src/lib/student-exam-review';
 
 import type { QuizAttemptResultResponse } from '@/src/types';
 
@@ -72,24 +74,21 @@ export function ExamAnswersReview({
 
   const selectedForCurrent = useMemo(() => {
     if (!current) return [];
-
-    // First try fallbackSelections if it has data
-    if (fallbackSelections && fallbackSelections[String(current.id)]) {
-      return fallbackSelections[String(current.id)];
-    }
-
-    if (!userAnsText || (current.attributes ?? (current as any)).type === 'short_answer') return [];
-    const texts = userAnsText.split(',').map((t: string) => t.trim());
-    return answers
-      .filter((ans) => texts.includes((ans.attributes?.text ?? (ans as any).text)?.trim()))
-      .map((ans) => String(ans.id));
-  }, [current, userAnsText, answers, fallbackSelections]);
+    return reviewSelectedIds({
+      row: currentUserAns,
+      options: answers,
+      localSelection: fallbackSelections?.[String(current.id)],
+      isShortAnswer: isShortAnswer(current),
+    });
+  }, [current, currentUserAns, answers, fallbackSelections]);
 
   const shortTextValue = current && (current.attributes ?? (current as any)).type === 'short_answer' ? userAnsText : '';
   const isCorrectBackend = (currentUserAns as any)?.attributes?.is_correct ?? (currentUserAns as any)?.is_correct;
 
   const questionCorrect = isCorrectBackend != null ? Boolean(isCorrectBackend) : isQuestionCorrect(current, selectedForCurrent);
   const reviewCorrectProp: boolean = questionCorrect === true;
+  const summary = reviewAnswerSummary({ options: answers, selectedIds: selectedForCurrent, questionCorrect: reviewCorrectProp });
+  const isShort = current ? isShortAnswer(current) : false;
 
   const goPrev = () => setCurrentIndex((i) => Math.max(0, i - 1));
   const goNext = () => setCurrentIndex((i) => Math.min(total - 1, i + 1));
@@ -118,6 +117,35 @@ export function ExamAnswersReview({
       shortAnswerPlaceholder={tTake('shortAnswerPlaceholder')}
       shortAnswerAriaLabel={tTake('shortAnswerAriaLabel')}
       awaitingGradingLabel={tTake('awaitingGrading')}
+      reviewAnswerSummary={
+        isShort || answers.length === 0 ? null : (
+          <div className="mt-1 flex flex-col gap-2">
+            <div
+              data-testid="review-your-answer"
+              className={`rounded-lg border px-3 py-2.5 sm:px-4 ${reviewCorrectProp ? 'border-emerald-600/50 bg-emerald-50 text-emerald-700' : 'border-red-600/50 bg-red-50 text-red-700'}`}
+            >
+              <p className="text-xs font-bold sm:text-[13px]">
+                {reviewCorrectProp ? tResult('reviewYourAnswerCorrect') : tResult('reviewYourAnswer')}
+              </p>
+              {(summary.chosen.length > 0 ? summary.chosen : [tResult('reviewNoAnswer')]).map((line, i) => (
+                <p key={i} dir="auto" className="whitespace-pre-wrap break-words text-start text-sm font-semibold leading-relaxed">
+                  {line}
+                </p>
+              ))}
+            </div>
+            {summary.correct.length > 0 ? (
+              <div data-testid="review-correct-answer" className="rounded-lg border border-emerald-600/50 bg-emerald-50 px-3 py-2.5 text-emerald-700 sm:px-4">
+                <p className="text-xs font-bold sm:text-[13px]">{tResult('reviewCorrectAnswer')}</p>
+                {summary.correct.map((line, i) => (
+                  <p key={i} dir="auto" className="whitespace-pre-wrap break-words text-start text-sm font-semibold leading-relaxed">
+                    {line}
+                  </p>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        )
+      }
       articleFooter={
         <>
           <p className="text-xs text-[#94A3B8] sm:text-[13px]">

@@ -1,4 +1,27 @@
 {
+  "appUpdateSettings": {
+    "title": "App Update",
+    "description": "Stop old app versions from opening until the student updates from the store.",
+    "enabledTitle": "Required update",
+    "enabledLabel": "Require the update",
+    "enabledDescription": "When on, an app older than the minimum version below shows only an \"Update required\" screen with a button to the store. If the app cannot reach the server it opens normally.",
+    "platforms": {
+      "android": "Android (Google Play)",
+      "huawei": "Huawei (AppGallery)",
+      "ios": "iPhone (App Store)"
+    },
+    "minVersion": "Minimum app version",
+    "minVersionHelp": "Version from the store listing, optionally with the build number: 1.0.3 or 1.0.3+12. Leave empty for no minimum on this store.",
+    "minVersionInvalid": "Use numbers and dots, optionally + build number, like 1.0.3 or 1.0.3+12.",
+    "storeUrl": "Store link",
+    "storeUrlInvalid": "Enter a full https:// link to the app's store page.",
+    "invalid": "Check the highlighted fields.",
+    "saved": "App update settings saved.",
+    "saveFailed": "Could not save the app update settings.",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel"
+  },
   "videoSleepSettings": {
     "label": "Video screen sleep interval (minutes)",
     "description": "Screen sleep interval for the mobile video player, in minutes.",
@@ -1252,6 +1275,10 @@
       "reviewQuestionBadge": "Question {n}",
       "reviewMultipleType": "Multiple choice",
       "reviewNoAnswerOptions": "This question has no listed answer options.",
+      "reviewYourAnswer": "Your answer",
+      "reviewYourAnswerCorrect": "Your answer (correct)",
+      "reviewCorrectAnswer": "Correct answer",
+      "reviewNoAnswer": "No answer provided",
       "feedbackLabel": "Explanation"
     },
     "studentExamsPage": {
@@ -2195,7 +2222,15 @@
         "correctAnswerRequired": "Please mark at least one correct answer for question"
       },
       "success": "Exam created successfully!",
-      "error": "Failed to create exam"
+      "error": "Failed to create exam",
+      "bannerTitle": "Exam banner (optional)",
+      "bannerHint": "Shown at the top of the exam while students answer. Recommended size 1600 × 400 px (4:1), JPG, PNG or WebP, up to 2 MB.",
+      "bannerUpload": "Upload banner image",
+      "bannerReplace": "Change image",
+      "bannerRemove": "Remove banner",
+      "bannerTypeError": "Unsupported image type. Use JPG, PNG or WebP.",
+      "bannerSizeError": "The image is larger than 2 MB.",
+      "bannerAlt": "Exam banner"
     },
     "edit": {
       "pageTitle": "Edit Exam",
@@ -2858,6 +2893,10 @@
     "watermark": {
       "title": "Watermark Settings",
       "description": "Configure watermarks for chapters, exams, and library content."
+    },
+    "appUpdate": {
+      "title": "App Update",
+      "description": "Minimum app version per store and the store links."
     },
     "soon": "Soon"
   },

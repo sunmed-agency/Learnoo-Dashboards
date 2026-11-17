@@ -12,6 +12,7 @@ import {
 } from '@/src/lib/watermark-from-features';
 import { examCopyGuardContentProps } from '@/src/hooks/useExamCopyGuard';
 import ExamWatermark from './WaterMarkDyna';
+import { ExamBanner } from './ExamBanner';
 export type ExamQuestionScreenMode = 'take' | 'review';
 
 function answerReasonText(a: QuizQuestionAnswer): string | null {
@@ -81,6 +82,10 @@ export type ExamQuestionScreenProps = {
   awaitingGradingLabel?: string;
   articleFooter: ReactNode;
   belowArticle?: ReactNode;
+  /** Review-only: shown under the options (the student's answer and, when wrong, the right one). */
+  reviewAnswerSummary?: ReactNode;
+  /** Exam banner image (quiz `banner`), shown above the question on every question. */
+  bannerUrl?: string | null;
 };
 
 export function ExamQuestionScreen({
@@ -110,6 +115,8 @@ export function ExamQuestionScreen({
   awaitingGradingLabel,
   articleFooter,
   belowArticle,
+  reviewAnswerSummary,
+  bannerUrl,
 }: ExamQuestionScreenProps) {
   const qNum = currentQuestionNumber;
   const copyGuardActive = mode === 'take' || mode === 'review';
@@ -191,6 +198,7 @@ export function ExamQuestionScreen({
       )}
 
       <div className="mx-auto   flex w-full max-w-[832px] flex-col gap-4 sm:gap-5">
+        <ExamBanner src={bannerUrl} alt={examTitle} />
 
         <article
           className={`relative isolate flex w-full flex-col overflow-hidden rounded-xl border border-[#E8ECF2] bg-white px-4 py-4 shadow-[0_4px_24px_rgba(15,23,42,0.06)] sm:rounded-2xl sm:px-5 sm:py-5${copyGuardActive ? ' select-none' : ''}`}
@@ -394,6 +402,7 @@ export function ExamQuestionScreen({
                         );
                       })
                     )}
+                    {reviewAnswerSummary}
                   </div>
                 )}
 

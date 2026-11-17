@@ -45,7 +45,10 @@ import {
   type ExamFormAnswer as Answer,
   type ExamFormDetails as ExamDetails,
   type ExamFormQuestion as Question,
+  EMPTY_EXAM_BANNER,
+  type ExamBannerState,
 } from '@/src/lib/exam-form';
+import { ExamBannerField } from '@/src/components/exams/ExamBannerField';
 import {
   readExamField,
   type ExamDateField,
@@ -72,6 +75,7 @@ export default function EditExamPage() {
   const { mutateAsync: updateQuiz } = useUpdateQuiz();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [banner, setBanner] = useState<ExamBannerState>(EMPTY_EXAM_BANNER);
   const [validationErrors, setValidationErrors] = useState<{
     questionIds: Set<string>;
     answerIds: Set<string>;
@@ -132,6 +136,8 @@ export default function EditExamPage() {
   // ── load quiz ──
   useEffect(() => {
     if (!quiz) return;
+
+    setBanner({ file: null, preview: quiz.attributes.banner || '' });
 
     setExamDetails({
       title: quiz.attributes.title || '',
@@ -379,7 +385,7 @@ export default function EditExamPage() {
         return;
       }
 
-      const formData = buildExamFormData(examDetails, questions, 'edit');
+      const formData = buildExamFormData(examDetails, questions, 'edit', banner);
 
       // Submit directly using the helper.
       const responsePayload = await updateQuiz(parseInt(examId), formData);
@@ -571,6 +577,7 @@ export default function EditExamPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <ExamBannerField value={banner} onChange={setBanner} />
 
         {/* ── Exam Details ── */}
         <section className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">

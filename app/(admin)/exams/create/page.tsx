@@ -43,7 +43,10 @@ import {
   type ExamFormAnswer as Answer,
   type ExamFormDetails as ExamDetails,
   type ExamFormQuestion as Question,
+  EMPTY_EXAM_BANNER,
+  type ExamBannerState,
 } from '@/src/lib/exam-form';
+import { ExamBannerField } from '@/src/components/exams/ExamBannerField';
 
 export default function CreateExamPage() {
   const t = useTranslations('exams');
@@ -54,6 +57,7 @@ export default function CreateExamPage() {
   const queryClient = useQueryClient();
   const { mutateAsync: createQuiz } = useCreateQuiz();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [banner, setBanner] = useState<ExamBannerState>(EMPTY_EXAM_BANNER);
   const [validationErrors, setValidationErrors] = useState<{
     questionIds: Set<string>;
     answerIds: Set<string>;
@@ -380,7 +384,7 @@ export default function CreateExamPage() {
         return;
       }
 
-      const formData = buildExamFormData(examDetails, questions, 'create');
+      const formData = buildExamFormData(examDetails, questions, 'create', banner);
 
       // Get token not needed since api.ts handles it natively
       const responsePayload = await createQuiz(formData);
@@ -514,6 +518,7 @@ export default function CreateExamPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <ExamBannerField value={banner} onChange={setBanner} />
         {/* Exam Details Section */}
         <section className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]/50 flex items-center gap-2">

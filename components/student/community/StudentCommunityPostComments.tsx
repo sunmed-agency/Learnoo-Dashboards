@@ -1,18 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MessageSquare, ThumbsUp as LikeIcon, Trash2, Loader2 } from 'lucide-react';
 import { useComments, useDeleteComment } from '@/src/hooks/useComments';
 import { useReactToPost } from '@/src/hooks/usePosts';
 import { useAuth } from '@/src/stores/authStore';
 import { AuthorRoleBadge } from '@/components/student/AuthorRoleBadge';
+import { sortCommentsOldestFirst } from '@/src/lib/community-comment-order';
 
 interface StudentCommunityPostCommentsProps {
   postId: string | number;
   commentsCount: number;
   readOnly?: boolean;
   onRefresh?: () => void | Promise<void>;
+  /**
+   * Id of a comment the student just posted from the feed's comment form.
+   * When it changes the list opens (or reloads) and brings that comment into
+   * view, so the student sees it land under the comments before it.
+   */
+  revealCommentId?: string | null;
 }
 
 function isLikelyInstructorRole(role: string | undefined): boolean {
@@ -32,6 +39,7 @@ export default function StudentCommunityPostComments({
   commentsCount,
   readOnly = false,
   onRefresh,
+  revealCommentId = null,
 }: StudentCommunityPostCommentsProps) {
   const t = useTranslations('courses.studentCommunity');
   const { user: currentUser } = useAuth();
@@ -44,6 +52,27 @@ export default function StudentCommunityPostComments({
     typeof postId === 'string' ? parseInt(postId, 10) : postId,
     { enabled: expanded }
   );
+
+  const revealedRef = useRef(revealCommentId);
+  const pendingRevealRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!revealCommentId || revealCommentId === revealedRef.current) return;
+    revealedRef.current = revealCommentId;
+    pendingRevealRef.current = revealCommentId;
+    // Opening the list loads it; an open list has to be reloaded.
+    if (expanded) refetchComments().catch(() => {});
+    else setExpanded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only a new comment id triggers this
+  }, [revealCommentId]);
+
+  useEffect(() => {
+    const id = pendingRevealRef.current;
+    if (!id || commentsLoading) return;
+    const el = document.getElementById(`comment-${id}`);
+    if (!el) return;
+    pendingRevealRef.current = null;
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [commentsResponse, commentsLoading]);
 
   const handleDelete = async (commentId: number) => {
     if (isDeleting) return;
@@ -79,10 +108,12 @@ export default function StudentCommunityPostComments({
     ? commentsResponse
     : (commentsResponse as any)?.data ?? [];
 
-  const displayComments = commentsArray.filter(
-    (c: any) =>
-      c.attributes?.parent_id != null &&
-      String(c.attributes.parent_id) === String(postId)
+  const displayComments = sortCommentsOldestFirst(
+    commentsArray.filter(
+      (c: any) =>
+        c.attributes?.parent_id != null &&
+        String(c.attributes.parent_id) === String(postId)
+    )
   );
   return (
     <div className="mt-5 border-t border-[#E2E8F0] pt-4">
@@ -105,7 +136,8 @@ export default function StudentCommunityPostComments({
       {/* Comments list */}
       {expanded && (
         <div className="mt-4 space-y-3">
-          {commentsLoading ? (
+          {/* Spinner on the first load only: a reload keeps the list in place. */}
+          {commentsLoading && !commentsResponse ? (
             <div className="flex items-center justify-center py-4">
               <Loader2 className="size-5 animate-spin text-[#2137D6]" />
             </div>
@@ -144,6 +176,7 @@ export default function StudentCommunityPostComments({
                 return (
                   <li
                     key={comment.id}
+                    id={`comment-${comment.id}`}
                     className={`group flex gap-3 rounded-xl p-3 transition-colors ${instructor
                       ? 'bg-amber-50/50 hover:bg-amber-50'
                       : 'bg-[#F8FAFC] hover:bg-[#F1F5F9]'

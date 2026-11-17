@@ -2060,7 +2060,15 @@
     "liveSession": "Live Session",
     "joinDescription": "Join your live class now.",
     "timeNotAvailable": "Time not available",
-    "notScheduled": "Not scheduled"
+    "notScheduled": "Not scheduled",
+    "locked": {
+      "privateTitle": "This live session needs activation",
+      "privateBody": "Enter the activation code for this session to join it.",
+      "courseTitle": "Activate the course first",
+      "courseBody": "This live session is part of a course you have not activated yet.",
+      "activateRoom": "Activate session",
+      "goToCourse": "Go to the course"
+    }
   },
   "exams": {
     "pageTitle": "Exams & Quizzes",
@@ -3663,5 +3671,15 @@
   },
   "Breadcrumb": {
     "ContentManager": "Content Manager"
+  },
+  "shareLink": {
+    "copy": "Copy student link",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy. Select the link and copy it.",
+    "examCreated": "Exam created",
+    "liveCreated": "Live session scheduled",
+    "examHint": "Send this link to your students. It opens the exam in the Learnoo app, or on the website if the app is not installed.",
+    "liveHint": "Send this link to your students. It opens the live session in the Learnoo app, or on the website if the app is not installed.",
+    "done": "Done"
   }
 }

@@ -18,3 +18,14 @@ test('Student routing checks known incomplete profiles and defers missing cached
   assert.equal(getHref({ university: null, faculty: null, centers: [] }), '/en/student/complete-profile');
   assert.equal(getHref({ university: { data: { id: '173' } }, faculty: { data: { id: '176' } }, centers: [{ id: '174' }] }), '/en/student');
 });
+
+test('after sign-in a student returns only to a student page of this site', () => {
+  const next = (path, role = 'Student') => moduleUnderTest.exports.getSafeNextPath(path, role);
+  assert.equal(next('/ar/student/exams/start-exam/42'), '/ar/student/exams/start-exam/42');
+  assert.equal(next('/en/student/live-sessions/7'), '/en/student/live-sessions/7');
+  assert.equal(next('/ar/student/exams/start-exam/42?course=3'), '/ar/student/exams/start-exam/42?course=3');
+  for (const bad of [null, '', 'https://evil.example/ar/student', '//evil.example/ar/student', '/ar/student/../../dashboard', '/dashboard', '/fr/student/x', '/ar/student\\evil']) {
+    assert.equal(next(bad), null, String(bad));
+  }
+  assert.equal(next('/ar/student/exams/start-exam/42', 'Admin'), null);
+});

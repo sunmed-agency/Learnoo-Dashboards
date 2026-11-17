@@ -2,7 +2,7 @@
 
 import { Pagination } from '@/src/components/ui/DataTable';
 import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { useDebounce } from 'use-debounce';
 import LiveSessionCard from '@/components/live-sessions/LiveSessionCard';
 import { usePaginatedLiveRooms, useDeleteLiveRoom } from '@/src/hooks/useLiveRooms';
 import { getCourseTitle } from '@/src/lib/student-live-room';
+import { liveSessionShareUrl } from '@/src/lib/share-links';
 import { useAuthStore } from '@/src/stores/authStore';
 import type { LiveRoom } from '@/src/types';
 import { toast } from 'react-hot-toast';
@@ -70,6 +71,7 @@ function getDuration(startedAt: string, endedAt?: string | null): string {
 export default function LiveSessionsPage() {
   const canDelete = useAuthStore((state) => state.user?.attributes.role === 'Super Admin');
   const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -163,6 +165,7 @@ export default function LiveSessionsPage() {
                 onStart={() => handleStart(room.id)}
                 onDetails={() => router.push(`/live-sessions/${room.id}`)}
                 onEdit={() => router.push(`/live-sessions/${room.id}/edit`)}
+                shareUrl={liveSessionShareUrl(room.id, locale)}
                 onDelete={canDelete ? () => handleDelete(room.id) : undefined}
               />
             );

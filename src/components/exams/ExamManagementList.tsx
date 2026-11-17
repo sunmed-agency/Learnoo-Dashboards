@@ -28,6 +28,8 @@ import {
   useUpdateQuiz,
 } from '@/src/hooks/useQuizzes';
 import { api } from '@/src/lib/api';
+import { CopyShareLinkButton } from '@/src/components/share/ShareLink';
+import { examShareUrl } from '@/src/lib/share-links';
 import { useAuthStore } from '@/src/stores/authStore';
 import {
   buildExamFormData,
@@ -392,6 +394,7 @@ export function ExamManagementList({ basePath }: ExamManagementListProps) {
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-1.5">
+                            <CopyShareLinkButton url={examShareUrl(quiz.id, locale)} />
                             <button
                               type="button"
                               onClick={() => void handleCopyQuiz(quiz)}

@@ -3738,6 +3738,9 @@ export interface QuizAttributes {
   course_ids?: number[];
   courses?: Course[];
 
+  /** Exam banner image URL (shown at the top of the exam), or null. */
+  banner?: string | null;
+
 
 
   title: string;

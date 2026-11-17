@@ -46,6 +46,30 @@ export interface ExamFormDetails {
   is_public: 'true' | 'false' | 'included';
 }
 
+/** Exam banner (header image shown at the top of the exam while students take it). */
+export interface ExamBannerState {
+  /** A newly picked file to upload, or null when keeping the current banner or none. */
+  file: File | null;
+  /** What the form shows: the saved banner URL, a blob: preview of `file`, or '' for no banner. */
+  preview: string;
+}
+
+/** Recommended banner size (4:1, like a Google Forms header) and the limits the backend enforces. */
+export const EXAM_BANNER = {
+  width: 1600,
+  height: 400,
+  maxBytes: 2 * 1024 * 1024,
+  mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+} as const;
+
+export const EMPTY_EXAM_BANNER: ExamBannerState = { file: null, preview: '' };
+
+export function getExamBannerFileError(file: Pick<File, 'type' | 'size'>): 'type' | 'size' | null {
+  if (!(EXAM_BANNER.mimeTypes as readonly string[]).includes(file.type)) return 'type';
+  if (file.size > EXAM_BANNER.maxBytes) return 'size';
+  return null;
+}
+
 export interface ApiErrorPayload {
   message?: string;
   details?: string;
@@ -161,10 +185,13 @@ function isNewAnswerId(id: string) {
 export function buildExamFormData(
   details: ExamFormDetails,
   questions: ExamFormQuestion[],
-  mode: 'create' | 'edit'
+  mode: 'create' | 'edit',
+  banner: ExamBannerState = EMPTY_EXAM_BANNER
 ): FormData {
   const formData = new FormData();
   appendExamFields(formData, details);
+  if (banner.file instanceof File) formData.append('banner', banner.file);
+  else if (mode === 'edit' && !banner.preview) formData.append('remove_banner', '1');
 
   questions.forEach((question, questionIndex) => {
     const questionKey = `questions[${questionIndex}]`;
@@ -224,7 +251,7 @@ export function getExamErrorField(errors: Record<string, unknown>, questions: Ex
     }
     return `${parts[2] === 'score' ? 'score' : 'question'}-${question.id}`;
   }
-  const fields: Record<string, string> = { course_id: 'courses', course_ids: 'courses', total_marks: 'totalMarks', passing_marks: 'passingMarks', max_attempts: 'maxAttempts', start_time: 'startTime', end_time: 'endTime', chapter_id: 'chapter', is_public: 'is_public' };
+  const fields: Record<string, string> = { banner: 'banner', course_id: 'courses', course_ids: 'courses', total_marks: 'totalMarks', passing_marks: 'passingMarks', max_attempts: 'maxAttempts', start_time: 'startTime', end_time: 'endTime', chapter_id: 'chapter', is_public: 'is_public' };
   return `exam-${fields[parts[0]] ?? parts[0]}`;
 }
 

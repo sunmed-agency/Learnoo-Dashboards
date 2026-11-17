@@ -10,6 +10,7 @@ import { api, ApiError } from '@/src/lib/api';
 import { writeStudentTakePayload } from '@/src/lib/student-quiz-cache';
 import { sanitizeNumericCourseQueryParam } from '@/src/lib/student-start-exam-href';
 import { navigateTakeExamExit } from '@/components/student/exams/takeExamNav';
+import { ExamBanner } from '@/components/student/exams/ExamBanner';
 
 /** Backend may return this in JSON `message` (2xx or error body). */
 function isMaxAttemptsReachedMessage(text: string | null | undefined): boolean {
@@ -108,6 +109,7 @@ export function StartExamIntro({
   return (
     <div className="w-full pb-10 pt-2" dir={dir}>
       <div className="mx-auto w-full max-w-[672px]">
+        <ExamBanner src={attrs.banner} alt={attrs.title} className="mb-4" />
         <article
           className="flex w-full max-w-[672px] flex-col gap-6 overflow-y-auto rounded-2xl border border-[#E8ECF2] bg-white px-4 py-6 shadow-[0_4px_32px_rgba(15,23,42,0.07)] sm:gap-8 sm:p-8 min-[700px]:min-h-[763px]"
         >

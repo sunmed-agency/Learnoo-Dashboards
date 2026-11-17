@@ -2222,7 +2222,15 @@
         "correctAnswerRequired": "Please mark at least one correct answer for question"
       },
       "success": "Exam created successfully!",
-      "error": "Failed to create exam"
+      "error": "Failed to create exam",
+      "bannerTitle": "Exam banner (optional)",
+      "bannerHint": "Shown at the top of the exam while students answer. Recommended size 1600 × 400 px (4:1), JPG, PNG or WebP, up to 2 MB.",
+      "bannerUpload": "Upload banner image",
+      "bannerReplace": "Change image",
+      "bannerRemove": "Remove banner",
+      "bannerTypeError": "Unsupported image type. Use JPG, PNG or WebP.",
+      "bannerSizeError": "The image is larger than 2 MB.",
+      "bannerAlt": "Exam banner"
     },
     "edit": {
       "pageTitle": "Edit Exam",

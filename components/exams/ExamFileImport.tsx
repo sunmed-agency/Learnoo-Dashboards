@@ -18,6 +18,8 @@ export function ExamFileImport({ onApply }: { onApply: (questions: ExamFormQuest
   const [count, setCount] = useState(0);
   const questions = exam?.questions.slice(0, count) ?? [];
   const question = questions[index];
+  // A radio group can show only one checked option; marking several as checked desyncs React from the DOM and swallows the next click.
+  const singleCorrect = question?.answers.filter(answer => answer.isCorrect).length === 1;
   const invalid = questions.flatMap((question, index) => (validateExamQuestions([question]).firstInvalid || (question.type !== "short_answer" && (question.answers.length < 2 || question.answers.filter(answer => answer.isCorrect).length !== 1))) ? [index] : []);
   const fieldStyle = "w-full rounded-lg border border-slate-300 bg-white p-3 text-sm";
 
@@ -87,7 +89,7 @@ export function ExamFileImport({ onApply }: { onApply: (questions: ExamFormQuest
             {exam.contexts.map((context, ci) => <div key={ci} className="mt-3"><p dir="auto" className="whitespace-pre-wrap">{context}</p><button type="button" disabled={question.text.includes(context)} onClick={() => updateQuestion({ text: `${context}\n\n${question.text}` })} className="mt-2 text-blue-700 underline">{ar ? "إضافة لهذا السؤال" : "Add to this question"}</button></div>)}
           </details>}
           {question.answers.map((answer, ai) => <div key={answer.id} className="flex items-start gap-3">
-            <label className="mt-3 flex items-center gap-1 text-xs"><input type="radio" name={`import-correct-${question.id}`} aria-label={ar ? `الإجابة الصحيحة ${ai + 1}` : `Correct answer ${ai + 1}`} checked={answer.isCorrect} onChange={() => updateQuestion({ answers: question.answers.map((answer, i) => ({ ...answer, isCorrect: i === ai })) })} />{ar ? "صحيحة" : "Correct"}</label>
+            <label className="mt-3 flex items-center gap-1 text-xs"><input type="radio" name={`import-correct-${question.id}`} aria-label={ar ? `الإجابة الصحيحة ${ai + 1}` : `Correct answer ${ai + 1}`} checked={singleCorrect && answer.isCorrect} onChange={() => updateQuestion({ answers: question.answers.map((answer, i) => ({ ...answer, isCorrect: i === ai })) })} />{ar ? "صحيحة" : "Correct"}</label>
             <label className="min-w-0 flex-1 text-sm">{ar ? `الخيار ${ai + 1}` : `Option ${ai + 1}`}<textarea aria-label={ar ? `الخيار ${ai + 1}` : `Option ${ai + 1}`} dir="auto" value={answer.text} onChange={event => updateQuestion({ answers: question.answers.map((answer, i) => i === ai ? { ...answer, text: event.target.value } : answer) })} rows={2} className={`${fieldStyle} mt-1`} /></label>
           </div>)}
           {question.answers.some(answer => answer.reason.trim()) && <label className="block text-sm">{ar ? "توضيح الإجابة" : "Answer explanation"}<textarea aria-label={ar ? "توضيح الإجابة" : "Answer explanation"} dir="auto" value={question.answers.find(answer => answer.reason.trim())?.reason ?? ""} onChange={event => updateQuestion({ answers: question.answers.map(answer => ({ ...answer, reason: event.target.value })) })} className={`${fieldStyle} mt-1`} /></label>}

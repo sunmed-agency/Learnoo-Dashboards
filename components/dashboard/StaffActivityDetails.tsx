@@ -1,12 +1,26 @@
 'use client';
 
+import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import type { ContentAuditSnapshot, StaffActivity } from '@/src/lib/api';
+import { examActivityRows, examChangeRows, liveSessionActivityRows, liveSessionChangeRows, notificationAudience, type ActivityRow } from '@/src/lib/staff-activity';
+
+function SavedContent({ heading, rows, changes, href, linkLabel, changesLabel }: { heading: string; rows: ActivityRow[]; changes: ActivityRow[]; href: string; linkLabel: string; changesLabel: string }) {
+  return <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
+    <p className="font-semibold">{heading}</p>
+    <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">{rows.map(row => <div key={row.label} className="contents"><dt className="text-gray-600">{row.label}</dt><dd>{row.value}</dd></div>)}</dl>
+    {!!changes.length && <><p className="mt-2 font-semibold">{changesLabel}</p>
+      <ul className="mt-1 list-disc ps-5">{changes.map(row => <li key={row.label}>{row.label}: {row.value}</li>)}</ul></>}
+    <Link href={href} className="mt-2 inline-block text-primary underline">{linkLabel}</Link>
+  </div>;
+}
 
 export default function StaffActivityDetails({ details }: { details: StaffActivity['details'] }) {
   const ar = useLocale() === 'ar';
   if (!details) return null;
-  const { course, lecture, chapter, import: activationImport, pre_activation: pendingDeleted, before, after, view_history = [] } = details;
+  const { course, lecture, chapter, import: activationImport, pre_activation: pendingDeleted, notification, exam, live_session: live, before, after, view_history = [] } = details;
+  const locale = ar ? 'ar' : 'en';
+  const changesLabel = ar ? 'ما تغيّر في هذا التعديل' : 'Changed in this edit';
   const itemLabels = ar
     ? { course: 'دورة', chapter: 'درس', library: 'مكتبة', category: 'تصنيف', quiz: 'اختبار' }
     : { course: 'Course', chapter: 'Lesson', library: 'Library', category: 'Category', quiz: 'Quiz' };
@@ -29,6 +43,16 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
       </>}
       {pendingDeleted && <p>{ar ? 'الرقم المحذوف' : 'Deleted number'}: <bdi dir="ltr">{pendingDeleted.phone}</bdi> · {itemLabels[pendingDeleted.item.type]} — {pendingDeleted.item.title || (ar ? 'محتوى لم يعد متاحًا' : 'Content no longer available')} <bdi>#{pendingDeleted.item.id}</bdi></p>}
     </div>}
+    {notification && <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
+      <p className="font-semibold">{ar ? 'عنوان الإشعار' : 'Notification title'}: {notification.title}</p>
+      <p className="mt-1 text-gray-600">{ar ? 'نص الإشعار' : 'Message'}:</p>
+      <p className="whitespace-pre-wrap">{notification.message}</p>
+      <p className="mt-1">{ar ? 'أُرسل إلى' : 'Sent to'}: {notificationAudience(notification, locale)} · {ar ? 'عدد الطلاب المستلمين' : 'Students reached'}: {notification.recipients}</p>
+    </div>}
+    {exam && <SavedContent heading={`${ar ? 'الامتحان' : 'Exam'}: ${exam.title} #${exam.id}`} rows={examActivityRows(exam, locale)} changes={examChangeRows(exam, locale)}
+      href={`/exams/${exam.id}/edit`} linkLabel={ar ? 'فتح الامتحان' : 'Open exam'} changesLabel={changesLabel} />}
+    {live && <SavedContent heading={`${ar ? 'جلسة البث المباشر' : 'Live session'}: ${live.title} #${live.id}`} rows={liveSessionActivityRows(live, locale)} changes={liveSessionChangeRows(live, locale)}
+      href={`/live-sessions/${live.id}`} linkLabel={ar ? 'فتح جلسة البث' : 'Open live session'} changesLabel={changesLabel} />}
     {before && <details className="mt-2 rounded-lg bg-slate-50 p-3 text-sm">
     <summary className="cursor-pointer font-bold">{after ? (ar ? 'تعديل المحتوى' : 'Content updated') : (ar ? 'حذف المحتوى' : 'Content deleted')}: {before.title} #{before.id}</summary>
     <table className="mt-3 w-full text-start"><thead><tr><th>{ar ? 'البيان' : 'Field'}</th><th>{ar ? 'قبل' : 'Before'}</th><th>{ar ? 'بعد' : 'After'}</th></tr></thead>

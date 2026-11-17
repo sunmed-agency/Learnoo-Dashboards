@@ -73,3 +73,80 @@ export function formatStaffActivity(action: string, locale: string): string {
   const verb = ({ POST: ['إضافة', 'Create'], PUT: ['تعديل', 'Update'], PATCH: ['تعديل', 'Update'], DELETE: ['حذف', 'Delete'] } as Record<string, string[]>)[method.toUpperCase()];
   return resource && verb ? `${verb[language]} ${resource[language]}` : ['إجراء على المنصة', 'Platform action'][language];
 }
+
+export interface ActivityCourse { id: number; title: string | null; category_path: string[] }
+export interface ExamActivitySnapshot {
+  id: number; title: string; type: 'exam' | 'homework'; status: 'draft' | 'active' | null; is_public: 'true' | 'false' | 'included' | null;
+  question_count: number; total_marks: number | null; passing_marks: number | null; duration: number | null; max_attempts: number | null;
+  start_time: string | null; end_time: string | null; courses: ActivityCourse[];
+}
+export interface LiveSessionActivitySnapshot {
+  id: number; title: string; is_public: 'true' | 'false' | 'included' | null; publication_status: 'draft' | 'active' | null;
+  started_at: string | null; ended_at: string | null; courses: ActivityCourse[];
+}
+/** `previous` holds the earlier value of each field an edit changed (an empty array when nothing changed). */
+export type EditedSnapshot<T> = T & { previous?: Partial<T> | [] };
+export interface NotificationActivity { title: string; message: string; audience: 'all' | 'courses'; recipients: number; courses: ActivityCourse[] }
+export interface ActivityRow { label: string; value: string }
+
+type Pair = readonly [string, string];
+const none: Pair = ['—', '—'];
+const access: Record<string, Pair> = { true: ['عام', 'Public'], false: ['خاص', 'Private'], included: ['مشمول مع الدورة', 'Included with the course'] };
+const published: Record<string, Pair> = { active: ['منشور', 'Published'], draft: ['مسودة', 'Draft'] };
+const examTypes: Record<string, Pair> = { exam: ['امتحان', 'Exam'], homework: ['واجب منزلي', 'Homework'] };
+const examLabels: Record<Exclude<keyof ExamActivitySnapshot, 'id'>, Pair> = {
+  title: ['العنوان', 'Title'], type: ['النوع', 'Type'], status: ['حالة النشر', 'Publish status'], is_public: ['الإتاحة', 'Access'],
+  question_count: ['عدد الأسئلة', 'Questions'], total_marks: ['الدرجة الكلية', 'Total marks'], passing_marks: ['درجة النجاح', 'Pass mark'],
+  duration: ['المدة', 'Duration'], max_attempts: ['عدد المحاولات', 'Attempts'], start_time: ['يفتح', 'Opens'], end_time: ['يغلق', 'Closes'],
+  courses: ['الدورات', 'Courses'],
+};
+const liveLabels: Record<Exclude<keyof LiveSessionActivitySnapshot, 'id'>, Pair> = {
+  title: ['العنوان', 'Title'], is_public: ['الإتاحة', 'Access'], publication_status: ['حالة النشر', 'Publish status'],
+  started_at: ['يبدأ', 'Starts'], ended_at: ['ينتهي', 'Ends'], courses: ['الدورات', 'Courses'],
+};
+
+function activityValue(key: string, value: unknown, language: 0 | 1, locale: string): string {
+  if (value === null || value === undefined || value === '') {
+    if (key === 'start_time') return ['متاح فورًا', 'Open right away'][language];
+    if (key === 'end_time') return ['بدون موعد إغلاق', 'No closing time'][language];
+    return none[language];
+  }
+  if (key === 'courses') return (value as ActivityCourse[]).map(course => course.title || `#${course.id}`).join(['، ', ', '][language]) || ['غير مرتبط بدورة', 'Not linked to a course'][language];
+  if (key === 'is_public') return (access[String(value)] ?? none)[language];
+  if (key === 'status' || key === 'publication_status') return (published[String(value)] ?? none)[language];
+  if (key === 'type') return (examTypes[String(value)] ?? none)[language];
+  if (key === 'passing_marks') return `${value}%`;
+  if (key === 'duration') return [`${value} دقيقة`, `${value} min`][language];
+  if (/_(time|at)$/.test(key)) return new Date(String(value)).toLocaleString(locale);
+  return String(value);
+}
+
+function snapshotRows(snapshot: object, labels: Record<string, Pair>, locale: string): ActivityRow[] {
+  const language = locale === 'ar' ? 0 : 1;
+  const values = snapshot as Record<string, unknown>;
+  return Object.entries(labels).filter(([key]) => key !== 'title' && (key !== 'courses' || (values.courses as unknown[]).length !== 1))
+    .map(([key, label]) => ({ label: label[language], value: activityValue(key, values[key], language, locale) }));
+}
+
+function changeRows(snapshot: EditedSnapshot<object>, labels: Record<string, Pair>, locale: string): ActivityRow[] {
+  const language = locale === 'ar' ? 0 : 1;
+  const values = snapshot as Record<string, unknown>;
+  return Object.entries(snapshot.previous ?? {}).filter(([key]) => labels[key]).map(([key, before]) => ({
+    label: labels[key][language],
+    value: [`من ${activityValue(key, before, 0, locale)} إلى ${activityValue(key, values[key], 0, locale)}`,
+      `from ${activityValue(key, before, 1, locale)} to ${activityValue(key, values[key], 1, locale)}`][language],
+  }));
+}
+
+/** Settings of an exam a staff member created or edited; a single course is already shown as the entry's course. */
+export const examActivityRows = (exam: ExamActivitySnapshot, locale: string) => snapshotRows(exam, examLabels, locale);
+export const examChangeRows = (exam: EditedSnapshot<ExamActivitySnapshot>, locale: string) => changeRows(exam, examLabels, locale);
+export const liveSessionActivityRows = (live: LiveSessionActivitySnapshot, locale: string) => snapshotRows(live, liveLabels, locale);
+export const liveSessionChangeRows = (live: EditedSnapshot<LiveSessionActivitySnapshot>, locale: string) => changeRows(live, liveLabels, locale);
+
+export function notificationAudience(notification: NotificationActivity, locale: string): string {
+  const ar = locale === 'ar';
+  if (notification.audience === 'all') return ar ? 'كل الطلاب' : 'All students';
+  if (notification.courses.length === 1) return ar ? 'طلاب الدورة' : 'Students of the course';
+  return (ar ? 'طلاب الدورات: ' : 'Students of: ') + notification.courses.map(course => course.title || `#${course.id}`).join(ar ? '، ' : ', ');
+}

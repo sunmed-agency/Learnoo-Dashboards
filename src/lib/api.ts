@@ -103,6 +103,7 @@ import type {
   StudentQuestion,
 } from '@/src/types';
 import type { AppUpdateSettings } from './app-update-settings';
+import type { EditedSnapshot, ExamActivitySnapshot, LiveSessionActivitySnapshot, NotificationActivity } from './staff-activity';
 import type {
   StudentNotificationCountResponse,
   StudentNotificationListResponse,
@@ -1586,6 +1587,9 @@ export interface StaffActivity {
       total_phones: number; activated: number; pending: number; skipped: number;
     };
     pre_activation?: { phone: string; item: { id: number; title: string | null; type: 'course' | 'chapter' | 'library' | 'category' | 'quiz' } };
+    notification?: NotificationActivity;
+    exam?: EditedSnapshot<ExamActivitySnapshot>;
+    live_session?: EditedSnapshot<LiveSessionActivitySnapshot>;
     before?: ContentAuditSnapshot; after?: ContentAuditSnapshot | null;
     view_history?: { student_id: string; name: string; count: number }[];
   } | null;

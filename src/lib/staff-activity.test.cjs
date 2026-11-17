@@ -28,6 +28,8 @@ test('custom actions describe what happened instead of pretending every POST cre
   assert.equal(format('POST v1/owner/device-transfers/01ky3bkhbsmnsqmqcm7c5fzw6d/reset', 'ar'), 'السماح للطالب بتغيير الجهاز وإلغاء الجلسات السابقة');
   assert.equal(format('POST v1/owner/device-transfers/01ky3bkhbsmnsqmqcm7c5fzw6d/reset', 'en'), 'Allowed a student device change and revoked previous sessions');
   assert.equal(format('POST v1/chapter/711/copy', 'en'), 'Copied a lesson');
+  assert.equal(format('DELETE v1/pre-activation/88', 'ar'), 'حذف رقم تفعيل مسبق معلق');
+  assert.equal(format('DELETE v1/pre-activation/88', 'en'), 'Deleted a pending pre-activation number');
   assert.equal(format('POST v1/chapter/711/retry-conversion', 'ar'), 'إعادة معالجة فيديو');
   assert.equal(format('POST v1/notifications/send', 'ar'), 'إرسال إشعار للطلاب');
   assert.equal(format('PATCH v1/notifications/read-all', 'en'), 'Marked all notifications as read');

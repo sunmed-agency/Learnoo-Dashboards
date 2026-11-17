@@ -1585,6 +1585,7 @@ export interface StaffActivity {
       item: { id: number; title: string; type: 'course' | 'chapter' | 'library' | 'category' | 'quiz' };
       total_phones: number; activated: number; pending: number; skipped: number;
     };
+    pre_activation?: { phone: string; item: { id: number; title: string | null; type: 'course' | 'chapter' | 'library' | 'category' | 'quiz' } };
     before?: ContentAuditSnapshot; after?: ContentAuditSnapshot | null;
     view_history?: { student_id: string; name: string; count: number }[];
   } | null;

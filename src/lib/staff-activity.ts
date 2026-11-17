@@ -35,6 +35,7 @@ const actions: Record<string, readonly [string, string]> = {
   'POST feature/store-or-update': ['تحديث إعدادات الميزات', 'Updated feature settings'],
   'POST pre-activation/upload': ['استيراد قائمة تفعيلات مسبقة', 'Imported pre-activations'],
   'POST pre-activation/process': ['تطبيق التفعيلات المسبقة', 'Applied pre-activations'],
+  'DELETE pre-activation/:id': ['حذف رقم تفعيل مسبق معلق', 'Deleted a pending pre-activation number'],
   'POST ota/upload': ['رفع نسخة جديدة من التطبيق', 'Uploaded an app release'],
   'PATCH notifications/:id/read': ['تحديد إشعار كمقروء', 'Marked a notification as read'],
   'PATCH notifications/read-all': ['تحديد جميع الإشعارات كمقروءة', 'Marked all notifications as read'],

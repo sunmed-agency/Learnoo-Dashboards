@@ -6,7 +6,7 @@ import type { ContentAuditSnapshot, StaffActivity } from '@/src/lib/api';
 export default function StaffActivityDetails({ details }: { details: StaffActivity['details'] }) {
   const ar = useLocale() === 'ar';
   if (!details) return null;
-  const { course, lecture, chapter, import: activationImport, before, after, view_history = [] } = details;
+  const { course, lecture, chapter, import: activationImport, pre_activation: pendingDeleted, before, after, view_history = [] } = details;
   const itemLabels = ar
     ? { course: 'دورة', chapter: 'درس', library: 'مكتبة', category: 'تصنيف', quiz: 'اختبار' }
     : { course: 'Course', chapter: 'Lesson', library: 'Library', category: 'Category', quiz: 'Quiz' };
@@ -17,7 +17,7 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
     ['max_views', ar ? 'حد المشاهدات' : 'View limit'], ['view_by_minute', ar ? 'ثانية احتساب المشاهدة' : 'View threshold (seconds)'],
   ];
   return <>
-    {(course || lecture || chapter || activationImport) && <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
+    {(course || lecture || chapter || activationImport || pendingDeleted) && <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
       {course && <p className="font-semibold">{ar ? 'الدورة' : 'Course'}: {course.title || (ar ? 'تفاصيل الدورة غير متاحة' : 'Course details unavailable')} <bdi>#{course.id}</bdi></p>}
       {!!course?.category_path.length && <p className="mt-1 text-gray-600">{ar ? 'المسار الدراسي' : 'Academic path'}: {course.category_path.join(' / ')}</p>}
       {details.course_context_current && course?.title && <p className="mt-1 text-xs text-gray-500">{ar ? 'بيانات الدورة الحالية؛ لم تُحفظ تفاصيلها وقت العملية القديمة.' : 'Current course details; no snapshot was saved for this older activity.'}</p>}
@@ -27,6 +27,7 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
         <p>{ar ? 'هدف الاستيراد' : 'Import target'}: {itemLabels[activationImport.item.type]} — {activationImport.item.title} <bdi>#{activationImport.item.id}</bdi></p>
         <p>{ar ? 'إجمالي الأرقام' : 'Total numbers'}: {activationImport.total_phones} · {ar ? 'تم التفعيل' : 'Activated'}: {activationImport.activated} · {ar ? 'قيد الانتظار' : 'Pending'}: {activationImport.pending} · {ar ? 'تم التخطي' : 'Skipped'}: {activationImport.skipped}</p>
       </>}
+      {pendingDeleted && <p>{ar ? 'الرقم المحذوف' : 'Deleted number'}: <bdi dir="ltr">{pendingDeleted.phone}</bdi> · {itemLabels[pendingDeleted.item.type]} — {pendingDeleted.item.title || (ar ? 'محتوى لم يعد متاحًا' : 'Content no longer available')} <bdi>#{pendingDeleted.item.id}</bdi></p>}
     </div>}
     {before && <details className="mt-2 rounded-lg bg-slate-50 p-3 text-sm">
     <summary className="cursor-pointer font-bold">{after ? (ar ? 'تعديل المحتوى' : 'Content updated') : (ar ? 'حذف المحتوى' : 'Content deleted')}: {before.title} #{before.id}</summary>

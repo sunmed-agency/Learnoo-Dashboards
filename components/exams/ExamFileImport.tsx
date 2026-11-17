@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { FileUp, Loader2, X } from "lucide-react";
-import { validateExamQuestions, type ExamFormQuestion } from "@/src/lib/exam-form";
+import { examTitleFromFileName, validateExamQuestions, type ExamFormQuestion } from "@/src/lib/exam-form";
 import type { ImportedExam } from "@/src/lib/exam-import";
 
 export function ExamFileImport({ onApply }: { onApply: (questions: ExamFormQuestion[], title: string) => void }) {
@@ -38,7 +38,7 @@ export function ExamFileImport({ onApply }: { onApply: (questions: ExamFormQuest
         ? await (await import("@/src/lib/exam-import")).readWordExam(data)
         : await (await import("@/src/lib/exam-import-pdf")).readPdfExam(data);
       setExam(result); setIndex(0); setCount(result.questions.length);
-      setTitle(file.name.replace(/\.[^/.]+$/, ""));
+      setTitle(examTitleFromFileName(file.name));
     } catch (error) {
       const messages: Record<string, string> = {
         IMPORT_SIZE_LIMIT: ar ? "حجم الملف أكبر من ١٠ ميجا. قسّمه إلى ملفات أصغر." : "The file exceeds 10 MB. Split it into smaller files.",

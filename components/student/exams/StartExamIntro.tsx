@@ -120,7 +120,7 @@ export function StartExamIntro({
             >
               <FileText className="size-7" strokeWidth={2} style={{ color: EXAM_PRIMARY }} aria-hidden />
             </div>
-            <h1 className="max-w-[480px] text-[1.375rem] font-bold leading-snug tracking-tight text-[#0F172A] sm:text-[1.5rem]">
+            <h1 className="max-w-[480px] text-[1.375rem] font-bold leading-snug [overflow-wrap:anywhere] tracking-tight text-[#0F172A] sm:text-[1.5rem]">
               {attrs.title}
             </h1>
             <p className="max-w-[420px] text-[0.9375rem] leading-relaxed text-[#64748B]">{subtitle}</p>

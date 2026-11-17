@@ -4,6 +4,13 @@ export function clampPercentage(value: unknown): number | null {
   return Math.min(100, Math.max(0, numeric));
 }
 
+/** A score percentage as students see it: at most one decimal (66.7%, 90%). */
+export function formatPercent(value: number): string {
+  if (!Number.isFinite(value)) return '—';
+  const rounded = Math.round(value * 10) / 10;
+  return `${rounded}%`;
+}
+
 export function percentageFromScore(score: unknown, total: unknown): number | null {
   const numericScore = typeof score === 'number' ? score : Number(score);
   const numericTotal = typeof total === 'number' ? total : Number(total);

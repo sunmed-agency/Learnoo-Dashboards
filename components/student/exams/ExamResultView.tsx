@@ -17,16 +17,11 @@ import {
   isExamPassed,
   passingMarksPercentage,
   readPercentageWithScoreFallback,
+  formatPercent,
 } from '@/src/lib/student-exam-score';
 import type { QuizAttemptResultResponse } from '@/src/types';
 
 const PRIMARY = '#2D46D9';
-
-function formatPercent(value: number): string {
-  if (!Number.isFinite(value)) return '—';
-  const rounded = Math.round(value * 10) / 10;
-  return `${rounded}%`;
-}
 
 function formatFinishedAt(raw: string | undefined, locale: string): string {
   if (!raw?.trim()) return '—';
@@ -214,7 +209,7 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
             </>
           ) : (
             <>
-              <h2 className="text-center text-lg font-semibold leading-snug text-[#0F172A] sm:text-xl">{quizTitle}</h2>
+              <h2 className="text-center text-lg font-semibold leading-snug text-[#0F172A] [overflow-wrap:anywhere] sm:text-xl">{quizTitle}</h2>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
                 <div className="rounded-xl border border-[#E8ECF2] bg-white px-5 py-6 text-center shadow-sm">

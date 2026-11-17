@@ -81,3 +81,10 @@ test('exam banner file checks match the backend rule (jpg/png/webp, at most 2 MB
   assert.equal(getExamBannerFileError({ type: 'image/png', size: EXAM_BANNER.maxBytes + 1 }), 'size');
   assert.equal(getExamErrorField({ banner: ['The banner must be an image.'] }, []), 'exam-banner');
 });
+
+test('an imported file name becomes a readable exam title', () => {
+  const { examTitleFromFileName } = loaded.exports;
+  assert.equal(examTitleFromFileName('اختبار_إدارة_أعمال_الحصة_الأولى.docx'), 'اختبار إدارة أعمال الحصة الأولى');
+  assert.equal(examTitleFromFileName('Midterm__part_1 .PDF'), 'Midterm part 1');
+  assert.equal(examTitleFromFileName('Quiz 2 - v1.5.docx'), 'Quiz 2 - v1.5');
+});

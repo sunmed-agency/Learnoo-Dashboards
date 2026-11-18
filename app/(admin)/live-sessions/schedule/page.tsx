@@ -7,6 +7,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, Info } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/src/lib/api';
+import { ShareLinkDialog } from '@/src/components/share/ShareLink';
+import { liveSessionShareUrl } from '@/src/lib/share-links';
 import { Course, CreateLiveRoomRequest } from '@/src/types';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -18,6 +20,8 @@ export default function ScheduleSessionPage() {
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
+  /** Set once the session is saved: its student link is shown before leaving. */
+  const [createdRoomId, setCreatedRoomId] = useState<string | null>(null);
   const [isFetchingCourses, setIsFetchingCourses] = useState(true);
 
   const [formData, setFormData] = useState<{
@@ -85,9 +89,9 @@ export default function ScheduleSessionPage() {
         is_public: formData.is_public,
       };
 
-      await api.liveRooms.create(requestData);
+      const created = await api.liveRooms.create(requestData);
       toast.success(t('liveSessions.schedule.success'));
-      router.push('/live-sessions');
+      setCreatedRoomId(String(created.data.id));
     } catch (error: any) {
       console.error('Error scheduling session:', error);
       toast.error(error.message || t('liveSessions.schedule.error'));
@@ -95,6 +99,17 @@ export default function ScheduleSessionPage() {
       setLoading(false);
     }
   };
+
+  if (createdRoomId) {
+    return (
+      <ShareLinkDialog
+        url={liveSessionShareUrl(createdRoomId, locale)}
+        title={t('shareLink.liveCreated')}
+        hint={t('shareLink.liveHint')}
+        onDone={() => router.push('/live-sessions')}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8 pb-12">

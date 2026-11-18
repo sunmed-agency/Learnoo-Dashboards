@@ -66,6 +66,8 @@ export interface StudentLiveRoomAttributes {
   video_url?: string | null;
   is_public?: "public" | "private" | "included" | null;
   has_activation?: boolean | null;
+  /** The student may join (false: not activated yet). */
+  can_view?: boolean | null;
   user?: StudentLiveRoomUser | null;
   course?: StudentLiveRoomCourse | null;
   course_ids?: (string | number)[] | null;

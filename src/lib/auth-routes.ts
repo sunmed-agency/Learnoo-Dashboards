@@ -136,6 +136,12 @@ export function getRouteZone(pathname: string): RouteZone {
   return 'unknown';
 }
 
+/** Sign-in page for a signed-out visitor; a student page is reopened after sign-in. */
+export function getLoginHref(pathname: string, search: string, zone: RouteZone): string {
+  if (zone !== 'student') return '/login';
+  return `/login?next=${encodeURIComponent(`${normalizePathname(pathname)}${search}`)}`;
+}
+
 export function getDashboardForRole(
   locale: AppLocale,
   role: AppRole | null | undefined,

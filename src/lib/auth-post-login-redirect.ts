@@ -44,3 +44,19 @@ export function getPostAuthHref(
   }
   return '/login';
 }
+
+/**
+ * Where a signed-out student was going (a shared exam / live session link):
+ * `/login?next=…` carries it through sign-in. Only a student page of this
+ * site, and only for a student, so the parameter cannot send anyone elsewhere.
+ */
+export function getSafeNextPath(
+  next: string | null | undefined,
+  role: string | null | undefined,
+): string | null {
+  const r = role?.trim();
+  if (!next || !isAppRole(r) || !isStudentLikeRole(r)) return null;
+  return /^\/(ar|en)\/student(\/[\w\-./?=&%]*)?$/.test(next) && !next.includes('//') && !next.includes('..')
+    ? next
+    : null;
+}

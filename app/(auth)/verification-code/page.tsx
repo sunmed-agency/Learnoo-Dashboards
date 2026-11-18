@@ -8,6 +8,7 @@ import { useLocale } from 'next-intl';
 import { toast } from 'sonner';
 import { useAuthActions, useAuthStore } from '@/src/stores/authStore';
 import { authApi, getApiErrorMessage } from '@/src/lib/api';
+import { getSafeNextPath } from '@/src/lib/auth-post-login-redirect';
 import AuthPageLayout from '../components/AuthLayout';
 
 export default function VerificationCodePage() {
@@ -99,10 +100,13 @@ export default function VerificationCodePage() {
         sessionStorage.removeItem('auth_flow');
       }
 
+      // Back to the shared exam / live session link the student opened signed out.
+      const next = getSafeNextPath(new URLSearchParams(window.location.search).get('next'), role);
+
       if (fromRegister) {
         router.push(`/${locale}/student/complete-profile`);
       } else {
-        router.push(dashboardPath);
+        router.push(next ?? dashboardPath);
       }
     } catch (err: unknown) {
       const message = getApiErrorMessage(err, t('errors.verificationFailed') || 'Verification failed');

@@ -26,6 +26,8 @@ import { useChapters } from '@/src/hooks/useChapters';
 import { quizKeys, useCreateQuiz } from '@/src/hooks/useQuizzes';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 import { ExamFileImport } from '@/components/exams/ExamFileImport';
+import { ShareLinkDialog } from '@/src/components/share/ShareLink';
+import { examShareUrl } from '@/src/lib/share-links';
 import { AiExamUsageNotice } from '@/src/components/ai-exam/AiExamUsageNotice';
 import { parseGeneratedExamQuestions, requestExamExtraction } from '@/src/lib/exam-ai';
 import {
@@ -57,6 +59,9 @@ export default function CreateExamPage() {
   const queryClient = useQueryClient();
   const { mutateAsync: createQuiz } = useCreateQuiz();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  /** Set once the exam is saved: its student link is shown before leaving. */
+  const [createdExamId, setCreatedExamId] = useState<string | null>(null);
+  const tShare = useTranslations('shareLink');
   const [banner, setBanner] = useState<ExamBannerState>(EMPTY_EXAM_BANNER);
   const [validationErrors, setValidationErrors] = useState<{
     questionIds: Set<string>;
@@ -396,7 +401,7 @@ export default function CreateExamPage() {
       // Refresh handled by hook
       localStorage.removeItem('admin_exam_create_draft');
       toast.success(t('create.success'));
-      router.push('/exams');
+      setCreatedExamId(String(responsePayload.id));
     } catch (error: any) {
       console.error('Error creating exam:', error);
       if (error?.errors) {
@@ -412,6 +417,17 @@ export default function CreateExamPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (createdExamId) {
+    return (
+      <ShareLinkDialog
+        url={examShareUrl(createdExamId, locale)}
+        title={tShare('examCreated')}
+        hint={tShare('examHint')}
+        onDone={() => router.push('/exams')}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8 max-w-5xl mx-auto pb-12">

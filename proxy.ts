@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import {
   getDashboardForRole,
+  getLoginHref,
   getPostAuthHref,
   getRouteZone,
   getStudentProfileGateRedirect,
@@ -73,7 +74,7 @@ export function proxy(request: NextRequest) {
 
   // --- Protected zones ---
   if (!auth.token) {
-    return redirectTo(request, '/login');
+    return redirectTo(request, getLoginHref(pathname, request.nextUrl.search, zone));
   }
 
   if (!auth.role || !isSupportedRole(auth.role)) {

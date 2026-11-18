@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import LiveSessionLockedPanel from "@/components/student/live-sessions/LiveSessionLockedPanel";
 import LiveSessionRoomClient from "@/components/student/live-sessions/LiveSessionRoomClient";
 import { getStudentLiveRoomById } from "@/src/services/student/live-room.service";
 import { getStudentData } from "@/src/services/student/user.service";
@@ -38,6 +39,15 @@ export default async function StudentLiveSessionDetailPage({ params }: PageProps
 
   if (!roomRes.success || !roomRes.data) {
     notFound();
+  }
+
+  // Opened from a shared link before the student activated it.
+  if (roomRes.data.attributes?.can_view === false) {
+    return (
+      <div className="mx-auto w-full max-w-7xl px-2.5 py-3 sm:px-6 sm:py-6 lg:px-8">
+        <LiveSessionLockedPanel room={roomRes.data} />
+      </div>
+    );
   }
 
   const fromApi =

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Video, MessageCircle, Play, Settings as SettingsIcon, Info, Disc, Trash2, Edit } from 'lucide-react';
+import { CopyShareLinkButton } from '@/src/components/share/ShareLink';
 
 interface LiveSessionCardProps {
   status: 'DRAFT' | 'LIVE' | 'UPCOMING' | 'ENDED';
@@ -17,6 +18,8 @@ interface LiveSessionCardProps {
   onDetails?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  /** Student link to copy and send. */
+  shareUrl?: string;
 }
 
 export default function LiveSessionCard({
@@ -31,7 +34,8 @@ export default function LiveSessionCard({
   onStart,
   onDetails,
   onEdit,
-  onDelete
+  onDelete,
+  shareUrl
 }: LiveSessionCardProps) {
   const t = useTranslations();
   const isLive = status === 'LIVE';
@@ -97,6 +101,12 @@ export default function LiveSessionCard({
             <Info className="w-4 h-4" />
             {t('liveSessions.card.details')}
           </button>
+        )}
+        {shareUrl && (
+          <CopyShareLinkButton
+            url={shareUrl}
+            className="w-full py-2 bg-white border border-[#E2E8F0] text-[#2137D6] rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 hover:bg-[#EEF2FF] transition-colors"
+          />
         )}
         {onEdit && (
           <button

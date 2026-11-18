@@ -155,7 +155,9 @@ export default function LoginPage() {
       } catch { }
       // Redirect to verification page - user must verify OTP before accessing dashboard
       // Note: We don't call fetchCurrentUser() here because token is not in cookies yet
-      router.push('/verification-code');
+      // A shared exam / live session link the student opened signed out goes along.
+      const next = new URLSearchParams(window.location.search).get('next');
+      router.push(next ? `/verification-code?next=${encodeURIComponent(next)}` : '/verification-code');
     } catch (err: unknown) {
       const message = getApiErrorMessage(err, t('errors.loginFailed'));
       if (err instanceof ApiError && err.code === 'device_transfer_required') setTransferToken(err.transferToken || '');

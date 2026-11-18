@@ -86,7 +86,7 @@ export interface LiveSessionActivitySnapshot {
 }
 /** `previous` holds the earlier value of each field an edit changed (an empty array when nothing changed). */
 export type EditedSnapshot<T> = T & { previous?: Partial<T> | [] };
-export interface NotificationActivity { title: string; message: string; audience: 'all' | 'courses'; recipients: number; courses: ActivityCourse[] }
+export interface NotificationActivity { title: string; message: string; audience: 'all' | 'courses'; recipients?: number; courses: ActivityCourse[] }
 export interface ActivityRow { label: string; value: string }
 
 type Pair = readonly [string, string];

@@ -47,7 +47,9 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
       <p className="font-semibold">{ar ? 'عنوان الإشعار' : 'Notification title'}: {notification.title}</p>
       <p className="mt-1 text-gray-600">{ar ? 'نص الإشعار' : 'Message'}:</p>
       <p className="whitespace-pre-wrap">{notification.message}</p>
-      <p className="mt-1">{ar ? 'أُرسل إلى' : 'Sent to'}: {notificationAudience(notification, locale)} · {ar ? 'عدد الطلاب المستلمين' : 'Students reached'}: {notification.recipients}</p>
+      <p className="mt-1">{ar ? 'أُرسل إلى' : 'Sent to'}: {notificationAudience(notification, locale)}
+        {notification.recipients !== undefined && <> · {ar ? 'عدد الطلاب المستلمين' : 'Students reached'}: {notification.recipients}</>}
+      </p>
     </div>}
     {exam && <SavedContent heading={`${ar ? 'الامتحان' : 'Exam'}: ${exam.title} #${exam.id}`} rows={examActivityRows(exam, locale)} changes={examChangeRows(exam, locale)}
       href={`/exams/${exam.id}/edit`} linkLabel={ar ? 'فتح الامتحان' : 'Open exam'} changesLabel={changesLabel} />}

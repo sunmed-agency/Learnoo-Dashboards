@@ -32,7 +32,10 @@ export async function readPdfExam(data: ArrayBuffer): Promise<ImportedExam> {
       }
       for (const line of lines) {
         if (line[0].transform[5] > page.view[3] - 45 || line[0].transform[5] < 40) continue;
-        const tokens = line.sort((a, b) => b.transform[4] - a.transform[4]).map(item => {
+        const rtl = line.some(item => item.dir === "rtl");
+        const tokens = line.sort((a, b) => rtl
+          ? b.transform[4] + b.width - a.transform[4] - a.width
+          : a.transform[4] - b.transform[4]).map(item => {
           const transform = pdfjs.Util.transform(viewport.transform, item.transform);
           const x = Math.max(0, Math.floor(transform[4])), y = Math.max(0, Math.floor(transform[5] - item.height * 1.5));
           const width = Math.min(canvas.width - x, Math.max(1, Math.ceil(item.width * 1.5)));
@@ -47,7 +50,7 @@ export async function readPdfExam(data: ArrayBuffer): Promise<ImportedExam> {
           }
           return { text: item.str.replace(/\uf0fc/g, "✓").replace(/\uf0fb/g, "✘"), right: item.transform[4] + item.width, correct: gray > pixels.length / 4 * 0.35, red: red > 3 && red > ink };
         });
-        const raw = tokens.map(token => token.text).join(" ").replace(/\s+/g, " ").trim();
+        const raw = tokens.map(token => token.text).join(" ").replace(/\s+([?!؟])/g, "$1").replace(/\s+/g, " ").trim();
         if (/السؤال/.test(raw)) {
           flush();
           mode = /خطأ/.test(raw) ? "true_false" : /اختر|إختر|االجابة/.test(raw) ? "choice" : "essay";
@@ -72,10 +75,12 @@ export async function readPdfExam(data: ArrayBuffer): Promise<ImportedExam> {
         if (numbered) {
           flush(); current = importedQuestion(raw, mode === "essay" ? "short_answer" : "single_choice");
         } else if (current && mode === "choice") {
-          for (const token of tokens.sort((a, b) => b.right - a.right)) {
+          for (const token of tokens) {
             const value = token.text.trim();
-            const match = value.match(/^\(?([أابجد])(?:\s*[).]\s*|\s+)(.*)$/u) ?? value.match(/^([أابجد])$/u);
-            if (match && ("أبجد".indexOf(match[1] === "ا" ? "أ" : match[1]) === current.answers.length)) {
+            const match = value.match(/^\(?([أابجدA-Da-d])\s*[).:-]\s*(.*)$/u)
+              ?? value.match(/^\(?([أابجد])\s+(.*)$/u) ?? value.match(/^([أابجدA-Da-d])$/u);
+            const label = match?.[1].toUpperCase().replace("ا", "أ");
+            if (match && label && Math.max("أبجد".indexOf(label), "ABCD".indexOf(label)) === current.answers.length) {
               const answer = { id: "", text: match[2] ?? "", isCorrect: token.correct, reason: "" };
               current.answers.push(answer);
               const column = columns.find(column => Math.abs(column.right - token.right) < 20);
@@ -84,7 +89,7 @@ export async function readPdfExam(data: ArrayBuffer): Promise<ImportedExam> {
               columns.sort((a, b) => a.right - b.right);
             } else if (current.answers.length) {
               const answer = (columns.find(column => column.right >= token.right - 15) ?? columns.at(-1))!.answer;
-              if (value !== ")") answer.text = `${answer.text} ${value}`.trim();
+              if (value !== ")" && value !== "(") answer.text = `${answer.text} ${value}`.trim();
               answer.isCorrect ||= token.correct;
             } else current.text += " " + value;
           }

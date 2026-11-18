@@ -51,6 +51,11 @@ export function parseWordExam(xml: string): ImportedExam {
   const explanation = (element: Element) => Array.from(element.getElementsByTagNameNS(WORD_NS, "r"))
     .filter(run => Array.from(run.getElementsByTagNameNS(WORD_NS, "color")).some(color => color.getAttributeNS(WORD_NS, "val")?.toUpperCase() === "FF0000"))
     .map(run => Array.from(run.getElementsByTagNameNS(WORD_NS, "t")).map(node => node.textContent ?? "").join("").replace(/[✓✔✘✕×✗]/g, "")).join("").trim();
+  const isTrueFalseTable = (table: Element) => {
+    const firstRow = Array.from(table.children).find(row => row.localName === "tr");
+    const markColumn = firstRow && Array.from(firstRow.children).filter(cell => cell.localName === "tc")[2];
+    return markColumn && /^(?:العلامة|mark)(?:\s*[:(]|$)/i.test(text(markColumn));
+  };
   const questions: ExamFormQuestion[] = [];
   let pending: string[] = [];
   let pendingReasons: string[] = [];
@@ -58,11 +63,17 @@ export function parseWordExam(xml: string): ImportedExam {
   let essay = false;
   let essayPrompt = "";
   let trueFalse = false;
-  for (const block of Array.from(body.children)) {
+  const blocks = Array.from(body.children).filter(block => block.localName !== "p" || text(block));
+  for (const [index, block] of blocks.entries()) {
     if (block.localName === "p") {
       const value = text(block);
       if (!value || /^Dr\s*[/.]/i.test(value)) continue;
-      if (/^السؤال|^Q\d+\s*:/i.test(value)) {
+      const next = blocks[index + 1];
+      if (next?.localName === "tbl" && !isTrueFalseTable(next)) {
+        essay = trueFalse = false;
+        pending.push(text(block, true));
+        pendingReasons.push(explanation(block));
+      } else if (/^السؤال|^Q\d+\s*:/i.test(value)) {
         pending = [];
         pendingReasons = [];
         essay = !/اختر|إختر|صح|خطأ|true|false|select|choose/i.test(value);
@@ -91,7 +102,7 @@ export function parseWordExam(xml: string): ImportedExam {
     if (block.localName !== "tbl") continue;
     const rows = Array.from(block.children).filter(row => row.localName === "tr");
     const cells = rows.flatMap(row => Array.from(row.children).filter(cell => cell.localName === "tc"));
-    if (rows.length && /العلامة|\bmark\b/i.test(Array.from(rows[0].children).map(cell => text(cell)).join(" "))) {
+    if (isTrueFalseTable(block)) {
       for (const row of rows.slice(1)) {
         const parts = Array.from(row.children).filter(cell => cell.localName === "tc");
         const statement = parts[1];
@@ -110,10 +121,7 @@ export function parseWordExam(xml: string): ImportedExam {
         .map(shade => shade.getAttributeNS(WORD_NS, "fill")?.toUpperCase() ?? "")
         .filter(fill => fill && !["AUTO", "FFFFFF", "000000"].includes(fill)))).sort().join(","));
       // A fill every option shares (e.g. a table style) is the table's background, not an answer mark.
-      const background = fills.reduce((common, fill) => {
-        const count = (value: string) => fills.filter(other => other === value).length;
-        return count(fill) > count(common) ? fill : common;
-      }, "");
+      const background = fills.find(fill => fill && fills.filter(other => other === fill).length > fills.length / 2) ?? "";
       const marked = highlighted.some(Boolean) ? highlighted : fills.map(fill => fill !== "" && fill !== background);
       const answers = cells.map((cell, ci) => ({ text: text(cell, true).replace(OPTION, ""), isCorrect: marked[ci], reason: explanation(cell) || pendingReasons.at(-1) || "" }));
       if (answers.some(answer => answer.text) && pending.length) questions.push(importedQuestion(stem, "single_choice", answers));

@@ -42,6 +42,7 @@ test('ambiguous and empty imports cannot silently pass review', () => {
   const q = importedQuestion('Question', 'single_choice', [{ text: 'One', isCorrect: true }, { text: 'Two', isCorrect: true }]);
   assert.deepEqual(finishImportedExam([q]).review, [1]);
   assert.throws(() => finishImportedExam([]), /NO_IMPORTABLE/);
+  assert.equal(finishImportedExam(Array.from({ length: 500 }, () => structuredClone(q))).questions.length, 500);
   assert.throws(() => finishImportedExam(Array(501).fill(q)), /NO_IMPORTABLE/);
 });
 
@@ -82,6 +83,10 @@ test('Word preserves all mixed questions and red feedback, including English tab
       assert.equal(question.answers[0].isCorrect, (i + 21) % 2 === 1);
       assert.ok(question.answers.every(answer => answer.reason === 'سبب الإجابة'));
     });
+    body = node('body', [...blocks.slice(40), p(), ...blocks.slice(0, 40)]);
+    const reordered = parseWordExam('fixture').questions;
+    const content = ({ text, type, answers }) => ({ text, type, answers: answers.map(({ id, ...answer }) => answer) });
+    assert.deepEqual(reordered.map(content), [...exam.questions.slice(20), ...exam.questions.slice(0, 20)].map(content));
     body = node('body', [p(run('Q1: True or false')), node('tbl', [
       node('tr', [cell(run('#')), cell(run('Statements')), cell(run('mark'))]),
       node('tr', [cell(run('1')), cell(run('Statement')), cell(run('✓'))]),
@@ -130,11 +135,14 @@ test('Word choice tables: a fill shared by every option is background, the highl
       p('سؤال بإجابتين؟'), table(['أ) 1', 'ب) 2', 'ج) 3', 'د) 4'].map((value, i) => cell(value, { fill: 'F6F9FA', mark: i < 2 }))),
       // Every option filled and nothing else marks one: no answer, review.
       p('سؤال بلا علامة؟'), table(options(-1, () => ({ fill: 'F6F9FA' }))),
+      p('السؤال التالي يطلب منك اختيار الإجابة الصحيحة'), table(options(0, mark => ({ mark }))),
+      p('Q1: What earns a full mark?'), table(['A) One', 'B) Two', 'C) Full mark', 'D) Four'].map((value, i) => cell(value, { mark: i === 2 }))),
+      p('Two conflicting fills'), node('tbl', [node('tr', [cell('A) One', { fill: 'FFFF00' }), cell('B) Two', { fill: '00FF00' })])]),
     ]);
     const exam = parseWordExam('fixture');
-    assert.equal(exam.questions.length, 7);
-    assert.deepEqual(exam.questions.map(question => question.answers.flatMap((answer, i) => answer.isCorrect ? [i] : [])), [[1], [2], [3], [0], [3], [0, 1], []]);
+    assert.equal(exam.questions.length, 10);
+    assert.deepEqual(exam.questions.map(question => question.answers.flatMap((answer, i) => answer.isCorrect ? [i] : [])), [[1], [2], [3], [0], [3], [0, 1], [], [0], [2], [0, 1]]);
     assert.deepEqual(exam.questions[0].answers.map(answer => answer.text), ['الأول', 'الثاني', 'الثالث', 'الرابع']);
-    assert.deepEqual(exam.review, [6, 7]);
+    assert.deepEqual(exam.review, [6, 7, 10]);
   } finally { global.DOMParser = previous; }
 });

@@ -34,6 +34,7 @@ import { STORE_LINKS } from '@/src/lib/store-links';
 import type { LandingPlans } from '@/src/lib/landing-plans';
 import { LANDING_CONTENT, type LandingLocale } from './content';
 import LangToggle from './LangToggle';
+import { PlatformLogo } from './PlatformLogos';
 import MobileMenu from './MobileMenu';
 import PhoneMockup from './PhoneMockup';
 import JoinDialog from './JoinDialog';
@@ -219,14 +220,11 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 py-8 sm:px-6 md:flex-row">
             <p className="text-[15px] font-bold text-[#334155]">{c.platforms.title}</p>
             <ul className="flex flex-wrap items-center justify-center gap-3">
-              {c.platforms.items.map((p, i) => {
-                const Icon = i === 3 ? Globe : Smartphone;
-                return (
-                  <li key={p} className="inline-flex items-center gap-2 rounded-xl bg-[#F1F5FF] px-4 py-2.5 text-[14.5px] font-bold text-[#1E293B]">
-                    <Icon className="h-4 w-4 text-[#2137D6]" aria-hidden />{p}
-                  </li>
-                );
-              })}
+              {c.platforms.items.map((p, i) => (
+                <li key={p} className="inline-flex h-11 items-center gap-2.5 rounded-xl bg-[#F1F5FF] px-4 text-[14.5px] font-bold text-[#1E293B]">
+                  <span className="grid h-6 w-6 place-items-center"><PlatformLogo index={i} /></span>{p}
+                </li>
+              ))}
             </ul>
           </div>
         </section>

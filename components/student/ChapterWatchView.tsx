@@ -25,6 +25,13 @@ import {
   Camera,
   Clock,
   Layers,
+  ClipboardList,
+  NotebookPen,
+  Video,
+  Users,
+  Library,
+  Eye,
+  UserRound,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { isIOSDevice } from '@/src/lib/video-stream-detect';
@@ -312,6 +319,7 @@ export default function ChapterWatchView({
   watchAccessDenied,
   courseLocked,
   initialWatermarkResolution,
+  course = null,
 }: {
   chapterId: string;
   chapter: Chapter | null;
@@ -324,6 +332,8 @@ export default function ChapterWatchView({
   courseLocked: boolean;
   /** From server `GET /v1/feature` + bucket resolution; used until client query settles. */
   initialWatermarkResolution?: WatermarkResolution | null;
+  /** The parent course (banner: title, thumbnail, instructor, lecture count). */
+  course?: { id?: string | number; attributes?: Record<string, unknown> } | null;
 }) {
   const locale = useLocale();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
@@ -564,6 +574,50 @@ export default function ChapterWatchView({
     }
     return null;
   }, [chapter, tDetails]);
+
+  /** Course banner data (looks only). */
+  const courseInfo = useMemo(() => {
+    const a = (course?.attributes ?? {}) as {
+      title?: string | null;
+      thumbnail?: string | null;
+      instructor?: { data?: { attributes?: { full_name?: string | null } } } | null;
+      stats?: { lectures?: number | null } | null;
+    };
+    return {
+      title: a.title?.trim() || '',
+      thumb: a.thumbnail?.trim() || '',
+      instructor: a.instructor?.data?.attributes?.full_name?.trim() || '',
+      lectures: a.stats?.lectures ?? 0,
+    };
+  }, [course]);
+
+  /** The compact course name in the sticky tabs row shows once the banner scrolls away. */
+  const courseBannerRef = useRef<HTMLElement | null>(null);
+  const [bannerOutOfView, setBannerOutOfView] = useState(false);
+  useEffect(() => {
+    const el = courseBannerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setBannerOutOfView(!e.isIntersecting), { rootMargin: '-120px 0px 0px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [chapter]);
+
+  /** Large screens: the lessons / discussions card is as tall as the player and scrolls inside. */
+  const [playerHeight, setPlayerHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = videoContainerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setPlayerHeight(mq.matches && !theaterMode ? Math.round(el.getBoundingClientRect().height) : null);
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    mq.addEventListener('change', update);
+    update();
+    return () => {
+      ro.disconnect();
+      mq.removeEventListener('change', update);
+    };
+  }, [chapter, theaterMode]);
 
   const chapterThumb = useMemo(() => {
     const u = chapter?.attributes?.thumbnail?.trim();
@@ -1133,38 +1187,119 @@ export default function ChapterWatchView({
         className="watch-light min-h-screen overflow-x-clip pb-28 text-[#0A1033] [-webkit-tap-highlight-color:transparent] sm:pb-[max(2.5rem,env(safe-area-inset-bottom,0px))]"
         dir={dir}
       >
-        <div className={`mx-auto w-full px-4 pt-2 pb-1 sm:px-6 sm:pb-2 sm:pt-6 lg:px-8 ${theaterMode ? 'max-w-[112rem]' : 'max-w-6xl'}`}>
-          <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="min-w-0 flex-1">
-              <Link
-                href={backHref}
-                className="mb-2 inline-flex min-h-[44px] items-center gap-2 py-1 text-sm font-medium text-slate-400 transition hover:text-white sm:mb-3"
-              >
-                <ArrowLeft className="size-4 shrink-0 rtl:rotate-180" />
-                {tDetails('watchBack')}
-              </Link>
-              <h1 className="text-xl font-bold leading-snug text-white sm:text-2xl sm:leading-tight lg:text-3xl">
-                {attrs.title}
-              </h1>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-400 sm:mt-2 sm:text-sm">
-                {lectureTitle ? (
-                  <>
-                    <span className="text-slate-300">{lectureTitle}</span>
-                    <span className="mx-1.5 text-slate-600 sm:mx-2">•</span>
-                  </>
-                ) : null}
-                <span>{t('subtitleChapter', { number: currentPartIndex + 1 })}</span>
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:justify-end">
-              {viewsBadge ? (
-                <span className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 text-xs font-semibold text-slate-200 sm:min-h-0 sm:py-1.5">
-                  {viewsBadge}
-                </span>
+        {/* Course banner: course, instructor and the lesson's chips on one line (looks only) */}
+        <div className={`mx-auto w-full px-4 pt-3 sm:px-6 sm:pt-6 lg:px-8 ${theaterMode ? 'max-w-[112rem]' : 'max-w-[90rem]'}`}>
+          <section
+            ref={courseBannerRef}
+            className="watch-dark relative isolate overflow-hidden rounded-[22px] bg-[#0A1033] text-white shadow-[0_24px_50px_-30px_rgba(45,70,232,0.75)]"
+          >
+            {courseInfo.thumb ? (
+              <Image src={courseInfo.thumb} alt="" fill priority className="-z-20 object-cover object-center opacity-40" sizes="(max-width: 768px) 100vw, 1400px" />
+            ) : null}
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_120%_at_100%_0%,rgba(53,80,240,0.75)_0%,transparent_60%),linear-gradient(180deg,rgba(10,16,51,0.55)_0%,rgba(10,16,51,0.92)_100%)]" aria-hidden />
+
+            <div className="flex items-center gap-4 p-4 sm:gap-5 sm:p-6">
+              {courseInfo.thumb ? (
+                <div className="relative hidden size-24 shrink-0 overflow-hidden rounded-2xl bg-white ring-4 ring-white/15 sm:block lg:size-28">
+                  <Image src={courseInfo.thumb} alt="" fill className="object-cover" sizes="112px" />
+                </div>
               ) : null}
+
+              <div className="min-w-0 flex-1">
+                <Link
+                  href={backHref}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white/90 ring-1 ring-white/15 transition hover:bg-white/20"
+                >
+                  <ArrowLeft className="size-3.5 shrink-0 rtl:rotate-180" aria-hidden />
+                  {tDetails('watchBack')}
+                </Link>
+                <h1 className="mt-3 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-[1.85rem]">
+                  {courseInfo.title || attrs.title}
+                </h1>
+                {courseInfo.instructor ? (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-white/80">
+                    <UserRound className="size-4 shrink-0" aria-hidden />
+                    {courseInfo.instructor}
+                  </p>
+                ) : null}
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {lectureTitle ? (
+                    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 sm:text-[13px]">
+                      <Layers className="size-3.5 shrink-0" aria-hidden />
+                      <span className="truncate">{lectureTitle}</span>
+                    </span>
+                  ) : null}
+                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 sm:text-[13px]">
+                    <Play className="size-3.5 shrink-0" fill="currentColor" aria-hidden />
+                    <span className="truncate">{attrs.title}</span>
+                    {partChapters.length > 1 ? (
+                      <span className="shrink-0 text-white/65" dir="ltr">{currentPartIndex + 1}/{partChapters.length}</span>
+                    ) : null}
+                  </span>
+                  {courseInfo.lectures > 0 ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 sm:text-[13px]">
+                      <FileText className="size-3.5 shrink-0" aria-hidden />
+                      {tDetails('heroLectureCount', { count: courseInfo.lectures })}
+                    </span>
+                  ) : null}
+                  {viewsBadge ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E8766A]/25 px-3 py-1.5 text-xs font-bold text-[#FFD9D3] ring-1 ring-[#E8766A]/40 sm:text-[13px]">
+                      <Eye className="size-3.5 shrink-0" aria-hidden />
+                      {viewsBadge}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* Course tabs (open the course page on that tab); pinned under the header with the course name once the banner scrolls away */}
+        {chapter.attributes.course_id != null && String(chapter.attributes.course_id).trim() !== '' ? (
+          <div className={`sticky top-14 z-30 mx-auto mb-4 mt-4 w-full px-4 sm:top-16 sm:mb-6 sm:px-6 lg:px-8 ${theaterMode ? 'max-w-[112rem]' : 'max-w-[90rem]'}`}>
+            <div className="flex items-center gap-3 rounded-2xl border border-[#E6EAF6] bg-white/90 px-2 shadow-[0_10px_24px_-22px_rgba(10,16,51,0.45)] backdrop-blur-xl">
+              <nav className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex min-w-max items-center gap-1">
+                  {([
+                    { key: 'lectures', icon: Layers },
+                    { key: 'exams', icon: ClipboardList },
+                    { key: 'notes', icon: NotebookPen },
+                    { key: 'liveSession', icon: Video },
+                    { key: 'community', icon: Users },
+                    { key: 'library', icon: Library },
+                  ] as const).map(({ key, icon: Icon }) => (
+                    <Link
+                      key={key}
+                      href={`${backHref}?tab=${key}`}
+                      aria-current={key === 'lectures' ? 'page' : undefined}
+                      className={`inline-flex items-center gap-2 whitespace-nowrap border-b-[3px] px-3 py-3.5 text-sm font-bold transition sm:px-4 ${key === 'lectures' ? 'border-[#E8766A] text-[#0A1033]' : 'border-transparent text-[#64748B] hover:text-[#2D46E8]'}`}
+                    >
+                      <Icon className="size-4 shrink-0" aria-hidden />
+                      {tDetails(`tabs.${key}`)}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+              <div
+                className={`hidden shrink-0 items-center gap-2.5 border-s border-[#E6EAF6] py-2 ps-3 pe-1 transition-opacity duration-300 lg:flex ${bannerOutOfView ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+                aria-hidden={!bannerOutOfView}
+              >
+                <span className="min-w-0 text-end">
+                  <span className="block max-w-[16rem] truncate text-sm font-extrabold text-[#0A1033]">{courseInfo.title || attrs.title}</span>
+                  {courseInfo.instructor ? <span className="block max-w-[16rem] truncate text-xs text-[#64748B]">{courseInfo.instructor}</span> : null}
+                </span>
+                {courseInfo.thumb ? (
+                  <span className="relative size-9 shrink-0 overflow-hidden rounded-lg bg-[#F4F6FD] ring-1 ring-[#E6EAF6]">
+                    <Image src={courseInfo.thumb} alt="" fill className="object-cover" sizes="36px" />
+                  </span>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="h-4 sm:h-6" aria-hidden />
+        )}
 
         {/* Two columns on large screens: the player (start side, right in Arabic) and the lessons + discussions */}
         <div className={`mx-auto w-full max-w-full overflow-x-clip px-0 sm:px-6 lg:px-8 [-webkit-overflow-scrolling:touch] ${theaterMode ? 'max-w-[112rem]' : 'max-w-[90rem] lg:grid lg:grid-cols-[minmax(0,1.75fr)_minmax(300px,1fr)] lg:items-start lg:gap-6'}`}>
@@ -1602,9 +1737,12 @@ export default function ChapterWatchView({
             </div>
           </div>
 
-          <aside className={`mt-[30px] w-full space-y-6 px-5 pb-4 sm:px-0 sm:pb-6 ${theaterMode ? '' : 'lg:sticky lg:top-20 lg:mt-0 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pb-2 lg:pe-1'}`}>
-          <div className="overflow-hidden rounded-2xl border border-[#E6EAF6] bg-white shadow-[0_1px_2px_rgba(10,16,51,0.04),0_12px_30px_-22px_rgba(45,70,232,0.35)]">
-            <div role="tablist" className="flex border-b border-[#EEF1F8]">
+          <aside className={`mt-[30px] w-full space-y-6 px-5 pb-4 sm:px-0 sm:pb-6 ${theaterMode ? '' : 'lg:sticky lg:top-[8.5rem] lg:mt-0 lg:pb-2'}`}>
+          <div
+            className="flex flex-col overflow-hidden rounded-2xl border border-[#E6EAF6] bg-white shadow-[0_1px_2px_rgba(10,16,51,0.04),0_12px_30px_-22px_rgba(45,70,232,0.35)]"
+            style={playerHeight ? { height: playerHeight } : undefined}
+          >
+            <div role="tablist" className="flex shrink-0 border-b border-[#EEF1F8]">
               {([
                 { key: 'lessons' as const, icon: Layers, label: locale === 'ar' ? 'الدروس' : 'Lessons', count: `${currentPartIndex + 1}/${partChapters.length}` },
                 { key: 'discussions' as const, icon: MessageCircle, label: t('discussionsHeading'), count: String(discussions.length) },
@@ -1624,7 +1762,8 @@ export default function ChapterWatchView({
               ))}
             </div>
 
-            <div className="p-3 sm:p-4">
+            {/* Scrolls inside when the list is longer than the player, with no visible bar */}
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 [scrollbar-width:none] sm:p-4 [&::-webkit-scrollbar]:hidden">
               {sideTab === 'lessons' ? (
                 <ol className="space-y-2">
                   {partChapters.map((ch, idx) => {

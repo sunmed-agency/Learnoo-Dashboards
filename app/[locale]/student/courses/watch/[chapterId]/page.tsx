@@ -62,9 +62,11 @@ export default async function WatchChapterPage({ params }: WatchChapterPageProps
     status === 403 || (chapter != null && chapter.attributes.watch_access_state !== 'available');
 
   let courseLocked = false;
+  let course: unknown = null;
   if (chapter?.attributes?.course_id != null) {
     const courseRes = await getCourseById(chapter.attributes.course_id);
     if (courseRes.success && courseRes.data?.data) {
+      course = courseRes.data.data;
       // @ts-ignore
       courseLocked = courseIsLocked(courseRes.data.data);
     }
@@ -82,6 +84,7 @@ export default async function WatchChapterPage({ params }: WatchChapterPageProps
       lectureTitle={lectureTitle}
       watchAccessDenied={watchAccessDenied}
       courseLocked={courseLocked}
+      course={course as never}
       initialWatermarkResolution={initialWatermarkResolution}
     />
   );

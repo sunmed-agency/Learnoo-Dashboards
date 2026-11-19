@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import AuthLangToggle from './AuthLangToggle';
 import AppDownloadLink from '@/src/components/AppDownloadLink';
 import AuthShowcase from './AuthShowcase';
 
@@ -17,7 +17,7 @@ export default function AuthPageLayout({ title, subtitle, children }: AuthLayout
       {/* Brand panel on the start side: right in Arabic, left in English */}
       <AuthShowcase />
 
-      <div className="relative flex min-h-screen min-w-0 flex-col lg:h-full lg:min-h-0 lg:overflow-y-auto">
+      <div className="relative flex min-h-screen min-w-0 flex-col overflow-x-hidden lg:h-full lg:min-h-0 lg:overflow-y-auto">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_70%_100%_at_50%_0%,rgba(45,70,232,0.12),transparent_70%)] lg:hidden" aria-hidden />
 
         <header className="relative flex shrink-0 items-center justify-between gap-3 px-4 pt-4 sm:px-8 sm:pt-5">
@@ -27,7 +27,7 @@ export default function AuthPageLayout({ title, subtitle, children }: AuthLayout
             </span>
             <span className="text-[19px] font-extrabold tracking-tight text-[#0A1033]" dir="ltr">Learnoo</span>
           </Link>
-          <LanguageSwitcher />
+          <AuthLangToggle />
         </header>
 
         <main className="relative flex flex-1 items-center justify-center px-4 py-6 sm:px-8 sm:py-8 lg:py-4">

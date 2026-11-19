@@ -20,7 +20,8 @@ export default function PlatformBranding() {
     if (accent && /^#[0-9a-f]{3,8}$/i.test(accent)) document.documentElement.style.setProperty('--accent', accent);
     const font = value('font_family');
     if (!font || !/^[a-z0-9 -]+$/i.test(font) || /^(inter|cairo)$/i.test(font.trim())) return;
-    document.documentElement.style.setProperty('--font-platform', `"${font}", sans-serif`);
+    // The chosen font is for Latin letters; Arabic always falls through to Cairo (most picks, e.g. Poppins, have no Arabic glyphs).
+    document.documentElement.style.setProperty('--font-platform', `"${font}", var(--font-cairo), "Cairo"`);
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';
     stylesheet.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600;700&display=swap`;

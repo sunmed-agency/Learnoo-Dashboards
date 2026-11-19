@@ -161,3 +161,27 @@ html[data-platform-branding="true"] :is([class~="via-[#6366F1]"], [class~="to-[#
 .staff-theme :is(input, select, textarea):focus-visible { outline: none; border-color: var(--lr-royal-light); box-shadow: 0 0 0 3px rgba(45,70,232,.15); }
 .staff-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
 .staff-theme ::-webkit-scrollbar-thumb { background: #CBD3F2; border-radius: 99px; }
+
+/* ============================================================
+   Student watch page, light theme (`.watch-light`): the old dark
+   palette of ChapterWatchView maps to the Learnoo light palette.
+   `.watch-dark` (the video area, the exam banner) keeps its colours.
+   ============================================================ */
+.watch-light :is([class~="bg-[#070d18]"], [class~="bg-[#050915]"]):not(.watch-dark, .watch-dark *) { background-color: #fff; }
+.watch-light :is(.bg-slate-900, .bg-slate-800, [class~="bg-slate-800/80"], [class~="bg-slate-800/90"], [class~="bg-slate-900/40"], [class~="bg-slate-900/80"], [class~="bg-slate-900/90"]):not(.watch-dark, .watch-dark *) { background-color: #F4F6FD; }
+.watch-light .bg-slate-700:not(.watch-dark, .watch-dark *) { background-color: #E6EAF6; }
+.watch-light :is(.border-slate-500, .border-slate-600, .border-slate-700, .border-slate-800, [class~="border-slate-600/80"], [class~="border-slate-600/90"], [class~="border-slate-800/80"], [class~="border-slate-800/90"]):not(.watch-dark, .watch-dark *) { border-color: #E6EAF6; }
+.watch-light .text-slate-100:not(.watch-dark, .watch-dark *) { color: #0A1033; }
+.watch-light .text-slate-200:not(.watch-dark, .watch-dark *) { color: #1E293B; }
+.watch-light .text-slate-300:not(.watch-dark, .watch-dark *) { color: #334155; }
+.watch-light :is(.text-slate-400, .text-slate-500):not(.watch-dark, .watch-dark *) { color: #64748B; }
+.watch-light .text-slate-600:not(.watch-dark, .watch-dark *) { color: #94A3B8; }
+/* White text turns dark, except on coloured buttons / badges */
+.watch-light .text-white:not(.watch-dark, .watch-dark *):not([class*="bg-["]):not([class*="bg-gradient"]):not([class*="bg-red"]):not([class*="bg-emerald"]):not([class*="bg-black"]):not([class*="bg-blue"]):not([class*="bg-amber"]):not(:is(button, a)[class*="bg-["] *) { color: #0A1033; }
+/* Light Royal tints (active toggles) */
+.watch-light :is([class~="bg-[#2D43D1]/20"], [class~="bg-[#2D43D1]/30"]):not(.watch-dark, .watch-dark *) { background-color: #EAEEFE; color: #2D46E8; border-color: rgba(45, 70, 232, .3); }
+.watch-light :is([class~="hover:bg-slate-800"], [class~="hover:bg-slate-800/80"]):not(.watch-dark, .watch-dark *):hover { background-color: #EAEEFE; }
+.watch-light :is(textarea, input):not(.watch-dark *) { color: #0A1033; }
+/* any opacity step of the old dark slates (e.g. bg-slate-900/50, border-slate-700/80) */
+.watch-light :is([class*=" bg-slate-900/"], [class^="bg-slate-900/"], [class*=" bg-slate-800/"], [class^="bg-slate-800/"], [class*=" bg-slate-950/"], [class^="bg-slate-950/"]):not(.watch-dark, .watch-dark *) { background-color: #F8F9FE; }
+.watch-light :is([class*=" border-slate-700/"], [class^="border-slate-700/"], [class*=" border-slate-600/"], [class^="border-slate-600/"], [class*=" border-slate-800/"], [class^="border-slate-800/"]):not(.watch-dark, .watch-dark *) { border-color: #E6EAF6; }

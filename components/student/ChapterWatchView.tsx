@@ -23,6 +23,8 @@ import {
   Square,
   Trash2,
   Camera,
+  Clock,
+  Layers,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { isIOSDevice } from '@/src/lib/video-stream-detect';
@@ -331,6 +333,8 @@ export default function ChapterWatchView({
 
   const [showPdf, setShowPdf] = useState(false);
   const [discussionsOpen, setDiscussionsOpen] = useState(true);
+  /** Side card tab: the lecture's lessons or the discussions. */
+  const [sideTab, setSideTab] = useState<'lessons' | 'discussions'>('lessons');
   const [composerText, setComposerText] = useState('');
   const [composerSubmitting, setComposerSubmitting] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
@@ -520,6 +524,7 @@ export default function ChapterWatchView({
     const id = new URLSearchParams(window.location.search).get('discussion');
     if (id && /^\d+$/.test(id)) {
       setDiscussionsOpen(true);
+      setSideTab('discussions');
       requestAnimationFrame(() => document.getElementById(`discussion-${id}`)?.scrollIntoView({ block: 'center' }));
     }
   }, [discussions]);
@@ -1125,7 +1130,7 @@ export default function ChapterWatchView({
   return (
     <>
       <div
-        className="min-h-screen overflow-x-clip bg-[#0b1426] pb-28 text-slate-100 [-webkit-tap-highlight-color:transparent] sm:pb-[max(2.5rem,env(safe-area-inset-bottom,0px))]"
+        className="watch-light min-h-screen overflow-x-clip pb-28 text-[#0A1033] [-webkit-tap-highlight-color:transparent] sm:pb-[max(2.5rem,env(safe-area-inset-bottom,0px))]"
         dir={dir}
       >
         <div className={`mx-auto w-full px-4 pt-2 pb-1 sm:px-6 sm:pb-2 sm:pt-6 lg:px-8 ${theaterMode ? 'max-w-[112rem]' : 'max-w-6xl'}`}>
@@ -1164,9 +1169,9 @@ export default function ChapterWatchView({
         {/* Two columns on large screens: the player (start side, right in Arabic) and the lessons + discussions */}
         <div className={`mx-auto w-full max-w-full overflow-x-clip px-0 sm:px-6 lg:px-8 [-webkit-overflow-scrolling:touch] ${theaterMode ? 'max-w-[112rem]' : 'max-w-[90rem] lg:grid lg:grid-cols-[minmax(0,1.75fr)_minmax(300px,1fr)] lg:items-start lg:gap-6'}`}>
           <div className="min-w-0">
-            <div className="overflow-hidden border-y border-slate-700 bg-[#070d18] shadow-xl sm:rounded-2xl sm:border sm:border-slate-700">
+            <div>
               <div className="flex flex-col">
-                <div ref={videoContainerRef} className="bg-black/50">
+                <div ref={videoContainerRef} className="watch-dark overflow-hidden bg-black shadow-[0_18px_40px_-24px_rgba(10,16,51,0.6)] sm:rounded-2xl">
                   {accessDenied ? (
                     // Checked before videoIsProcessing/stableVideoSrc: a locked
                     // chapter's API response typically omits the video URL
@@ -1270,7 +1275,7 @@ export default function ChapterWatchView({
               </div>
 
               {/* Under video: stacked on small screens; desktop = one row like design (Ask | Lecture parts inline | Discussions). */}
-              <div className="border-t border-slate-800/80 bg-[#050915] px-0 py-0 sm:px-6 sm:py-3.5">
+              <div className="mt-4 rounded-2xl border border-[#E6EAF6] bg-white px-0 py-0 shadow-[0_1px_2px_rgba(10,16,51,0.04),0_12px_30px_-22px_rgba(45,70,232,0.35)] sm:px-6 sm:py-3.5">
                 <div className="flex flex-col gap-3 px-4 pb-6 pt-5 sm:px-5 sm:pb-7 sm:pt-7 md:grid md:grid-cols-1 lg:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-5 md:px-5 md:py-3.5 md:pb-3.5 md:pt-3.5 lg:gap-6 lg:px-6">
                   <div className="flex justify-stretch max-md:border-b max-md:border-slate-800/90 md:min-w-0 md:justify-start">
                     {Number.isFinite(chapterIdForApi) ? (
@@ -1351,7 +1356,7 @@ export default function ChapterWatchView({
 
                     <button
                       type="button"
-                      onClick={() => setDiscussionsOpen((o) => !o)}
+                      onClick={() => { setDiscussionsOpen(true); setSideTab('discussions'); }}
                       className={`inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border px-8 py-3 text-sm font-semibold text-white transition active:bg-slate-800/80 max-md:px-12 md:flex-1 md:min-h-0 md:w-auto md:shrink-0 md:px-5 md:py-2.5 ${discussionsOpen
                         ? 'border-[#2D43D1]/70 bg-[#2D43D1]/20 hover:bg-[#2D43D1]/30'
                         : 'border-slate-600/90 bg-slate-800/90 hover:bg-slate-800'
@@ -1598,79 +1603,102 @@ export default function ChapterWatchView({
           </div>
 
           <aside className={`mt-[30px] w-full space-y-6 px-5 pb-4 sm:px-0 sm:pb-6 ${theaterMode ? '' : 'lg:sticky lg:top-20 lg:mt-0 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pb-2 lg:pe-1'}`}>
-          {partChapters.length > 1 ? (
-            <section className="rounded-2xl border border-slate-700 bg-[#070d18] p-3 sm:p-4" aria-label={t('lecturePartsToolbar')}>
-              <h2 className="mb-3 px-1 text-sm font-bold uppercase tracking-wide text-slate-400">{t('lecturePartsToolbar')}</h2>
-              <ol className="space-y-1.5">
-                {partChapters.map((ch, idx) => {
-                  const active = String(ch.id) === String(chapterId);
-                  const label = t('partLabel', { number: idx + 1 });
-                  const badge = (
-                    <span className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold ${active ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-300'}`} dir="ltr">{idx + 1}</span>
-                  );
-                  if (isStudentChapterVideoPlayable(ch)) {
+          <div className="overflow-hidden rounded-2xl border border-[#E6EAF6] bg-white shadow-[0_1px_2px_rgba(10,16,51,0.04),0_12px_30px_-22px_rgba(45,70,232,0.35)]">
+            <div role="tablist" className="flex border-b border-[#EEF1F8]">
+              {([
+                { key: 'lessons' as const, icon: Layers, label: locale === 'ar' ? 'الدروس' : 'Lessons', count: `${currentPartIndex + 1}/${partChapters.length}` },
+                { key: 'discussions' as const, icon: MessageCircle, label: t('discussionsHeading'), count: String(discussions.length) },
+              ]).map(({ key, icon: Icon, label, count }) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={sideTab === key}
+                  onClick={() => setSideTab(key)}
+                  className={`flex flex-1 items-center justify-center gap-2 border-b-2 px-3 py-3.5 text-sm font-bold transition ${sideTab === key ? 'border-[#E8766A] text-[#0A1033]' : 'border-transparent text-[#64748B] hover:text-[#2D46E8]'}`}
+                >
+                  <Icon className="size-4 shrink-0" aria-hidden />
+                  {label}
+                  <span className="rounded-full bg-[#F4F6FD] px-2 py-0.5 text-[11px] font-bold text-[#64748B]" dir="ltr">{count}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="p-3 sm:p-4">
+              {sideTab === 'lessons' ? (
+                <ol className="space-y-2">
+                  {partChapters.map((ch, idx) => {
+                    const active = String(ch.id) === String(chapterId);
+                    const info = ch.attributes as { title?: string | null; duration?: string | null };
+                    const title = info?.title?.trim() || t('partLabel', { number: idx + 1 });
+                    const duration = info?.duration?.trim() || '';
+                    const row = (locked: boolean) => (
+                      <>
+                        <span className={`relative grid size-11 shrink-0 place-items-center rounded-xl text-white ${locked ? 'bg-slate-300' : 'bg-gradient-to-br from-[#1F33C4] to-[#2D46E8]'}`}>
+                          {locked ? <Lock className="size-4" aria-hidden /> : <Play className="size-4" fill="currentColor" aria-hidden />}
+                          <span className="absolute -bottom-1.5 -end-1.5 grid size-5 place-items-center rounded-full bg-white text-[10px] font-bold text-[#0A1033] ring-1 ring-[#E6EAF6]" dir="ltr">{idx + 1}</span>
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-bold text-[#0A1033]">{title}</span>
+                          <span className="mt-0.5 flex items-center gap-1.5 text-xs text-[#64748B]">
+                            {duration ? (<><Clock className="size-3.5 shrink-0" aria-hidden /><span dir="ltr">{duration}</span></>) : t('partLabel', { number: idx + 1 })}
+                          </span>
+                        </span>
+                        {active ? (
+                          <span className="shrink-0 rounded-full bg-[#E6F7F4] px-2.5 py-1 text-[11px] font-bold text-[#0F9F8C]">{locale === 'ar' ? 'شغّال' : 'Playing'}</span>
+                        ) : null}
+                      </>
+                    );
                     return (
                       <li key={ch.id}>
-                        <Link
-                          href={`/${locale}/student/courses/watch/${ch.id}`}
-                          prefetch
-                          aria-current={active ? 'true' : undefined}
-                          className={`flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${active ? 'bg-gradient-to-l from-[#2D46E8] to-[#5B73FF] text-white shadow-[0_10px_22px_-14px_rgba(45,70,232,0.9)] ltr:bg-gradient-to-r' : 'text-slate-200 hover:bg-slate-800/80'}`}
-                        >
-                          {badge}
-                          <span className="min-w-0 flex-1 truncate">{label}</span>
-                          {active ? <span className="size-2 shrink-0 rounded-full bg-[#FFB4A9] shadow-[0_0_0_3px_rgba(232,118,106,0.35)]" aria-hidden /> : null}
-                        </Link>
+                        {isStudentChapterVideoPlayable(ch) ? (
+                          <Link
+                            href={`/${locale}/student/courses/watch/${ch.id}`}
+                            prefetch
+                            aria-current={active ? 'true' : undefined}
+                            className={`flex items-center gap-3 rounded-2xl border p-2.5 transition ${active ? 'border-[#2D46E8]/25 bg-[#EAEEFE]' : 'border-transparent hover:bg-[#F4F6FD]'}`}
+                          >
+                            {row(false)}
+                          </Link>
+                        ) : (
+                          <span title={t('partLockedTooltip')} aria-disabled className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-transparent p-2.5 opacity-70">
+                            {row(true)}
+                          </span>
+                        )}
                       </li>
                     );
-                  }
-                  return (
-                    <li key={ch.id}>
-                      <span title={t('partLockedTooltip')} aria-disabled className="flex cursor-not-allowed items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold text-slate-500">
-                        {badge}
-                        <span className="min-w-0 flex-1 truncate">{label}</span>
-                        <Lock className="size-4 shrink-0" aria-hidden />
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
-            </section>
-          ) : null}
-
-          {discussionsOpen ? (
-            <section className="space-y-3 sm:space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">
-                {t('discussionsHeading')}
-              </h2>
-              {discussions.length === 0 ? (
-                <p className="rounded-xl border border-slate-700 bg-slate-900/40 px-3 py-10 text-center text-sm text-slate-400 sm:px-4">
+                  })}
+                </ol>
+              ) : discussions.length === 0 ? (
+                <p className="rounded-xl bg-[#F4F6FD] px-3 py-10 text-center text-sm text-[#64748B] sm:px-4">
                   {t('noDiscussions')}
                 </p>
               ) : (
-                discussions
-                  .filter((d) => Boolean(discussionContent(d)))
-                  .map((d, i) => (
-                    <DiscussionNode
-                      key={discussionKey(d, i)}
-                      discussion={d}
-                      locale={locale}
-                      t={t}
-                      replyToId={replyToId}
-                      setReplyToId={setReplyToId}
-                      replyText={replyText}
-                      setReplyText={setReplyText}
-                      replySubmitting={replySubmitting}
-                      onSubmitReply={submitReply}
-                      onPreviewImage={setPreviewImageUrl}
-                    />
-                  ))
+                <div className="space-y-3">
+                  {discussions
+                    .filter((d) => Boolean(discussionContent(d)))
+                    .map((d, i) => (
+                      <DiscussionNode
+                        key={discussionKey(d, i)}
+                        discussion={d}
+                        locale={locale}
+                        t={t}
+                        replyToId={replyToId}
+                        setReplyToId={setReplyToId}
+                        replyText={replyText}
+                        setReplyText={setReplyText}
+                        replySubmitting={replySubmitting}
+                        onSubmitReply={submitReply}
+                        onPreviewImage={setPreviewImageUrl}
+                      />
+                    ))}
+                </div>
               )}
-            </section>
-          ) : null}
+            </div>
+          </div>
 
           {examQuiz && (startExamHref || examLockedByActivation) ? (
-            <div className="flex flex-col items-stretch justify-between gap-3 overflow-hidden rounded-2xl border border-[#5c3d28]/80 bg-[#3d2818] px-4 py-3.5 sm:flex-row sm:items-center sm:px-5">
+            <div className="watch-dark flex flex-col items-stretch justify-between gap-3 overflow-hidden rounded-2xl border border-[#5c3d28]/80 bg-[#3d2818] px-4 py-3.5 sm:flex-row sm:items-center sm:px-5">
               <div className="flex min-w-0 items-center gap-3 text-sm font-semibold text-[#f5e6d6]">
                 <FileText className="size-5 shrink-0 text-[#f59e0b]" aria-hidden />
                 {t('examBannerText')}

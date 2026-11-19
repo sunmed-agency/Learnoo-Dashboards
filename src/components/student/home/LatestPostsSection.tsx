@@ -6,6 +6,7 @@ import { ArrowRight, BookOpen, MessageSquare, ThumbsUp, User } from "lucide-reac
 import type { Post } from "@/src/services/student/post.service";
 import { readCommunityPostCourseNames } from "@/src/lib/student-community-posts";
 import { AuthorRoleBadge } from "@/components/student/AuthorRoleBadge";
+import { pickPostImageUrl } from "@/src/lib/community-post-media";
 
 function getPostRelativeTime(isoString: string, locale: string): string {
   const date = new Date(isoString);
@@ -68,6 +69,7 @@ export default function LatestPostsSection({
             const comments = post.attributes.comments_count ?? 0;
             const reactions = post.attributes.reactions_count ?? 0;
             const courseNames = readCommunityPostCourseNames(post, courseTitleById);
+            const imageSrc = pickPostImageUrl(post.attributes as unknown as Record<string, unknown>);
 
             return (
               <Link
@@ -75,6 +77,16 @@ export default function LatestPostsSection({
                 href={`/${locale}/student/community?post=${post.id}`}
                 className="group block overflow-hidden rounded-2xl border border-[var(--border-color)] bg-white transition duration-300 hover:-translate-y-1 hover:border-[var(--primary)] hover:shadow-lg"
               >
+                {/* The post's image, full card width on every screen (inline styles: src/ is not scanned by Tailwind) */}
+                {imageSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- remote API URLs
+                  <img
+                    src={imageSrc}
+                    alt={post.attributes.title || ""}
+                    loading="lazy"
+                    style={{ display: "block", width: "100%", maxHeight: 260, objectFit: "cover", background: "#F4F6FD", borderBottom: "1px solid #E6EAF6" }}
+                  />
+                ) : null}
                 <div className="flex gap-4 p-4">
                   <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[var(--primary)] transition group-hover:bg-[var(--primary)] group-hover:text-white">
                     <User size={28} />

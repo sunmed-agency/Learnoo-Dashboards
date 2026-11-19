@@ -390,6 +390,8 @@ export default function TakeExamRun({
       dir={dir}
       examTitle={title}
       bannerUrl={quiz.attributes.banner}
+      bannerCourseTitle={quiz.attributes.course_title}
+      bannerInstructor={quiz.attributes.course_instructor}
       questionBadgeText={t('questionBadge', { n: qNum })}
       questionProgressText={t('questionProgress', { current: qNum, total })}
       currentQuestionNumber={qNum}

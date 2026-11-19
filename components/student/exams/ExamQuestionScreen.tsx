@@ -86,6 +86,9 @@ export type ExamQuestionScreenProps = {
   reviewAnswerSummary?: ReactNode;
   /** Exam banner image (quiz `banner`), shown above the question on every question. */
   bannerUrl?: string | null;
+  /** Course name and instructor shown on the banner. */
+  bannerCourseTitle?: string | null;
+  bannerInstructor?: string | null;
 };
 
 export function ExamQuestionScreen({
@@ -117,6 +120,8 @@ export function ExamQuestionScreen({
   belowArticle,
   reviewAnswerSummary,
   bannerUrl,
+  bannerCourseTitle,
+  bannerInstructor,
 }: ExamQuestionScreenProps) {
   const qNum = currentQuestionNumber;
   const copyGuardActive = mode === 'take' || mode === 'review';
@@ -198,7 +203,10 @@ export function ExamQuestionScreen({
       )}
 
       <div className="mx-auto   flex w-full max-w-[832px] flex-col gap-4 sm:gap-5">
-        <ExamBanner src={bannerUrl} alt={examTitle} />
+        {/* On question pages the banner shows only when the exam has an image (the header already names the exam). */}
+        {bannerUrl ? (
+          <ExamBanner src={bannerUrl} alt={examTitle} courseTitle={bannerCourseTitle} instructor={bannerInstructor} />
+        ) : null}
 
         <article
           className={`relative isolate flex w-full flex-col overflow-hidden rounded-xl border border-[#E8ECF2] bg-white px-4 py-4 shadow-[0_4px_24px_rgba(15,23,42,0.06)] sm:rounded-2xl sm:px-5 sm:py-5${copyGuardActive ? ' select-none' : ''}`}

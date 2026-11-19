@@ -3740,6 +3740,10 @@ export interface QuizAttributes {
 
   /** Exam banner image URL (shown at the top of the exam), or null. */
   banner?: string | null;
+  /** The exam's course name (its own course, else the first shared one). */
+  course_title?: string | null;
+  /** The instructor of that course, for the student exam banner. */
+  course_instructor?: string | null;
 
 
 

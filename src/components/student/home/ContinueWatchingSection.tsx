@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Lock, Play } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { HlsVideoPlayer } from "@/components/student/watch/HlsVideoPlayer";
 import { IUserProgress } from "@/src/interfaces/progress.interface";
 import { isChapterHiddenFromStudent } from "@/src/lib/student-chapter-access";
 import type { Chapter } from "@/src/types";
@@ -106,6 +105,11 @@ export default function ContinueWatchingSection({
         ? t("viewLimitReached")
         : t("notPublished");
   const UnavailableIcon = Lock;
+  // The lesson image (or the course image) instead of a black video frame.
+  const coverSrc =
+    lastChapter.thumbnail?.trim() ||
+    (courseDetails?.attributes as { thumbnail?: string | null } | undefined)?.thumbnail?.trim() ||
+    "";
 
   return (
     <section className="rounded-2xl  border border-[var(--border-color)] bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-4">
@@ -123,17 +127,24 @@ export default function ContinueWatchingSection({
       </div>
 
       <div className="grid grid-cols-1 gap-4 rounded-xl bg-[#F7F8FA] p-3 sm:p-4 lg:grid lg:grid-cols-4 lg:items-center lg:gap-4">
-        <div className="relative w-full min-w-0 overflow-hidden rounded-2xl bg-black lg:col-span-1">
+        <div className="relative w-full min-w-0 overflow-hidden rounded-2xl bg-[#0A1033] lg:col-span-1">
           <div className="relative aspect-video w-full max-h-[40vh] sm:max-h-[20rem] lg:max-h-none">
             {watchHref ? (
-              <HlsVideoPlayer
-                className="absolute inset-0 h-full w-full object-cover"
-                src={videoSrc}
-                controls={false}
-                muted
-                playsInline
-                preload="metadata"
-              />
+              coverSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element -- remote API URLs
+                <img
+                  src={coverSrc}
+                  alt={lastChapter.title || ""}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0"
+                  style={{ background: "radial-gradient(ellipse 70% 90% at 85% 10%, #3550F0 0%, transparent 60%), radial-gradient(ellipse 55% 70% at 5% 100%, rgba(232,118,106,0.55) 0%, transparent 60%), linear-gradient(135deg, #0A1033 0%, #141C66 55%, #1F33C4 100%)" }}
+                  aria-hidden
+                />
+              )
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-800 px-4 text-center text-xs font-medium text-white/80">
                 <UnavailableIcon className="size-6" aria-hidden />

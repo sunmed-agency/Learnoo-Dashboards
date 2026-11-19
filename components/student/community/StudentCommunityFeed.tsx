@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, ExternalLink, Globe, Loader2, MessageSquare, Plus, Reply, ThumbsUp } from 'lucide-react';
+import { BookOpen, ExternalLink, Globe, Loader2, MessageSquare, Plus, ThumbsUp } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -311,10 +311,12 @@ export default function StudentCommunityFeed({
     [replyTarget],
   );
 
+  const feedWidth = embedded ? '' : 'mx-auto w-full max-w-[680px]';
+
   return (
     <div className={`w-full ${embedded ? 'pb-6 pt-0' : 'pb-12 pt-2'}`} dir={dir}>
       {!embedded ? (
-        <header className="mb-8 max-w-4xl">
+        <header className={`mb-6 ${feedWidth}`}>
           <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] sm:text-3xl">{tPage('pageTitle')}</h1>
           <p className="mt-2 text-sm text-[#64748B] sm:text-base">{tPage('pageSubtitle')}</p>
         </header>
@@ -344,17 +346,18 @@ export default function StudentCommunityFeed({
         </section>
       ) : null}
 
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0 flex-1 overflow-x-auto">
-          <div className="flex min-w-max flex-nowrap items-center gap-2 border-b border-[#E5E7EB]">
+      <div className={`mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between ${feedWidth}`}>
+        <div className="min-w-0 flex-1 overflow-x-auto pb-1">
+          <div className="flex min-w-max flex-nowrap items-center gap-2">
             {tabs.map((item) => (
               <button
                 key={item.key}
                 type="button"
                 onClick={() => setTab(item.key)}
-                className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition sm:px-4 ${tab === item.key
-                  ? 'border-[#2563EB] text-[#2563EB]'
-                  : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                aria-pressed={tab === item.key}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${tab === item.key
+                  ? 'bg-[var(--primary)] text-white shadow-[0_8px_18px_-10px_rgba(45,70,232,0.8)]'
+                  : 'bg-white text-[#475569] ring-1 ring-[#E6EAF6] hover:bg-[#EAEEFE] hover:text-[var(--primary)]'
                   }`}
               >
                 {item.label}
@@ -375,7 +378,7 @@ export default function StudentCommunityFeed({
       </div>
 
       {postsError ? (
-        <p className="mb-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">{tPage('postsError')}</p>
+        <p className={`mb-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800 ${feedWidth}`}>{tPage('postsError')}</p>
       ) : null}
 
       {/* Spinner on the first load only: refreshing after a comment or a like
@@ -385,11 +388,11 @@ export default function StudentCommunityFeed({
           <Loader2 className="size-10 animate-spin text-[#2137D6]" />
         </div>
       ) : filteredPosts.length === 0 ? (
-        <p className="rounded-xl border border-[#E5E7EB] bg-white px-6 py-12 text-center text-sm text-[#64748B]">
+        <p className={`rounded-2xl border border-[#E6EAF6] bg-white px-6 py-12 text-center text-sm text-[#64748B] ${feedWidth}`}>
           {tPage('postsEmpty')}
         </p>
       ) : (
-        <ul className="flex flex-col gap-5">
+        <ul className={`flex flex-col gap-4 ${feedWidth}`}>
           {filteredPosts.map((post) => {
             const user = post.attributes.user?.data.attributes;
             const userInitial = user?.first_name?.[0] || user?.full_name?.[0] || '?';
@@ -404,116 +407,127 @@ export default function StudentCommunityFeed({
             const postImageSrc = pickPostImageUrl(post.attributes);
             const courseNames = readCommunityPostCourseNames(post, courseTitleById);
 
-            const cardTone = instructor
-              ? 'border-amber-200 bg-amber-50/90'
-              : 'border-[#E2E8F0] bg-white';
-
             return (
-              <li id={`post-${post.id}`} key={post.id} className={`rounded-2xl border p-6 shadow-sm ${cardTone}`}>
-                <div className="flex items-start gap-4">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#EEF2FF] text-[15px] font-bold text-[#2137D6]">
-                    {userInitial}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 gap-y-1">
-                      <span className="text-[15px] font-bold text-[#1E293B]">{userName}</span>
-                      <AuthorRoleBadge role={user?.role} />
-                      <span className="text-xs font-semibold text-[#94A3B8]">
-                        · {timeLabel(post.attributes.created_at || '')}
-                      </span>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wide ${communityPostTypeBadgeClasses(typeKey)}`}
-                      >
-                        {typeLabel}
-                      </span>
-                      {post.attributes.status === 'draft' && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{t('courses.pending')}</span>
-                      )}
+              <li
+                id={`post-${post.id}`}
+                key={post.id}
+                className={`overflow-hidden rounded-2xl border bg-white shadow-[0_1px_2px_rgba(10,16,51,0.05),0_12px_32px_-22px_rgba(45,70,232,0.35)] ${instructor ? 'border-amber-200' : 'border-[#E6EAF6]'}`}
+              >
+                {instructor ? <div className="h-1 bg-gradient-to-l from-amber-400 to-[#E8766A]" aria-hidden /> : null}
+
+                {/* Author */}
+                <div className="px-4 pt-4 sm:px-5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#2D46E8] to-[#E8766A] text-base font-bold text-white shadow-sm ring-2 ring-white">
+                      {userInitial}
                     </div>
-
-                    {courseNames.length > 0 ? (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {courseNames.map((name) => (
-                          <span
-                            key={name}
-                            className="inline-flex items-center gap-1 rounded-full bg-[#EEF2FF] px-2.5 py-0.5 text-[11px] font-semibold text-[#2137D6]"
-                          >
-                            <BookOpen className="size-3 shrink-0" aria-hidden />
-                            {name}
-                          </span>
-                        ))}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="text-[15px] font-bold text-[#0A1033]">{userName}</span>
+                        <AuthorRoleBadge role={user?.role} />
+                        {post.attributes.status === 'draft' && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{t('courses.pending')}</span>
+                        )}
                       </div>
-                    ) : null}
-
-                    <h3 className="mt-3 text-base font-bold text-[#0F172A] sm:text-[17px]">{post.attributes.title}</h3>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[#475569]">
-                      {post.attributes.content}
-                    </p>
-
-                    {postImageSrc ? (
-                      <div className="relative mt-4 max-h-80 w-full overflow-hidden rounded-xl border border-[#E2E8F0]">
-                        {/* eslint-disable-next-line @next/next/no-img-element -- remote API URLs */}
-                        <img
-                          src={postImageSrc}
-                          alt=""
-                          className="max-h-80 w-full object-contain"
-                        />
-                      </div>
-                    ) : null}
-
-                    {tags.length > 0 ? (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {tags.map((tag) => (
-                          <span key={tag} className="rounded bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-medium text-[#64748B]">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    <div className="mt-5 flex flex-wrap items-center gap-4 sm:gap-6">
-                      <span className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#64748B]">
-                        <MessageSquare className="size-[18px] shrink-0" aria-hidden />
-                        {tPage('commentsCount', { count: comments })}
-                      </span>
-                      {readOnly ? (
-                        <span className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#64748B]">
-                          <ThumbsUp className="size-[18px] shrink-0" strokeWidth={2} aria-hidden />
-                          {tPage('like')}: {reactions}
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-[#94A3B8]">
+                        <span>{timeLabel(post.attributes.created_at || '')}</span>
+                        <span aria-hidden>·</span>
+                        <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-bold tracking-wide ${communityPostTypeBadgeClasses(typeKey)}`}>
+                          {typeLabel}
                         </span>
-                      ) : (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => openReplyModal(post)}
-                            disabled={isCreating || isReplying}
-                            className="inline-flex items-center gap-2 rounded-lg px-2 py-1 text-[13px] font-semibold text-[#2137D6] transition hover:bg-[#EEF2FF] hover:text-[#1a2bb3] disabled:opacity-50"
-                          >
-                            <Reply className="size-[18px] shrink-0 rtl:scale-x-[-1]" aria-hidden />
-                            {tPage('addComment')}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void handleReact(post)}
-                            disabled={reactingId !== null}
-                            className={`inline-flex items-center gap-2 rounded-lg px-2 py-1 text-[13px] font-semibold transition ${liked ? 'text-[#2137D6]' : 'text-[#64748B] hover:text-[#1E293B]'
-                              } disabled:opacity-50`}
-                            aria-pressed={liked}
-                            aria-label={tPage('like')}
-                          >
-                            <ThumbsUp
-                              className="size-[18px] shrink-0"
-                              strokeWidth={2}
-                              fill={liked ? 'currentColor' : 'none'}
-                              aria-hidden
-                            />
-                            <span>{reactions}</span>
-                          </button>
-                        </>
-                      )}
+                      </div>
                     </div>
+                  </div>
 
-                    {/* Comments section */}
+                  {courseNames.length > 0 ? (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {courseNames.map((name) => (
+                        <span
+                          key={name}
+                          className="inline-flex items-center gap-1 rounded-full bg-[#EAEEFE] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--primary)]"
+                        >
+                          <BookOpen className="size-3 shrink-0" aria-hidden />
+                          {name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {post.attributes.title ? (
+                    <h3 className="mt-3 text-base font-bold text-[#0A1033] sm:text-[17px]">{post.attributes.title}</h3>
+                  ) : null}
+                  {post.attributes.content ? (
+                    <p className="mt-1.5 whitespace-pre-wrap text-[15px] leading-7 text-[#334155]">{post.attributes.content}</p>
+                  ) : null}
+
+                  {tags.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {tags.map((tag) => (
+                        <span key={tag} className="text-[13px] font-semibold text-[var(--primary)]">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* Image: full card width, opens the original */}
+                {postImageSrc ? (
+                  <a
+                    href={postImageSrc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 block border-y border-[#EEF1F8] bg-[#F4F6FD]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- remote API URLs */}
+                    <img
+                      src={postImageSrc}
+                      alt={post.attributes.title || ''}
+                      loading="lazy"
+                      className="mx-auto max-h-[70vh] w-full object-contain"
+                    />
+                  </a>
+                ) : null}
+
+                <div className="px-4 sm:px-5">
+                  {/* Counts */}
+                  <div className="flex items-center justify-between gap-3 border-b border-[#EEF1F8] py-2.5 text-[13px] text-[#64748B]">
+                    <span className="inline-flex items-center gap-1.5" aria-label={`${tPage('like')}: ${reactions}`}>
+                      <span className="grid size-5 place-items-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[#5B73FF] text-white">
+                        <ThumbsUp className="size-3" fill="currentColor" aria-hidden />
+                      </span>
+                      {reactions}
+                    </span>
+                    {/* The comments count lives on the comments toggle below, so it is not repeated here */}
+                  </div>
+
+                  {/* Actions */}
+                  {readOnly ? null : (
+                    <div className="grid grid-cols-2 gap-1 border-b border-[#EEF1F8] py-1">
+                      <button
+                        type="button"
+                        onClick={() => void handleReact(post)}
+                        disabled={reactingId !== null}
+                        className={`inline-flex items-center justify-center gap-2 rounded-xl py-2 text-sm font-semibold transition hover:bg-[#F4F6FD] disabled:opacity-50 ${liked ? 'text-[var(--primary)]' : 'text-[#475569]'}`}
+                        aria-pressed={liked}
+                      >
+                        <ThumbsUp className="size-[18px] shrink-0" strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden />
+                        {tPage('like')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openReplyModal(post)}
+                        disabled={isCreating || isReplying}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl py-2 text-sm font-semibold text-[#475569] transition hover:bg-[#F4F6FD] hover:text-[var(--primary)] disabled:opacity-50"
+                      >
+                        <MessageSquare className="size-[18px] shrink-0" aria-hidden />
+                        {tPage('addComment')}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Comments */}
+                  <div className="pb-3">
                     <StudentCommunityPostComments
                       postId={post.id}
                       commentsCount={comments}

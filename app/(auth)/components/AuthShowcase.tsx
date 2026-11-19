@@ -35,11 +35,12 @@ export default function AuthShowcase() {
   const c = COPY[useLocale() === 'ar' ? 'ar' : 'en'];
 
   return (
-    <aside className="relative isolate hidden overflow-hidden rounded-[2rem] bg-[#0A1033] text-white lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
+    <aside className="relative isolate hidden min-h-0 overflow-hidden rounded-[2rem] bg-[#0A1033] text-white lg:flex lg:h-full lg:flex-col lg:gap-6 lg:p-8 xl:p-10">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_70%_15%,#3550F0_0%,transparent_60%),radial-gradient(ellipse_60%_50%_at_10%_95%,#1F33C4_0%,transparent_60%),linear-gradient(160deg,#0A1033_0%,#141C66_55%,#1F33C4_100%)]" aria-hidden />
       <div className="absolute inset-0 -z-10 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:44px_44px]" aria-hidden />
 
-      <div className="relative mx-auto mt-2 w-full max-w-[440px]" aria-hidden>
+      <div className="flex min-h-0 flex-1 items-center justify-center" aria-hidden>
+      <div className="relative aspect-[440/400] h-full max-h-[400px] max-w-full">
         <LoginIllustration welcome={c.welcome} secure={c.secure} />
 
         <div className="auth-float absolute -top-2 start-0 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-xl shadow-black/20 backdrop-blur-md xl:-start-4">
@@ -61,8 +62,9 @@ export default function AuthShowcase() {
           </span>
         </div>
       </div>
+      </div>
 
-      <div className="relative mt-8">
+      <div className="relative shrink-0">
         <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[12px] font-semibold text-blue-100">
           <Sparkles className="h-3.5 w-3.5" /> {c.eyebrow}
         </span>
@@ -70,8 +72,8 @@ export default function AuthShowcase() {
           {c.title[0]}{' '}
           <span className="bg-gradient-to-r from-[#FFB088] via-[#FFD3BD] to-white bg-clip-text text-transparent rtl:bg-gradient-to-l">{c.title[1]}</span>
         </h2>
-        <p className="mt-3 max-w-[460px] text-[14px] leading-7 text-blue-100/85">{c.body}</p>
-        <ul className="mt-6 grid gap-3 xl:grid-cols-3">
+        <p className="mt-3 max-w-[460px] text-[14px] leading-7 text-blue-100/85 [@media(max-height:700px)]:hidden">{c.body}</p>
+        <ul className="mt-5 grid gap-3 xl:grid-cols-3 [@media(max-height:820px)]:hidden">
           {c.points.map((point, i) => {
             const Icon = POINT_ICONS[i];
             return (
@@ -88,7 +90,7 @@ export default function AuthShowcase() {
 
 function LoginIllustration({ welcome, secure }: { welcome: string; secure: string }) {
   return (
-    <svg viewBox="0 0 440 400" className="h-auto w-full" role="presentation">
+    <svg viewBox="0 0 440 400" className="h-full w-full" role="presentation">
       <defs>
         <linearGradient id="auth-phone" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#141C66" />

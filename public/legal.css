@@ -56,3 +56,9 @@ main { position: relative; z-index: 2; width: min(100% - 32px, 880px); margin: -
 footer { width: min(100% - 32px, 880px); margin: 28px auto 0; padding: 0 0 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: .9rem; color: var(--muted); }
 footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
 @media (max-width: 520px) { .card { padding: 20px; border-radius: 18px; } .hero { padding-bottom: 84px; } .hero-inner { padding-top: 32px; } .bar-link { padding: 6px 12px; } }
+
+/* One language at a time: legal-lang.js sets <html lang> from the site's locale cookie (or ?lang=). */
+html[lang="ar"] [data-lang="en"], html[lang="en"] [data-lang="ar"] { display: none !important; }
+html[lang="en"] body { direction: ltr; }
+.bar-actions { display: flex; align-items: center; gap: 8px; }
+.lang-btn { font: inherit; cursor: pointer; }

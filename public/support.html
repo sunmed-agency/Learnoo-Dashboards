@@ -1,30 +1,40 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-title-ar="دعم Learnoo" data-title-en="Learnoo Support">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0A1033">
-  <meta name="description" content="التواصل مع دعم Learnoo والمساعدة في الحساب والمحتوى وطلبات الخصوصية.">
-  <title>دعم Learnoo | Support</title>
+  <meta name="description" content="Learnoo support: help with your account, courses and privacy requests. الدعم الفني لـ Learnoo.">
+  <title>دعم Learnoo</title>
+  <script src="/legal-lang.js?v=20261119"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
-  <link rel="stylesheet" href="/legal.css?v=20261119">
+  <link rel="stylesheet" href="/legal.css?v=20261119b">
 </head>
 <body>
   <header class="hero">
     <div class="bar">
       <a class="brand" href="/" aria-label="Learnoo"><img src="/Logo.jpeg" alt="" width="40" height="40"><span dir="ltr">Learnoo</span></a>
-      <a class="bar-link" href="/privacy.html">سياسة الخصوصية</a>
+      <div class="bar-actions">
+        <button type="button" class="bar-link lang-btn" data-lang="ar" onclick="learnooSetLang('en')" lang="en">English</button>
+        <button type="button" class="bar-link lang-btn" data-lang="en" onclick="learnooSetLang('ar')" lang="ar">العربية</button>
+        <a class="bar-link" href="/privacy.html"><span data-lang="ar">سياسة الخصوصية</span><span data-lang="en">Privacy</span></a>
+      </div>
     </div>
-    <div class="hero-inner">
-      <p class="eyebrow">الدعم الفني · Support</p>
+    <div class="hero-inner" data-lang="ar">
+      <p class="eyebrow">الدعم الفني</p>
       <h1>إزاي نقدر نساعدك؟</h1>
       <p class="lead">للمساعدة في حسابك أو الوصول للكورسات والمحاضرات، فريق Learnoo موجود عشانك.</p>
     </div>
+    <div class="hero-inner" data-lang="en">
+      <p class="eyebrow">Support</p>
+      <h1>How can we help?</h1>
+      <p class="lead">For help with your account or access to courses and lectures, the Learnoo team is here for you.</p>
+    </div>
   </header>
 
-  <main>
+  <main data-lang="ar">
     <section class="card">
       <h2><span class="n">1</span>تواصل معانا</h2>
       <div class="contacts">
@@ -40,23 +50,40 @@
       <p>اكتب المشكلة واسم الكورس، وابعت صورة للخطأ لو أمكن. وتقدر كمان تستخدم قسم الدعم جوه حساب الطالب على المنصة.</p>
       <p class="note">ماتبعتش أبدًا كلمة السر أو كود التحقق أو بيانات الدفع، لا في الإيميل ولا في أي رسالة.</p>
     </section>
-
     <section class="card">
       <h2><span class="n">2</span>الخصوصية وحذف الحساب</h2>
       <p>راجع <a href="/privacy.html">سياسة الخصوصية</a> عشان تعرف البيانات اللي بنستخدمها ومدة الاحتفاظ بيها.</p>
       <p>تقدر <a href="/delete-account">تطلب حذف حسابك</a> من المنصة. ولأي استفسار عن بياناتك، ابعت على <a href="mailto:support@learnoo.app" dir="ltr">support@learnoo.app</a> بعنوان «طلب خصوصية».</p>
     </section>
+  </main>
 
-    <section class="card en" lang="en">
-      <h2><span class="n">EN</span>Learnoo support</h2>
-      <p>For account, course access, technical help or privacy requests, email <a href="mailto:support@learnoo.app">support@learnoo.app</a>. For general and business enquiries, email <a href="mailto:info@learnoo.app">info@learnoo.app</a>.</p>
-      <p>Describe the issue and include the course name. Never send passwords, verification codes or payment details. You can also use student support inside the platform, read our <a href="/privacy.html">privacy policy</a>, or <a href="/delete-account">request account deletion</a>.</p>
+  <main data-lang="en" dir="ltr">
+    <section class="card">
+      <h2><span class="n">1</span>Contact us</h2>
+      <div class="contacts">
+        <a class="contact accent" href="mailto:support@learnoo.app">
+          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg></span>
+          <span><small>Support (account and content issues)</small><b>support@learnoo.app</b></span>
+        </a>
+        <a class="contact" href="mailto:info@learnoo.app">
+          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+          <span><small>Official email (general and business enquiries)</small><b>info@learnoo.app</b></span>
+        </a>
+      </div>
+      <p>Describe the issue and include the course name, with a screenshot of the error if you can. You can also use the support section inside your student account on the platform.</p>
+      <p class="note">Never send your password, verification code or payment details, by email or in any message.</p>
+    </section>
+    <section class="card">
+      <h2><span class="n">2</span>Privacy and account deletion</h2>
+      <p>Read our <a href="/privacy.html">privacy policy</a> to see which data we use and how long we keep it.</p>
+      <p>You can <a href="/delete-account">request account deletion</a> on the platform. For any question about your data, email <a href="mailto:support@learnoo.app">support@learnoo.app</a> with the subject “Privacy request”.</p>
     </section>
   </main>
 
   <footer>
     <span>© <span dir="ltr">2026 Learnoo</span></span>
-    <nav><a href="/">الرئيسية</a><a href="/login">تسجيل الدخول</a><a href="/privacy.html">سياسة الخصوصية · Privacy</a></nav>
+    <nav data-lang="ar"><a href="/">الرئيسية</a><a href="/login">تسجيل الدخول</a><a href="/privacy.html">سياسة الخصوصية</a></nav>
+    <nav data-lang="en"><a href="/">Home</a><a href="/login">Log in</a><a href="/privacy.html">Privacy policy</a></nav>
   </footer>
 </body>
 </html>

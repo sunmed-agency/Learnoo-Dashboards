@@ -50,12 +50,18 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
     if (local?.selectionsForReview) setLocalSelections(local.selectionsForReview);
 
     let active = true;
+    // Right after finishing, the finish response already holds the score: show it at once instead
+    // of waiting for the result request (which grades the attempt again). That request still runs
+    // and replaces it when it arrives (it also brings the answers for the review).
+    const finishRes = local?.finishResponse;
+    const shownFromFinish = Boolean((finishRes as { results?: unknown } | undefined)?.results);
+    if (shownFromFinish) setPayload(finishRes as unknown as QuizAttemptResultResponse);
+
     async function loadResult() {
       try {
         let attemptIdToFetch: string | number | undefined = undefined;
 
         // Try to get the exact attempt ID they just took from local memory
-        const finishRes = local?.finishResponse;
         if (finishRes) {
           attemptIdToFetch = finishRes.attempt?.data?.id ?? (finishRes.attempt as any)?.id;
         }
@@ -75,6 +81,8 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
         if (active) setPayload(resultRes);
       } catch (err) {
         console.error('Failed to load exam result', err);
+        // Keep the result from the finish response on screen if we already showed it.
+        if (shownFromFinish) return;
         if (active) setLoadError(t('loadingError'));
         if (active) setPayload(null);
       }
@@ -155,13 +163,13 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
   const quizTitle = quizInfo?.title?.trim() ?? quizInfo?.attributes?.title?.trim() ?? '—';
 
   return (
-    <div className="flex w-full justify-center px-4 pb-16 pt-[72px] sm:pt-[112px]" dir={dir}>
+    <div className="flex w-full justify-center px-0 pb-6 pt-1 sm:px-4" dir={dir}>
       <div
-        className="flex w-full max-w-[1130px] min-h-[min(954px,calc(100vh-8rem))] flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_40px_rgba(15,23,42,0.1)]"
+        className="flex w-full max-w-[960px] flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_40px_rgba(15,23,42,0.1)]"
         style={{ borderRadius: 16 }}
       >
         <header
-          className="flex flex-col items-center px-6 pb-12 pt-12 text-center sm:px-10 sm:pb-14 sm:pt-14"
+          className="flex items-center justify-center gap-4 px-5 py-5 text-start sm:px-8 sm:py-6"
           style={{
             backgroundColor: bannerBg,
             borderTopLeftRadius: 16,
@@ -169,27 +177,29 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
           }}
         >
           <div
-            className="flex size-16 items-center justify-center rounded-full border-2 border-white text-white sm:size-[72px]"
+            className="flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-white text-white sm:size-14"
             aria-hidden
           >
             {passed ? (
-              <Trophy className="size-9 sm:size-10" strokeWidth={2} />
+              <Trophy className="size-6 sm:size-7" strokeWidth={2} />
             ) : (
-              <CircleX className="size-9 sm:size-10" strokeWidth={2} />
+              <CircleX className="size-6 sm:size-7" strokeWidth={2} />
             )}
           </div>
-          <h1 className="mt-6 text-2xl font-bold text-white sm:text-[1.75rem]">
-            {passed ? t('congratulationsTitle') : t('failedTitle')}
-          </h1>
-          <p className="mt-2 max-w-md text-[0.9375rem] text-white/95">
-            {passed ? t('passedSubtitle') : t('failedSubtitle')}
-          </p>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">
+              {passed ? t('congratulationsTitle') : t('failedTitle')}
+            </h1>
+            <p className="mt-0.5 text-[13px] text-white/95 sm:text-sm">
+              {passed ? t('passedSubtitle') : t('failedSubtitle')}
+            </p>
+          </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-10 px-6 py-10 sm:px-12 sm:py-12">
+        <div className="flex flex-1 flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-8 sm:py-6">
           {showAnswerReview && canAnswerReview ? (
             <>
-              <div className="flex flex-col gap-4 border-b border-slate-100 pb-6">
+              <div className="flex flex-col gap-2 border-b border-slate-100 pb-3">
                 <button
                   type="button"
                   onClick={() => setShowAnswerReview(false)}
@@ -209,28 +219,28 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
             </>
           ) : (
             <>
-              <h2 className="text-center text-lg font-semibold leading-snug text-[#0F172A] [overflow-wrap:anywhere] sm:text-xl">{quizTitle}</h2>
+              <h2 className="text-center text-base font-bold leading-snug text-[#0F172A] [overflow-wrap:anywhere] sm:text-lg">{quizTitle}</h2>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
-                <div className="rounded-xl border border-[#E8ECF2] bg-white px-5 py-6 text-center shadow-sm">
-                  <p className="text-3xl font-bold tabular-nums sm:text-[2rem]" style={{ color: PRIMARY }}>
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="rounded-xl border border-[#E8ECF2] bg-white px-2 py-3 text-center shadow-sm sm:px-5 sm:py-4">
+                  <p className="text-xl font-bold tabular-nums sm:text-[1.75rem]" style={{ color: PRIMARY }}>
                     {yourPct != null ? formatPercent(yourPct) : '—'}
                   </p>
-                  <p className="mt-2 text-[13px] font-medium text-[#64748B]">{t('yourScore')}</p>
+                  <p className="mt-1 text-[12px] font-medium text-[#64748B] sm:text-[13px]">{t('yourScore')}</p>
                 </div>
-                <div className="rounded-xl border border-[#E8ECF2] bg-white px-5 py-6 text-center shadow-sm">
-                  <p className="text-3xl font-bold tabular-nums text-[#0F172A] sm:text-[2rem]">{scoreMarksLine}</p>
-                  <p className="mt-2 text-[13px] font-medium text-[#64748B]">{t('scoreMarks')}</p>
+                <div className="rounded-xl border border-[#E8ECF2] bg-white px-2 py-3 text-center shadow-sm sm:px-5 sm:py-4">
+                  <p className="text-xl font-bold tabular-nums text-[#0F172A] sm:text-[1.75rem]">{scoreMarksLine}</p>
+                  <p className="mt-1 text-[12px] font-medium text-[#64748B] sm:text-[13px]">{t('scoreMarks')}</p>
                 </div>
-                <div className="rounded-xl border border-[#E8ECF2] bg-white px-5 py-6 text-center shadow-sm">
-                  <p className="text-3xl font-bold tabular-nums text-[#0F172A] sm:text-[2rem]">
+                <div className="rounded-xl border border-[#E8ECF2] bg-white px-2 py-3 text-center shadow-sm sm:px-5 sm:py-4">
+                  <p className="text-xl font-bold tabular-nums text-[#0F172A] sm:text-[1.75rem]">
                     {passPct != null ? formatPercent(passPct) : '—'}
                   </p>
-                  <p className="mt-2 text-[13px] font-medium text-[#64748B]">{t('passingScore')}</p>
+                  <p className="mt-1 text-[12px] font-medium text-[#64748B] sm:text-[13px]">{t('passingScore')}</p>
                 </div>
               </div>
 
-              <dl className="grid gap-3 rounded-xl border border-[#E8ECF2] bg-[#F8FAFC] px-4 py-4 text-sm sm:grid-cols-2 sm:px-6 sm:py-5">
+              <dl className="grid grid-cols-2 gap-3 rounded-xl border border-[#E8ECF2] bg-[#F8FAFC] px-4 py-3 text-sm sm:px-6">
                 <div>
                   <dt className="font-medium text-[#64748B]">{t('finishedAt')}</dt>
                   <dd className="mt-1 font-semibold text-[#0F172A]">{formatFinishedAt(results.finished_at as string | undefined, locale)}</dd>
@@ -247,10 +257,10 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
                 </div>
               </dl>
 
-              <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
                 <Link
                   href={homeHref}
-                  className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-[#F1F5F9] px-5 text-sm font-semibold text-[#334155] transition-colors hover:bg-[#E2E8F0] sm:max-w-[200px] sm:flex-none"
+                  className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-[#F1F5F9] px-5 text-sm font-semibold text-[#334155] transition-colors hover:bg-[#E2E8F0] sm:max-w-[200px] sm:flex-none"
                 >
                   <Home className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                   {t('backToHome')}
@@ -259,7 +269,7 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
                   <button
                     type="button"
                     onClick={() => setShowAnswerReview(true)}
-                    className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-5 text-sm font-semibold text-[#3730A3] transition-colors hover:bg-[#E0E7FF] sm:max-w-[240px] sm:flex-none"
+                    className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] px-5 text-sm font-semibold text-[#3730A3] transition-colors hover:bg-[#E0E7FF] sm:max-w-[240px] sm:flex-none"
                   >
                     <ListChecks className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                     {t('reviewAnswers')}
@@ -267,7 +277,7 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
                 ) : null}
                 <Link
                   href={reviewHref}
-                  className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors sm:max-w-[220px] sm:flex-none"
+                  className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors sm:max-w-[220px] sm:flex-none"
                   style={{ backgroundColor: '#E8EEFC', color: PRIMARY }}
                 >
                   <BookOpen className="size-4 shrink-0" strokeWidth={2} aria-hidden />
@@ -276,7 +286,7 @@ export default function ExamResultView({ locale, quizId }: { locale: string; qui
                 <button
                   type="button"
                   onClick={handleRetry}
-                  className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold text-white transition-colors hover:opacity-95 sm:max-w-[200px] sm:flex-none"
+                  className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold text-white transition-colors hover:opacity-95 sm:max-w-[200px] sm:flex-none"
                   style={{ backgroundColor: PRIMARY }}
                 >
                   <RefreshCw className="size-4 shrink-0" strokeWidth={2} aria-hidden />

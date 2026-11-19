@@ -103,7 +103,7 @@ export default function StudentLayoutShell({
         <main className="min-w-0 flex-1 px-4 py-4 pb-6 sm:px-5 sm:py-5 lg:px-16 lg:py-5">
           {children}
         </main>
-        <AppDownloadLink />
+        {/* "Get the app" now lives in the header (StudentAppMenu) instead of a footer on every page */}
 
         <StudentToaster />
       </div>

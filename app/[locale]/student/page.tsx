@@ -26,33 +26,33 @@ import {
 } from "@/src/services/student/user.service";
 
 export default async function StudentPage() {
-  const studentResult = await getStudentData();
+  // Independent requests run together (they used to run one after another, so the home page opened slowly).
+  const [studentResult, progressResult, coursesResult, liveRoomsResult, notesResult, libraryResult, categoryResult, examsResult] =
+    await Promise.all([
+      getStudentData(),
+      getStudentProgression(),
+      getStudentCourses(),
+      getStudentLiveRooms(),
+      getStudentNotes(),
+      getLibrary(),
+      getCategories(),
+      getLatestStudentExams(4),
+    ]);
+
   const student = studentResult.success ? studentResult.data?.data?.attributes ?? null : null;
-
-  const progressResult = await getStudentProgression();
   const progress = progressResult.success ? progressResult.data?.data ?? [] : [];
-
-  const coursesResult = await getStudentCourses();
   const courses = coursesResult.success ? coursesResult.data?.data ?? [] : [];
-
-  const liveRoomsResult = await getStudentLiveRooms();
   const rawLiveSessions = liveRoomsResult.success ? liveRoomsResult.data ?? [] : [];
-
-  const notesResult = await getStudentNotes();
   const notes = notesResult.success ? notesResult.data?.data ?? [] : [];
 
-  const libraryResult = await getLibrary();
   const rawLibrary = libraryResult.success
     ? (Array.isArray(libraryResult.data)
         ? libraryResult.data
         : (libraryResult.data as any)?.data ?? [])
     : [];
 
-  const categoryResult = await getCategories();
   const category = categoryResult.success ? categoryResult.data?.data ?? [] : [];
 
-
-  const examsResult = await getLatestStudentExams(4);
   const latestExams = examsResult.success ? examsResult.data ?? [] : [];
 
   // `getStudentCourses` already drops courses that are not active (draft), so

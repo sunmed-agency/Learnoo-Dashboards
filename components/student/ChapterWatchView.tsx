@@ -44,7 +44,7 @@ import {
   normalizeDiscussions,
   type WatchDiscussionItem,
 } from '@/components/student/watch/watchChapterDiscussionUtils';
-import { isNoVideoUrl, isStudentChapterPdfVisible } from '@/src/lib/student-chapter-access';
+import { isNoVideoUrl, isStudentChapterPdfVisible, isStudentChapterVideoPlayable } from '@/src/lib/student-chapter-access';
 import PdfPreviewModal from './PdfPreviewModal';
 import type { WatermarkResolution } from '@/src/lib/watermark-from-features';
 import { HlsVideoPlayer } from '@/components/student/watch/HlsVideoPlayer';
@@ -1161,8 +1161,9 @@ export default function ChapterWatchView({
           </div>
         </div>
 
-        <div className="w-full max-w-full  overflow-x-clip [-webkit-overflow-scrolling:touch]">
-          <div className={`mx-auto w-full px-0 sm:px-6 lg:px-8 ${theaterMode ? 'max-w-[112rem]' : 'max-w-6xl'}`}>
+        {/* Two columns on large screens: the player (start side, right in Arabic) and the lessons + discussions */}
+        <div className={`mx-auto w-full max-w-full overflow-x-clip px-0 sm:px-6 lg:px-8 [-webkit-overflow-scrolling:touch] ${theaterMode ? 'max-w-[112rem]' : 'max-w-[90rem] lg:grid lg:grid-cols-[minmax(0,1.75fr)_minmax(300px,1fr)] lg:items-start lg:gap-6'}`}>
+          <div className="min-w-0">
             <div className="overflow-hidden border-y border-slate-700 bg-[#070d18] shadow-xl sm:rounded-2xl sm:border sm:border-slate-700">
               <div className="flex flex-col">
                 <div ref={videoContainerRef} className="bg-black/50">
@@ -1595,9 +1596,48 @@ export default function ChapterWatchView({
               ) : null}
             </div>
           </div>
-        </div>
 
-        <div className={`mx-auto mt-[30px] w-full space-y-6 px-5 pb-4 sm:space-y-8 sm:px-6 sm:pb-6 lg:px-8 ${theaterMode ? 'max-w-[112rem]' : 'max-w-6xl'}`}>
+          <aside className={`mt-[30px] w-full space-y-6 px-5 pb-4 sm:px-0 sm:pb-6 ${theaterMode ? '' : 'lg:sticky lg:top-20 lg:mt-0 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pb-2 lg:pe-1'}`}>
+          {partChapters.length > 1 ? (
+            <section className="rounded-2xl border border-slate-700 bg-[#070d18] p-3 sm:p-4" aria-label={t('lecturePartsToolbar')}>
+              <h2 className="mb-3 px-1 text-sm font-bold uppercase tracking-wide text-slate-400">{t('lecturePartsToolbar')}</h2>
+              <ol className="space-y-1.5">
+                {partChapters.map((ch, idx) => {
+                  const active = String(ch.id) === String(chapterId);
+                  const label = t('partLabel', { number: idx + 1 });
+                  const badge = (
+                    <span className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold ${active ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-300'}`} dir="ltr">{idx + 1}</span>
+                  );
+                  if (isStudentChapterVideoPlayable(ch)) {
+                    return (
+                      <li key={ch.id}>
+                        <Link
+                          href={`/${locale}/student/courses/watch/${ch.id}`}
+                          prefetch
+                          aria-current={active ? 'true' : undefined}
+                          className={`flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition ${active ? 'bg-gradient-to-l from-[#2D46E8] to-[#5B73FF] text-white shadow-[0_10px_22px_-14px_rgba(45,70,232,0.9)] ltr:bg-gradient-to-r' : 'text-slate-200 hover:bg-slate-800/80'}`}
+                        >
+                          {badge}
+                          <span className="min-w-0 flex-1 truncate">{label}</span>
+                          {active ? <span className="size-2 shrink-0 rounded-full bg-[#FFB4A9] shadow-[0_0_0_3px_rgba(232,118,106,0.35)]" aria-hidden /> : null}
+                        </Link>
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={ch.id}>
+                      <span title={t('partLockedTooltip')} aria-disabled className="flex cursor-not-allowed items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold text-slate-500">
+                        {badge}
+                        <span className="min-w-0 flex-1 truncate">{label}</span>
+                        <Lock className="size-4 shrink-0" aria-hidden />
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          ) : null}
+
           {discussionsOpen ? (
             <section className="space-y-3 sm:space-y-4">
               <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">
@@ -1657,6 +1697,7 @@ export default function ChapterWatchView({
               ) : null}
             </div>
           ) : null}
+          </aside>
         </div>
       </div>
 

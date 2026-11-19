@@ -18,7 +18,6 @@ import {
   Bell,
   BookOpen,
   CheckCheck,
-  ChevronDown,
   FileText,
   Globe2,
   LogOut,
@@ -34,6 +33,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 import SearchBox from "./SearchBox";
+import StudentAppMenu from "./StudentAppMenu";
 
 type DropdownType = "language" | "notifications" | "profile" | null;
 
@@ -165,8 +165,8 @@ export default function Navbar({
     }
   };
 
-  const currentLanguage =
-    languages.find((language) => language.code === locale) || languages[0];
+  const otherLanguage =
+    languages.find((language) => language.code !== locale) || languages[0];
 
   const toggleDropdown = (dropdown: Exclude<DropdownType, null>) => {
     setOpenDropdown((current) => (current === dropdown ? null : dropdown));
@@ -200,37 +200,20 @@ export default function Navbar({
       </div>
 
       <div className="ms-1 flex shrink-0 items-center gap-1.5 sm:ms-4 sm:gap-3">
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => toggleDropdown("language")}
-            className="flex h-9 items-center gap-1.5 rounded-full bg-gray-50 px-2 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-blue-50 hover:text-primary sm:h-10 sm:gap-2 sm:px-3 sm:text-sm"
-          >
-            <Globe2 className="size-4 sm:size-[17px]" />
-            <span>{currentLanguage.short}</span>
-            <ChevronDown className="size-3.5 sm:size-[15px]" />
-          </button>
+        <StudentAppMenu />
 
-          {openDropdown === "language" && (
-            <div className="absolute end-0 top-12 z-50 w-40 rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-2 shadow-xl">
-              {languages.map((language) => (
-                <button
-                  key={language.code}
-                  type="button"
-                  onClick={() => changeLanguage(language.code)}
-                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition ${
-                    locale === language.code
-                      ? "bg-blue-50 text-primary"
-                      : "text-[var(--text-muted)] hover:bg-blue-50 hover:text-primary"
-                  }`}
-                >
-                  <span>{language.label}</span>
-                  <span className="text-xs font-bold">{language.short}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* One tap switches to the other language (like the landing and sign-in pages) */}
+        <button
+          type="button"
+          onClick={() => changeLanguage(otherLanguage.code)}
+          lang={otherLanguage.code}
+          aria-label={otherLanguage.label}
+          className="flex h-9 items-center gap-1.5 rounded-full bg-white px-2.5 text-xs font-semibold text-[var(--primary)] ring-1 ring-[var(--border-color)] transition hover:bg-[#EAEEFE] sm:h-10 sm:gap-2 sm:px-3 sm:text-sm"
+        >
+          <Globe2 className="size-4 sm:size-[17px]" aria-hidden />
+          <span className="hidden sm:inline">{otherLanguage.label}</span>
+          <span className="sm:hidden">{otherLanguage.short}</span>
+        </button>
 
         <div className="relative">
           <button

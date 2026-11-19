@@ -539,7 +539,7 @@
     "profileSettings": "الملف الشخصي والإعدادات",
     "featureControl": "التحكم في الميزات",
     "otaUpload": "رفع تحديثات الابلكيشن",
-    "myCourses": "دوراتي",
+    "myCourses": "موادي",
     "academicStructure": "الهيكل الأكاديمي",
     "liveSessions": "الجلسات المباشرة",
     "exams": "الامتحانات",
@@ -634,7 +634,7 @@
     "titles": {
       "dashboard": "نظرة عامة على لوحة التحكم",
       "students": "إدارة الطلاب",
-      "courses": "دوراتي",
+      "courses": "موادي",
       "centers": "المراكز",
       "departments": "الهيكل الأكاديمي",
       "faculties": "الكليات",
@@ -778,7 +778,7 @@
         }
       },
       "courses": {
-        "seeAll": "مشاهدة جميع الكورسات"
+        "seeAll": "جميع المواد"
       },
       "upcomingLive": {
         "title": "الحصص المباشرة القادمة",
@@ -996,7 +996,7 @@
       "pending": "قيد الانتظار",
       "declined": "مرفوض"
     },
-    "studentPageTitle": "دوراتي",
+    "studentPageTitle": "موادي",
     "studentPageDescription": "تصفح دوراتك النشطة وافتح تفاصيل الدورة.",
     "studentTabs": {
       "all": "الكل",
@@ -1229,8 +1229,8 @@
       "examsAttemptsOverview": "{remaining} محاولة متبقية من {max} ({current} مستخدمة)",
       "examsCourseNotEnrolledTitle": "الدورة غير مفعّلة",
       "examsCourseNotEnrolledBody": "هذا الامتحان ينتمي إلى دورة غير مفعّلة على حسابك. فعّل الدورة أولاً ثم عُد لبدء الامتحان.",
-      "examsCourseNotEnlockedHint": "افتح الدورة من صفحة دوراتي وأدخل رمز التفعيل لفتح امتحاناتها.",
-      "examsActivateCourseFirstCta": "الانتقال إلى دوراتي",
+      "examsCourseNotEnlockedHint": "افتح المادة من صفحة موادي وأدخل رمز التفعيل لفتح امتحاناتها.",
+      "examsActivateCourseFirstCta": "الانتقال إلى موادي",
       "examsCourseEnrolledBadge": "الدورة مفعّلة",
       "watchPageTitle": "مشاهدة المحاضرة",
       "watchBack": "العودة إلى الدورة",
@@ -1356,9 +1356,9 @@
       "examAccessDeniedTitle": "الامتحان غير متاح بعد",
       "examAccessDeniedBody": "تعذّر فتح هذا الامتحان من هنا. إذا كان الامتحان خاصاً، افتح الدورة ثم تبويب الامتحانات وفعّله بالرمز، ثم حاول البدء مرة أخرى.",
       "examCourseNotEnrolledTitle": "فعّل الدورة أولاً",
-      "examCourseNotEnrolledBody": "هذا الامتحان ينتمي إلى دورة غير مفعّلة على حسابك. افتح الدورة من «دوراتي» وأدخل رمز التفعيل، ثم عُد لبدء الامتحان.",
+      "examCourseNotEnrolledBody": "هذا الامتحان ينتمي إلى مادة غير مفعّلة على حسابك. افتح المادة من «موادي» وأدخل رمز التفعيل، ثم عُد لبدء الامتحان.",
       "goToCourseExams": "فتح الدورة — الامتحانات",
-      "goToCourses": "دوراتي",
+      "goToCourses": "موادي",
       "takePlaceholderTitle": "جلسة الاختبار",
       "takePlaceholderBody": "سيتم ربط الأسئلة والتصحيح في الخطوة التالية. تم حفظ بيانات الاختبار من شاشة المقدمة.",
       "backToIntro": "العودة إلى مقدمة الاختبار"

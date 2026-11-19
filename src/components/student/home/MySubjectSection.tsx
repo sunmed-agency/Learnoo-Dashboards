@@ -373,17 +373,18 @@ export default function MySubjectSection({
   return (
     <>
       <section className="rounded-2xl border border-[var(--border-color)] bg-white px-4 py-5 shadow-sm sm:px-6">
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <div>
+        <div className="mb-5 flex items-center justify-between gap-3" style={{ minHeight: 40 }}>
+          {/* Title and the "choose" hint share one line, so the section keeps its height inside a folder */}
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
             <h2 className="text-xl font-bold text-[var(--text-dark)]">
               {selectedCategory?.attributes.name ||
                 t("title")}
             </h2>
 
             {selectedCategory && (
-              <p className="mt-1 text-sm text-[var(--text-muted)]">
+              <span className="rounded-full bg-[#EAEEFE] px-3 py-1 text-xs font-semibold text-[var(--primary)]">
                 {t("chooseLevel")}
-              </p>
+              </span>
             )}
           </div>
 

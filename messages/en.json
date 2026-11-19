@@ -522,7 +522,7 @@
     "home": "Home",
     "profile": "Profile",
     "helpFaq": "Help & FAQ",
-    "myCourses": "My Courses",
+    "myCourses": "My Subjects",
     "academicStructure": "Academic Structure",
     "liveSessions": "Live Sessions",
     "exams": "Exams",
@@ -590,7 +590,7 @@
     "titles": {
       "dashboard": "Dashboard Overview",
       "students": "Students Management",
-      "courses": "My Courses",
+      "courses": "My Subjects",
       "centers": "Centers",
       "departments": "Academic Structure",
       "faculties": "Faculties",
@@ -734,7 +734,7 @@
         }
       },
       "courses": {
-        "seeAll": "See All Courses"
+        "seeAll": "All Subjects"
       },
       "upcomingLive": {
         "title": "Upcoming Live Classes",
@@ -952,7 +952,7 @@
       "pending": "Pending",
       "declined": "Declined"
     },
-    "studentPageTitle": "My Courses",
+    "studentPageTitle": "My Subjects",
     "studentPageDescription": "Browse your active courses and open course details.",
     "studentTabs": {
       "all": "All",
@@ -1186,7 +1186,7 @@
       "examsCourseNotEnrolledTitle": "Course not activated",
       "examsCourseNotEnrolledBody": "This exam belongs to a course that is not active on your account. Activate the course first, then come back to start the exam.",
       "examsCourseNotEnlockedHint": "Open the course on the My Courses page and enter your activation code to unlock its exams.",
-      "examsActivateCourseFirstCta": "Go to My Courses",
+      "examsActivateCourseFirstCta": "Go to My Subjects",
       "examsCourseEnrolledBadge": "Course active",
       "watchPageTitle": "Watch lecture",
       "watchBack": "Back to course",
@@ -1314,7 +1314,7 @@
       "examCourseNotEnrolledTitle": "Activate the course first",
       "examCourseNotEnrolledBody": "This exam belongs to a course that is not active on your account yet. Open the course from My Courses, enter your activation code, then come back to start the exam.",
       "goToCourseExams": "Open course — Exams",
-      "goToCourses": "My courses",
+      "goToCourses": "My subjects",
       "takePlaceholderTitle": "Exam session",
       "takePlaceholderBody": "Answer flow and scoring will be wired in the next step. Your quiz data was saved from the intro screen.",
       "backToIntro": "Back to exam intro"

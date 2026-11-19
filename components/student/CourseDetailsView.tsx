@@ -678,7 +678,8 @@ export default function CourseDetailsView({ courseId }: { courseId: string }) {
             </section>
           )}
 
-          <div className="overflow-x-auto pb-1 md:[scrollbar-width:thin] md:[scrollbar-color:rgb(148_163_184)_rgb(241_245_249)] md:[&::-webkit-scrollbar]:h-2 md:[&::-webkit-scrollbar-track]:rounded-full md:[&::-webkit-scrollbar-track]:bg-slate-100 md:[&::-webkit-scrollbar-thumb]:rounded-full md:[&::-webkit-scrollbar-thumb]:bg-slate-300 md:hover:[&::-webkit-scrollbar-thumb]:bg-slate-400">
+          {/* Lectures / files / exams tabs stay pinned under the header while scrolling */}
+          <div className="sticky top-14 z-40 -mx-1 overflow-x-auto rounded-2xl bg-white/90 px-1 pb-1 shadow-[0_10px_24px_-22px_rgba(10,16,51,0.45)] backdrop-blur-xl sm:top-16 md:[scrollbar-width:thin] md:[scrollbar-color:rgb(148_163_184)_rgb(241_245_249)] md:[&::-webkit-scrollbar]:h-2 md:[&::-webkit-scrollbar-track]:rounded-full md:[&::-webkit-scrollbar-track]:bg-slate-100 md:[&::-webkit-scrollbar-thumb]:rounded-full md:[&::-webkit-scrollbar-thumb]:bg-slate-300 md:hover:[&::-webkit-scrollbar-thumb]:bg-slate-400">
             <div className="flex min-w-max flex-nowrap items-center gap-1 border-b border-[#E5E7EB] sm:gap-2">
               {tabs.map((item) => (
                 <button
@@ -686,8 +687,8 @@ export default function CourseDetailsView({ courseId }: { courseId: string }) {
                   type="button"
                   onClick={() => selectTab(item.key)}
                   className={`whitespace-nowrap border-b-[3px] py-3.5 px-4 text-sm font-medium transition sm:px-8 sm:py-4 sm:text-[15px] ${tab === item.key
-                    ? "border-[#2D43D1] text-[#2D43D1]"
-                    : "border-transparent text-[#64748B] hover:text-[#0F172A]"
+                    ? "border-[var(--primary)] font-bold text-[var(--primary)]"
+                    : "border-transparent text-[#64748B] hover:text-[var(--primary)]"
                     }`}
                 >
                   {item.label}

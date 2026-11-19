@@ -236,42 +236,61 @@ export default function TakeExamRun({
 
   const selectedForCurrent = current ? selections[String(current.id)] ?? [] : [];
 
-  const [isGoingNext, setIsGoingNext] = useState(false);
+  // Answers are saved in the background, one after another (so a later save of the same question
+  // always sees the row the earlier one created). Moving between questions no longer waits on the
+  // network; a failed save is remembered and retried before the exam is finished.
+  const saveChainRef = useRef<Promise<unknown>>(Promise.resolve());
+  const unsavedRef = useRef<Set<string>>(new Set());
 
-  const goNext = async () => {
-    if (!current || isGoingNext) return;
-    if (!isQuestionAnswered(current, selectedForCurrent, currentShortText)) return;
-    setIsGoingNext(true);
-
-    try {
-      const saved = await flushCurrentAnswer(String(current.id));
-      if (!saved) {
-        toast.error(t('answerSaveFailed'));
-        return;
-      }
-      if (!isLast) setCurrentIndex((i) => Math.min(i + 1, total - 1));
-    } finally {
-      setIsGoingNext(false);
-    }
+  const queueSave = (qid: string): Promise<boolean> => {
+    const run = saveChainRef.current.then(
+      () => flushCurrentAnswer(qid),
+      () => flushCurrentAnswer(qid),
+    ).then(
+      (ok) => {
+        if (ok) unsavedRef.current.delete(qid);
+        else unsavedRef.current.add(qid);
+        return ok;
+      },
+      () => {
+        unsavedRef.current.add(qid);
+        return false;
+      },
+    );
+    saveChainRef.current = run;
+    return run;
   };
 
-  const goPrevious = async () => {
-    if (!current || currentIndex === 0 || isGoingNext || finishing) return;
-    setIsGoingNext(true);
-
-    try {
-      // Keep what the student picked here; the attempt is re-graded from the saved answers when it ends.
-      if (isQuestionAnswered(current, selectedForCurrent, currentShortText)) {
-        const saved = await flushCurrentAnswer(String(current.id));
-        if (!saved) {
-          toast.error(t('answerSaveFailed'));
-          return;
-        }
-      }
-      setCurrentIndex((i) => Math.max(i - 1, 0));
-    } finally {
-      setIsGoingNext(false);
+  /** Waits for the queued saves and retries the ones that failed. True when everything is saved. */
+  const settleSaves = async (): Promise<boolean> => {
+    await saveChainRef.current;
+    for (const qid of Array.from(unsavedRef.current)) {
+      await queueSave(qid);
     }
+    return unsavedRef.current.size === 0;
+  };
+
+  /** Moving between questions never waits on a save any more. */
+  const isGoingNext = false;
+
+  const goNext = () => {
+    if (!current) return;
+    if (!isQuestionAnswered(current, selectedForCurrent, currentShortText)) return;
+    void queueSave(String(current.id)).then((ok) => {
+      if (!ok) toast.error(t('answerSaveFailed'), { id: 'answer-save-failed' });
+    });
+    if (!isLast) setCurrentIndex((i) => Math.min(i + 1, total - 1));
+  };
+
+  const goPrevious = () => {
+    if (!current || currentIndex === 0 || finishing) return;
+    // Keep what the student picked here; the attempt is re-graded from the saved answers when it ends.
+    if (isQuestionAnswered(current, selectedForCurrent, currentShortText)) {
+      void queueSave(String(current.id)).then((ok) => {
+        if (!ok) toast.error(t('answerSaveFailed'), { id: 'answer-save-failed' });
+      });
+    }
+    setCurrentIndex((i) => Math.max(i - 1, 0));
   };
 
   const autoSubmit = useCallback(async () => {
@@ -280,11 +299,13 @@ export default function TakeExamRun({
 
     if (current) {
       const qid = String(current.id);
-      let saved = await flushCurrentAnswer(qid);
+      let saved = await queueSave(qid);
       for (let attempt = 0; !saved && attempt < 2; attempt += 1) {
         await new Promise((resolve) => setTimeout(resolve, 500));
-        saved = await flushCurrentAnswer(qid);
+        saved = await queueSave(qid);
       }
+      // Earlier questions still saving in the background (or that failed) are settled too.
+      await settleSaves().catch(() => false);
       if (!saved) {
         console.error('[quiz-user-answer] auto-submit: could not save the current answer after retries');
       }
@@ -310,7 +331,9 @@ export default function TakeExamRun({
 
     setFinishing(true);
     try {
-      const saved = await flushCurrentAnswer(String(current.id));
+      void queueSave(String(current.id));
+      // Every answer (this one and any still saving in the background) must be saved before submitting.
+      const saved = await settleSaves();
       if (!saved) {
         toast.error(t('answerSaveFailed'));
         return;

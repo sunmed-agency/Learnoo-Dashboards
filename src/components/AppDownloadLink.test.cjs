@@ -19,7 +19,7 @@ for (const locale of ['ar', 'en']) test(`download footer links to Google Play an
   assert.ok(nodes.every(n => !/\b(fixed|sticky|absolute)\b/.test(n.props.className || '')));
   const images = nodes.filter(n => n.type === Image);
   assert.deepEqual(images.map(n => n.props.src), [
-    `/images/store-badges/google-play-${locale}.png`,
+    `/images/store-badges/google-play-badge-${locale}.png`,
     '/images/store-badges/appgallery-en.png',
     '/images/store-badges/app-store-en.svg',
   ]);

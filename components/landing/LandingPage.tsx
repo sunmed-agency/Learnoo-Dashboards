@@ -76,9 +76,9 @@ function SectionHead({ eyebrow, title, lead, dark = false }: { eyebrow: string; 
 
 function StoreBadges({ locale, label, className = '' }: { locale: LandingLocale; label: string; className?: string }) {
   const badges = [
-    { name: 'Google Play', href: STORE_LINKS.googlePlay, src: `/images/store-badges/google-play-${locale}.png`, width: 646, height: 250, className: 'h-[62px] w-auto -my-[7px]' },
-    { name: 'App Store', href: STORE_LINKS.appStore, src: '/images/store-badges/app-store-en.svg', width: 250, height: 83, className: 'h-12 w-auto' },
-    { name: 'Huawei AppGallery', href: STORE_LINKS.appGallery, src: '/images/store-badges/appgallery-en.png', width: 3545, height: 1064, className: 'h-12 w-auto' },
+    { name: 'Google Play', href: STORE_LINKS.googlePlay, src: `/images/store-badges/google-play-badge-${locale}.png`, width: 564, height: 168 },
+    { name: 'App Store', href: STORE_LINKS.appStore, src: '/images/store-badges/app-store-en.svg', width: 250, height: 83 },
+    { name: 'Huawei AppGallery', href: STORE_LINKS.appGallery, src: '/images/store-badges/appgallery-en.png', width: 3545, height: 1064 },
   ];
   return (
     <div className={`flex flex-wrap items-center gap-3 ${className}`}>
@@ -89,9 +89,9 @@ function StoreBadges({ locale, label, className = '' }: { locale: LandingLocale;
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${label} ${b.name}`}
-          className="rounded-lg transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="flex h-12 w-[150px] items-center justify-center rounded-lg transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          <Image src={b.src} alt={b.name} width={b.width} height={b.height} sizes="170px" className={b.className} />
+          <Image src={b.src} alt={b.name} width={b.width} height={b.height} sizes="150px" className="h-full w-full object-contain" />
         </a>
       ))}
     </div>
@@ -135,10 +135,16 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
       {/* ================= Header ================= */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#071450]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="Learnoo">
-            <Image src="/Logo.jpeg" alt="" width={38} height={38} className="rounded-xl shadow-lg shadow-blue-500/30" priority />
-            <span className="text-[21px] font-extrabold tracking-tight text-white" dir="ltr">Learnoo</span>
-          </Link>
+          <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Learnoo">
+              <Image src="/Logo.jpeg" alt="" width={38} height={38} className="rounded-xl shadow-lg shadow-blue-500/30" priority />
+              <span className="hidden text-[21px] font-extrabold tracking-tight text-white min-[380px]:inline" dir="ltr">Learnoo</span>
+            </Link>
+            {/* Mobile: sign-in always visible beside the logo */}
+            <Link href="/login" className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] font-extrabold text-[#1530C8] shadow-lg shadow-black/20 ring-2 ring-white/30 transition hover:bg-[#EEF2FF] sm:hidden">
+              <LogIn className="h-4 w-4 rtl:-scale-x-100" aria-hidden />{c.nav.login}
+            </Link>
+          </div>
 
           <nav className="hidden items-center gap-1 xl:flex" aria-label={c.nav.menu}>
             {navLinks.map((l) => (
@@ -148,10 +154,10 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <LangToggle to={ar ? 'en' : 'ar'} label={c.langSwitch} className="text-white/85 hover:bg-white/10 hover:text-white" />
-            <Link href="/login" className="hidden items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold text-white ring-1 ring-white/25 transition hover:bg-white/10 sm:inline-flex">
+            <Link href="/login" className="hidden items-center gap-2 whitespace-nowrap rounded-full bg-white px-5 py-2.5 text-sm font-extrabold text-[#1530C8] shadow-lg shadow-black/20 ring-2 ring-white/30 transition hover:bg-[#EEF2FF] sm:inline-flex">
               <LogIn className="h-4 w-4 rtl:-scale-x-100" aria-hidden />{c.nav.login}
             </Link>
-            <a href="#pricing" className="hidden whitespace-nowrap rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1530C8] shadow-lg shadow-black/10 transition hover:bg-[#EEF2FF] md:inline-flex">{c.nav.join}</a>
+            <a href="#pricing" className="hidden whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-bold text-white ring-1 ring-white/30 transition hover:bg-white/10 md:inline-flex">{c.nav.join}</a>
 
             <MobileMenu label={c.nav.menu} links={navLinks} login={c.nav.login} join={c.nav.join} />
           </div>

@@ -9,6 +9,7 @@ export default function LangToggle({ to, label, className = '' }: { to: 'ar' | '
     <button
       type="button"
       lang={to}
+      aria-label={label}
       onClick={() => {
         Cookies.set('locale', to, { expires: 365, path: '/' });
         window.location.reload();
@@ -16,7 +17,7 @@ export default function LangToggle({ to, label, className = '' }: { to: 'ar' | '
       className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition-colors ${className}`}
     >
       <Globe className="h-4 w-4" aria-hidden />
-      {label}
+      <span className="hidden min-[400px]:inline">{label}</span>
     </button>
   );
 }

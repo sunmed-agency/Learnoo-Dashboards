@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { IUserProgress } from "@/src/interfaces/progress.interface";
 import { isChapterHiddenFromStudent } from "@/src/lib/student-chapter-access";
 import type { Chapter } from "@/src/types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getCourseById } from "@/src/services/student/course.service";
 import { ICourse } from "@/src/interfaces/courses.interface";
 
@@ -93,6 +93,93 @@ export default function ContinueWatchingSection({
       cancelled = true;
     };
   }, [courseIdsKey]);
+
+  // ---- Row of several lessons: moves on its own, the card in the middle is bigger.
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const pausedRef = useRef(false);
+  const resumeTimerRef = useRef<number | null>(null);
+  const isRow = list.length > 1;
+
+  // The card nearest the row's middle is the active one.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || !isRow) return;
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const box = el.getBoundingClientRect();
+      const mid = box.left + box.width / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      Array.from(el.children).forEach((child, i) => {
+        const r = child.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < bestDist) {
+          bestDist = d;
+          best = i;
+        }
+      });
+      setActiveIndex(best);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    measure();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [isRow, list.length]);
+
+  // Every 3.5s bring the next card to the middle (back to the first after the last).
+  // Stops while the student hovers / touches the row, and for reduced-motion users.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || !isRow) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      if (pausedRef.current || document.hidden) return;
+      const cards = Array.from(el.children) as HTMLElement[];
+      if (!cards.length) return;
+      const box = el.getBoundingClientRect();
+      const mid = box.left + box.width / 2;
+      let current = 0;
+      let bestDist = Infinity;
+      cards.forEach((c, i) => {
+        const r = c.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < bestDist) {
+          bestDist = d;
+          current = i;
+        }
+      });
+      const next = cards[(current + 1) % cards.length];
+      const r = next.getBoundingClientRect();
+      el.scrollBy({ left: r.left + r.width / 2 - mid, behavior: "smooth" });
+    }, 3500);
+    return () => window.clearInterval(id);
+  }, [isRow, list.length]);
+
+  const pauseRow = () => {
+    pausedRef.current = true;
+    if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
+  };
+  const resumeRowSoon = (ms = 4000) => {
+    if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = window.setTimeout(() => {
+      pausedRef.current = false;
+    }, ms);
+  };
+  useEffect(
+    () => () => {
+      if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
+    },
+    [],
+  );
 
   if (!list.length) return null;
 
@@ -212,20 +299,48 @@ export default function ContinueWatchingSection({
       {list.length === 1 ? (
         renderCard(list[0], true)
       ) : (
-        // Several lessons: one row side by side that scrolls sideways (swipe on phones), no visible bar
+        // Several lessons: one row that moves on its own (swipe on phones), no visible bar.
+        // The card in the middle grows; the others go back to normal size.
         <div
-          className="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
+          ref={scrollerRef}
+          className="flex gap-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{
+            scrollSnapType: "x mandatory",
+            WebkitOverflowScrolling: "touch",
+            paddingTop: 14,
+            paddingBottom: 18,
+            // side space so the first and last cards can sit in the middle too
+            paddingInline: "max(0px, calc(50% - min(39vw, 150px)))",
+          }}
+          onMouseEnter={pauseRow}
+          onMouseLeave={() => resumeRowSoon(1500)}
+          onTouchStart={pauseRow}
+          onTouchEnd={() => resumeRowSoon()}
+          onFocusCapture={pauseRow}
+          onBlurCapture={() => resumeRowSoon()}
         >
-          {list.map((entry) => (
-            <div
-              key={entry.id ?? entry.attributes.chapter.data.id}
-              className="shrink-0"
-              style={{ width: "min(78vw, 300px)", scrollSnapAlign: "start" }}
-            >
-              {renderCard(entry, false)}
-            </div>
-          ))}
+          {list.map((entry, i) => {
+            const active = i === activeIndex;
+            return (
+              <div
+                key={entry.id ?? entry.attributes.chapter.data.id}
+                className="shrink-0"
+                style={{
+                  width: "min(78vw, 300px)",
+                  scrollSnapAlign: "center",
+                  transform: active ? "scale(1.06)" : "scale(0.92)",
+                  opacity: active ? 1 : 0.75,
+                  transition: "transform 450ms cubic-bezier(.2,.8,.2,1), opacity 450ms ease, box-shadow 450ms ease",
+                  borderRadius: 12,
+                  boxShadow: active ? "0 18px 36px -20px rgba(45,70,232,0.55)" : "none",
+                  position: "relative",
+                  zIndex: active ? 1 : 0,
+                }}
+              >
+                {renderCard(entry, false)}
+              </div>
+            );
+          })}
         </div>
       )}
     </section>

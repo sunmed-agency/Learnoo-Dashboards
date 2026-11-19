@@ -25,7 +25,7 @@ import {
   LifeBuoy
 } from 'lucide-react';
 
-import Logo from '@/components/Logo';
+import Image from 'next/image';
 import { logout } from '@/lib/auth';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import { usePlatformFeature } from '@/src/hooks';
@@ -88,7 +88,6 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
 
   const platformName = getFeatureValue('platform_name', 'Learnoo');
   const primaryColor = getFeatureValue('primary_color', '#4F46E5');
-  const logoUrl = getFeatureValue('logo', '');
 
   // Get user initials
   const getInitials = () => {
@@ -108,37 +107,27 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
 
   return (
     <aside
-      className={`bg-[#F9FAFF] flex flex-col h-screen sticky top-0 border-r border-[#E5E7EB] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
+      className={`bg-white/85 backdrop-blur-xl flex flex-col h-screen sticky top-0 border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
         }`}
     >
       {/* Brand Logo and Title */}
-      <div className={`h-20 flex items-center px-5 gap-3 border-b border-[#F0F2F5] ${isCollapsed ? 'justify-center px-0' : ''}`}>
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
-          style={{
-            background: logoUrl ? 'transparent' : `linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd)`,
-          }}
-        >
-          {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
-          ) : (
-            <Logo className="w-8 h-8 text-white" />
-          )}
-        </div>
-        {!isCollapsed && (
-          <span
-            className="font-bold text-xl tracking-tight"
-            style={{ color: primaryColor }}
-          >
-            {platformName}
-          </span>
-        )}
+      <div className={`h-20 flex items-center px-4 gap-3 border-b border-[#EEF1F8] ${isCollapsed ? 'justify-center px-0' : ''}`}>
+        {/* Always the official Learnoo logo (mark + wordmark) */}
+        <Image
+          src="/brand/learnoo-logo-blue.svg"
+          alt={platformName}
+          width={545}
+          height={478}
+          unoptimized
+          priority
+          className={isCollapsed ? 'h-10 w-auto' : 'h-14 w-auto shrink-0'}
+        />
       </div>
 
       {/* Navigation Menu */}
       <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide flex flex-col gap-1">
         {!isCollapsed && (
-          <p className="text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4">MAIN MENU</p>
+          <p className="flex items-center gap-2 text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4"><span className="size-1.5 rounded-full bg-[#E8766A]" aria-hidden />MAIN MENU</p>
         )}
         <nav className="flex flex-col gap-1.5">
           {menuItems.map((item) => {
@@ -151,14 +140,14 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
                 href={item.path}
                 className={`group flex items-center p-3 rounded-xl transition-all duration-300 relative ${isActive
                   ? isCollapsed
-                    ? " text-[#4F46E5]  scale-110 z-10"
-                    : "bg-[#4F46E5]/10 text-[#4F46E5] shadow-sm ring-1 ring-[#4F46E5]/20"
-                  : "text-[#64748B] hover:bg-white/60 hover:text-[#4F46E5]"
+                    ? "bg-gradient-to-br from-[var(--primary)] to-[#5B73FF] text-white shadow-[0_10px_24px_-12px_rgba(45,70,232,0.75)] z-10"
+                    : "bg-gradient-to-l from-[var(--primary)] to-[#5B73FF] text-white shadow-[0_10px_24px_-12px_rgba(45,70,232,0.75)] ltr:bg-gradient-to-r"
+                  : "text-[#475569] hover:bg-[#EAEEFE] hover:text-[var(--primary)]"
                   } ${isCollapsed ? 'justify-center mx-1.5' : ''}`}
                 title={isCollapsed ? item.name : ''}
               >
                 {isActive && !isCollapsed && (
-                  <div className="absolute left-[-16px] top-1/2 -translate-y-1/2 w-1.5 h-8 bg-[#4F46E5] rounded-r-full shadow-[2px_0px_10px_rgba(79,70,229,0.4)]" />
+                  <div className="absolute -start-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-[#E8766A] rounded-e-full shadow-[0_0_12px_rgba(232,118,106,0.55)]" />
                 )}
                 <div className={`shrink-0 ${isCollapsed ? '' : 'mx-3'}`}>
                   <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
@@ -174,7 +163,7 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
                   </span>
                 )} */}
                 {isActive && isCollapsed && (
-                  <div className="absolute left-[-15px] top-1/2 -translate-y-1/2 w-1.5 h-10 bg-[#4F46E5] rounded-r-full shadow-[2px_0px_12px_rgba(79,70,229,0.5)] animate-in fade-in slide-in-from-left-2 duration-300" />
+                  <div className="absolute -start-[15px] top-1/2 -translate-y-1/2 w-1.5 h-10 bg-[#E8766A] rounded-e-full shadow-[0_0_12px_rgba(232,118,106,0.55)] animate-in fade-in slide-in-from-left-2 duration-300" />
                 )}
               </Link>
             );

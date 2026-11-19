@@ -33,7 +33,7 @@ export default function DoctorHeader() {
   const displayName = fullName || (user ? `${user.attributes.first_name} ${user.attributes.last_name}` : 'Doctor');
 
   return (
-    <header className="h-16 bg-white flex items-center justify-between px-6 sticky top-0 z-30">
+    <header className="h-16 bg-white/75 backdrop-blur-xl border-b border-[#E6EAF6] shadow-[0_8px_24px_-20px_rgba(10,16,51,0.35)] flex items-center justify-between px-6 sticky top-0 z-30">
       {/* Search */}
       <div className="relative group flex-1 max-w-md">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

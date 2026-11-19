@@ -144,7 +144,6 @@ export default function Sidebar({
   const common = useTranslations("common");
   const locale = useLocale();
   const { data: branding } = usePlatformFeature();
-  const logo = branding?.find(f => f.attributes.key === "logo")?.attributes.value;
   const platformName = branding?.find(f => f.attributes.key === "platform_name")?.attributes.value || "Learnoo";
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -246,38 +245,16 @@ export default function Sidebar({
           className="mb-5 flex items-center justify-center rounded-2xl py-2"
           onClick={onItemNavigate}
         >
-          {logo ? (
-            <div className="flex items-center gap-2">
-              <div className="relative size-12 shrink-0">
-                <Image
-                  src={logo}
-                  unoptimized
-                  alt={platformName}
-                  fill
-                  sizes="48px"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-
-              {!effectiveCollapsed && (
-                <span className="text-xl font-bold text-[var(--primary)]">
-                  {platformName}
-                </span>
-              )}
-            </div>
-          ) : (
-            // Official Learnoo logo (mark + wordmark) when no custom logo is set
-            <Image
-              src="/brand/learnoo-logo-blue.svg"
-              unoptimized
-              alt={platformName}
-              width={545}
-              height={478}
-              priority
-              className={effectiveCollapsed ? "h-11 w-auto" : "h-16 w-auto"}
-            />
-          )}
+          {/* Always the official Learnoo logo (mark + wordmark) */}
+          <Image
+            src="/brand/learnoo-logo-blue.svg"
+            unoptimized
+            alt={platformName}
+            width={545}
+            height={478}
+            priority
+            className={effectiveCollapsed ? "h-11 w-auto" : "h-16 w-auto"}
+          />
         </Link>
 
         <div className="flex-1">

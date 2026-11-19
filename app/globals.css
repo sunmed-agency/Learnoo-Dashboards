@@ -138,3 +138,26 @@ html[data-platform-branding="true"] :is([class~="via-[#6366F1]"], [class~="to-[#
 .lr-float-slow { animation: lr-float 8s ease-in-out 1.2s infinite; }
 .lr-spin { transform-box: fill-box; transform-origin: center; animation: lr-spin 50s linear infinite; }
 @media (prefers-reduced-motion: reduce) { .lr-float, .lr-float-slow, .lr-spin { animation: none; } }
+
+/* ============================================================
+   Learnoo staff identity (admin, owner, instructor: `.staff-theme`)
+   Same palette as the student area. Looks only; tenant branding (--primary) still wins.
+   ============================================================ */
+.staff-theme {
+  --lr-royal: #2D46E8; --lr-royal-light: #5B73FF; --lr-royal-soft: #EAEEFE;
+  --lr-coral: #E8766A; --lr-line: #E6EAF6; --lr-midnight: #0A1033; --lr-mist: #F4F6FD;
+  --lr-shadow: 0 1px 2px rgba(10,16,51,.04), 0 10px 30px -18px rgba(45,70,232,.28);
+  background: var(--lr-mist);
+}
+/* Old indigo / violet accents → Royal, soft indigo tints → Royal soft */
+.staff-theme :is([class~="text-[#4F46E5]"], [class~="text-[#4338CA]"], [class~="text-[#6366F1]"]) { color: var(--lr-royal); }
+.staff-theme :is([class~="bg-[#4F46E5]"], [class~="bg-[#6366F1]"]) { background-color: var(--lr-royal); }
+.staff-theme :is([class~="border-[#4F46E5]"], [class~="border-[#6366F1]"]) { border-color: var(--lr-royal); }
+.staff-theme :is([class~="bg-[#EEF2FF]"], [class~="bg-[#E0E7FF]"]) { background-color: var(--lr-royal-soft); }
+.staff-theme :is([class~="from-[#4F46E5]"], [class~="from-[#6366F1]"]) { --tw-gradient-from: var(--lr-royal) var(--tw-gradient-from-position); --tw-gradient-to: rgb(45 70 232 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.staff-theme :is([class~="to-[#7C3AED]"], [class~="to-[#8B5CF6]"]) { --tw-gradient-to: var(--lr-coral) var(--tw-gradient-to-position); }
+/* Cards in the content area: brand-tinted soft shadow */
+.staff-theme main :is(.rounded-2xl, .rounded-xl).bg-white.border { border-color: var(--lr-line); box-shadow: var(--lr-shadow); }
+.staff-theme :is(input, select, textarea):focus-visible { outline: none; border-color: var(--lr-royal-light); box-shadow: 0 0 0 3px rgba(45,70,232,.15); }
+.staff-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
+.staff-theme ::-webkit-scrollbar-thumb { background: #CBD3F2; border-radius: 99px; }

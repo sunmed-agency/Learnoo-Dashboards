@@ -19,7 +19,9 @@ export default function DoctorLayout({
   if (readOnlyRoute) return null;
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-sans">
+    <div className="staff-theme relative flex min-h-screen bg-[#F8FAFC] font-sans">
+      {/* Soft Royal / Coral glow behind the dashboard */}
+      <div className="student-bg-art" aria-hidden />
       {/* Sidebar - Dynamically handle width based on collapse state */}
       <DoctorSidebar 
         isCollapsed={isSidebarCollapsed} 
@@ -27,7 +29,7 @@ export default function DoctorLayout({
       />
       
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'ml-0' : ''}`}>
+      <div className={`relative z-[1] flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'ml-0' : ''}`}>
         <DoctorHeader />
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <div className="w-full mx-auto">

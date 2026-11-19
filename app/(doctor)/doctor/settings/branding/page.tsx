@@ -7,10 +7,14 @@ import { usePlatformFeature, useUpdatePlatformFeature } from '@/src/hooks';
 import api from '@/src/lib/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { Upload } from 'lucide-react';
+import { useCurrentUser } from '@/src/hooks/useAuth';
 
 export default function BrandingSettingsPage() {
   const { data: features, isLoading } = usePlatformFeature();
   const updateFeature = useUpdatePlatformFeature();
+  // The system font applies to every page and account, so only the owner sees and changes it.
+  const { role } = useCurrentUser();
+  const isOwner = role === 'Super Admin';
 
   const [formData, setFormData] = useState({
     primaryColor: '#2563EB',
@@ -96,7 +100,7 @@ export default function BrandingSettingsPage() {
     if (formData.accentColor.trim()) {
       requests.push(updateFeature.mutateAsync({ key: 'accent_color', value: formData.accentColor.trim() }));
     }
-    if (formData.fontFamily.trim()) {
+    if (isOwner && formData.fontFamily.trim()) {
       requests.push(updateFeature.mutateAsync({ key: 'font_family', value: formData.fontFamily.trim() }));
     }
 
@@ -274,7 +278,7 @@ export default function BrandingSettingsPage() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-1.5 relative">
+            <div className={`grid grid-cols-1 gap-1.5 relative ${isOwner ? '' : 'hidden'}`}>
                <label className="text-[13px] font-medium text-[#4B5563]">Font Family</label>
                 <select
                   name="fontFamily"
@@ -310,8 +314,8 @@ export default function BrandingSettingsPage() {
                 </div>
             </div>
 
-            {/* Font Family Preview */}
-            <div className="xl:col-span-3">
+            {/* Font Family Preview: one font for Arabic and English */}
+            <div className={`xl:col-span-3 ${isOwner ? '' : 'hidden'}`}>
               <label className="text-[13px] font-medium text-[#4B5563] block mb-2">Font Preview</label>
               <link
                 rel="stylesheet"
@@ -320,13 +324,16 @@ export default function BrandingSettingsPage() {
               <div
                 key={formData.fontFamily}
                 className="p-6 bg-white border border-[#EEEEEE] rounded-xl min-h-[120px] flex flex-col justify-center gap-3"
-                style={{ fontFamily: `"${formData.fontFamily}", sans-serif` }}
+                style={{ fontFamily: `"${formData.fontFamily}", "Cairo", sans-serif` }}
               >
                 <p className="text-[32px] font-bold" style={{ color: formData.primaryColor }}>
                   Aa Bb Cc 123
                 </p>
                 <p className="text-[16px] text-[#4B5563]">
                   The quick brown fox jumps over the lazy dog.
+                </p>
+                <p className="text-[16px] text-[#4B5563]" dir="rtl">
+                  ذاكر مواد كليتك مع نخبة من المتخصصين.
                 </p>
                 <p className="text-[14px] text-[#6B7280]">
                   Pack my box with five dozen liquor jugs.

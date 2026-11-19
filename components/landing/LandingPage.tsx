@@ -126,7 +126,7 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
     <div className="landing w-full overflow-x-clip bg-white text-[#0F172A] antialiased" data-locale={locale}>
       <style>{`
         html { scroll-behavior: smooth; }
-        .landing { --font-display: var(--font-cairo), 'Cairo'; --font-text: var(--font-cairo), 'Cairo'; font-family: var(--font-text), system-ui, sans-serif; text-rendering: optimizeLegibility; }
+        .landing { --font-display: var(--font-platform, var(--font-cairo)), 'Cairo'; --font-text: var(--font-platform, var(--font-cairo)), 'Cairo'; font-family: var(--font-text), system-ui, sans-serif; text-rendering: optimizeLegibility; }
         .landing :is(h1, h2, h3, summary, .font-display) { font-family: var(--font-display), var(--font-text), system-ui, sans-serif; }
         .landing[data-locale="ar"] :is(h1, h2, h3) { letter-spacing: 0; }
         .landing [dir="ltr"] { font-family: var(--font-text), system-ui, sans-serif; }

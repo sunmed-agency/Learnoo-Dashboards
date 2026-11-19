@@ -4,8 +4,9 @@ import "./globals.css";
 import Providers from "./providers";
 import { Toaster } from "sonner";
 import { Cairo } from "next/font/google";
+import { fetchSystemFont, isDefaultSystemFont, systemFontStack, systemFontStylesheet } from "@/src/lib/system-font";
 
-// Cairo is the typeface of the whole system (Arabic + Latin).
+// Cairo is the default typeface of the whole system (Arabic + Latin); the owner can pick another one.
 const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["300", "400", "500", "600", "700", "800", "900"], display: "swap", variable: "--font-cairo" });
 
 export const metadata: Metadata = {
@@ -57,12 +58,23 @@ export default async function RootLayout({
       ? (await import("../messages/ar.json")).default
       : (await import("../messages/en.json")).default;
 
+  // The owner's font, from the first page (sign-in included) for everyone.
+  const systemFont = await fetchSystemFont(process.env.NEXT_PUBLIC_API_URL || "https://api.learnoo.app");
+  const customFont = isDefaultSystemFont(systemFont) ? null : systemFont;
+
   return (
     <html
       lang={locale}
       dir={isRTL ? "rtl" : "ltr"}
       className={`geist-sans geist-mono ${cairo.variable}`}
+      style={customFont ? ({ "--font-platform": systemFontStack(customFont) } as React.CSSProperties) : undefined}
     >
+      {customFont && (
+        <head>
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link rel="stylesheet" href={systemFontStylesheet(customFont)} />
+        </head>
+      )}
       {/* Extensions (e.g. ColorZilla: cz-shortcut-listen) mutate <body> before hydration */}
       <body suppressHydrationWarning>
         <Providers

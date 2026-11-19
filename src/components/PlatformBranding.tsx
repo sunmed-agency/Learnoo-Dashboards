@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePlatformFeature } from '@/src/hooks/usePlatformFeature';
+import { isDefaultSystemFont, normalizeSystemFont, systemFontStack, systemFontStylesheet } from '@/src/lib/system-font';
 
 export default function PlatformBranding() {
   const { data: features } = usePlatformFeature();
@@ -18,15 +19,22 @@ export default function PlatformBranding() {
       document.documentElement.style.setProperty('--on-primary', channels[0] * .299 + channels[1] * .587 + channels[2] * .114 > 160 ? '#172033' : '#ffffff');
     }
     if (accent && /^#[0-9a-f]{3,8}$/i.test(accent)) document.documentElement.style.setProperty('--accent', accent);
-    const font = value('font_family');
-    if (!font || !/^[a-z0-9 -]+$/i.test(font) || /^(inter|cairo)$/i.test(font.trim())) return;
-    // The chosen font is for Latin letters; Arabic always falls through to Cairo (most picks, e.g. Poppins, have no Arabic glyphs).
-    document.documentElement.style.setProperty('--font-platform', `"${font}", var(--font-cairo), "Cairo"`);
+    // The owner's system font: the root layout already sets it from the first page; this keeps it
+    // in step right after the owner changes it. One font for Arabic and English, Cairo by default.
+    const raw = value('font_family');
+    if (raw === undefined) return;
+    const font = normalizeSystemFont(raw);
+    if (isDefaultSystemFont(font)) {
+      document.documentElement.style.removeProperty('--font-platform');
+      return;
+    }
+    document.documentElement.style.setProperty('--font-platform', systemFontStack(font));
+    const href = systemFontStylesheet(font);
+    if (document.querySelector(`link[href="${href}"]`)) return;
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';
-    stylesheet.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600;700&display=swap`;
+    stylesheet.href = href;
     document.head.appendChild(stylesheet);
-    return () => stylesheet.remove();
   }, [features]);
   return null;
 }

@@ -40,7 +40,7 @@ export default async function Home() {
 
   return (
     <div className={fontVariables}>
-      <LandingPage locale={locale} plans={plans} />
+      <LandingPage locale={locale} plans={plans} apiBaseUrl={API_BASE_URL} />
     </div>
   );
 }

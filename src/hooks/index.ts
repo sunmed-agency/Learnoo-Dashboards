@@ -196,6 +196,7 @@ export { useDashboardStats, useActivityData, useEngagementData, useRecentActivit
 export { usePlatformFeature, useUpdatePlatformFeature } from './usePlatformFeature';
 export { useAppUpdateSettings, useSaveAppUpdateSettings } from './useAppUpdateSettings';
 export { useLandingPlans, useSaveLandingPlans } from './useLandingPlans';
+export { useSubscriptionRequests, useUpdateSubscriptionRequest, useDeleteSubscriptionRequest } from './useSubscriptionRequests';
 export * from './useDepartments';
 export * from './useFaculties';
 export * from './useUniversities';

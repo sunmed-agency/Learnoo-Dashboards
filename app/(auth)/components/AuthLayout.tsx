@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import Logo from '@/components/Logo';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import AppDownloadLink from '@/src/components/AppDownloadLink';
+import AuthShowcase from './AuthShowcase';
 
 interface AuthLayoutProps {
   title: string;
@@ -8,28 +10,41 @@ interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
+/** Shared shell for every sign-in / sign-up page: form column + Learnoo brand panel on large screens. */
 export default function AuthPageLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-auth-bg flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 font-sans">
-      <div className="w-full max-w-[448px] flex flex-col items-center gap-0">
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-6 sm:mb-8 gap-0">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-blue rounded-2xl flex items-center justify-center shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)] mb-4 transition-all">
-            <Logo className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-          </div>
-          <h1 className="font-sans font-bold text-[22px] sm:text-[25.5px] leading-tight sm:leading-9 text-text-dark text-center mb-2 transition-all">{title}</h1>
-          <p className="font-sans font-normal text-[12px] sm:text-[13.6px] leading-relaxed sm:leading-6 text-text-muted text-center max-w-[320px] sm:max-w-none transition-all">{subtitle}</p>
-        </div>
+    <div className="min-h-screen w-full bg-[#F5F7FF] font-sans lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-4 lg:p-4">
+      <div className="relative flex min-h-screen min-w-0 flex-col lg:min-h-[calc(100vh-2rem)]">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_70%_100%_at_50%_0%,rgba(37,99,235,0.12),transparent_70%)] lg:hidden" aria-hidden />
 
-        {/* Card */}
-        <div className="w-full bg-white border border-border-color shadow-[0px_0px_8px_rgba(0,0,0,0.1)] rounded-2xl p-5 sm:p-6 transition-all">
-          <div className="flex justify-end mb-4">
-            <LanguageSwitcher />
+        <header className="relative flex items-center justify-between gap-3 px-4 pt-4 sm:px-8 sm:pt-6">
+          <Link href="/" className="flex items-center gap-2.5 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" aria-label="Learnoo">
+            <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5">
+              <Logo className="h-8 w-8" />
+            </span>
+            <span className="text-[19px] font-extrabold tracking-tight text-[#0B1437]" dir="ltr">Learnoo</span>
+          </Link>
+          <LanguageSwitcher />
+        </header>
+
+        <main className="relative flex flex-1 items-center justify-center px-4 py-8 sm:px-8 sm:py-10">
+          <div className="w-full max-w-[440px]">
+            <div className="mb-6 sm:mb-7">
+              <h1 className="text-[24px] font-bold leading-tight text-text-dark sm:text-[28px]">{title}</h1>
+              <p className="mt-2 text-[13px] leading-6 text-text-muted sm:text-[14px]">{subtitle}</p>
+            </div>
+            <div className="w-full rounded-2xl border border-[#E6EAF5] bg-white p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04),0_12px_32px_-12px_rgba(33,55,214,0.18)] sm:p-7">
+              {children}
+            </div>
           </div>
-          {children}
+        </main>
+
+        <div className="relative px-4 sm:px-8">
+          <AppDownloadLink />
         </div>
-        <AppDownloadLink />
       </div>
+
+      <AuthShowcase />
     </div>
   );
 }

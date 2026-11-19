@@ -36,6 +36,8 @@ import { LANDING_CONTENT, type LandingLocale } from './content';
 import LangToggle from './LangToggle';
 import MobileMenu from './MobileMenu';
 import PhoneMockup from './PhoneMockup';
+import JoinDialog from './JoinDialog';
+import DashboardMockup from './DashboardMockup';
 
 const SUPPORT_EMAIL = 'applearnoo@gmail.com';
 
@@ -96,12 +98,10 @@ function StoreBadges({ locale, label, className = '' }: { locale: LandingLocale;
   );
 }
 
-export default function LandingPage({ locale, plans }: { locale: LandingLocale; plans: LandingPlans }) {
+export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: LandingLocale; plans: LandingPlans; apiBaseUrl: string }) {
   const c = LANDING_CONTENT[locale];
   const ar = locale === 'ar';
   const Forward = ar ? ArrowLeft : ArrowRight;
-  const joinHref = plans.contact_url || `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(ar ? 'طلب انضمام محاضر إلى Learnoo' : 'Lecturer joining Learnoo')}`;
-  const joinExternal = !!plans.contact_url;
   const year = new Date().getFullYear();
 
   const navLinks = [
@@ -314,51 +314,8 @@ export default function LandingPage({ locale, plans }: { locale: LandingLocale; 
             <SectionHead eyebrow={c.lecturers.eyebrow} title={c.lecturers.title} lead={c.lecturers.lead} />
 
             <div className="mt-10 grid items-center gap-12 sm:mt-14 xl:grid-cols-[1fr_1.1fr]">
-              {/* browser mock with the lecturer's own domain */}
-              <div className="relative mx-auto w-full max-w-2xl" aria-hidden>
-                <div className="absolute -inset-6 rounded-[2.5rem] bg-[#2137D6]/10 blur-3xl" />
-                <div className="relative overflow-hidden rounded-3xl bg-white shadow-[0_40px_80px_-30px_rgba(15,23,42,0.45)] ring-1 ring-[#E2E8F0]">
-                  <div className="flex items-center gap-3 border-b border-[#EEF2F7] bg-[#F8FAFC] px-4 py-3" dir="ltr">
-                    <div className="flex gap-1.5"><span className="h-3 w-3 rounded-full bg-[#FF5F57]" /><span className="h-3 w-3 rounded-full bg-[#FEBC2E]" /><span className="h-3 w-3 rounded-full bg-[#28C840]" /></div>
-                    <div className="flex flex-1 items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-[13px] font-semibold text-[#334155] ring-1 ring-[#E2E8F0]">
-                      <Lock className="h-3.5 w-3.5 text-emerald-600" />{c.lecturers.domain}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-[56px_1fr] sm:grid-cols-[150px_1fr]">
-                    <div className="space-y-2 border-e border-[#EEF2F7] bg-[#FBFCFF] p-3">
-                      {[LayoutDashboard, Video, Radio, ClipboardCheck, Users].map((Icon, i) => (
-                        <div key={i} className={`flex items-center gap-2 rounded-lg px-2.5 py-2 ${i === 0 ? 'bg-[#2137D6] text-white' : 'text-[#64748B]'}`}>
-                          <Icon className="h-4 w-4 shrink-0" /><span className="hidden h-2 flex-1 rounded-full bg-current opacity-30 sm:block" />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="min-w-0 space-y-3 p-3 sm:space-y-4 sm:p-5">
-                      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                        {[['#2137D6', '1,240'], ['#10B981', '86%'], ['#F59E0B', '32']].map(([color, value]) => (
-                          <div key={value} className="rounded-xl bg-[#F8FAFC] p-2.5 ring-1 ring-[#EEF2F7] sm:p-3">
-                            <span className="block h-1.5 w-6 rounded-full sm:w-8" style={{ background: color }} />
-                            <span className="mt-2 block text-[14px] font-extrabold text-[#0F172A] sm:text-[16px]" dir="ltr">{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex h-28 items-end gap-2 rounded-xl bg-[#F8FAFC] p-3 ring-1 ring-[#EEF2F7]">
-                        {[40, 65, 50, 80, 60, 95, 75].map((h, i) => (
-                          <span key={i} className="flex-1 rounded-t-md bg-gradient-to-t from-[#2137D6] to-[#60A5FA]" style={{ height: `${h}%` }} />
-                        ))}
-                      </div>
-                      {[0, 1].map((i) => (
-                        <div key={i} className="flex items-center gap-3 rounded-xl p-2 ring-1 ring-[#EEF2F7]">
-                          <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#EEF2FF] text-[#2137D6]"><Video className="h-4 w-4" /></span>
-                          <span className="h-2 flex-1 rounded-full bg-[#E2E8F0]" /><span className="h-2 w-10 rounded-full bg-emerald-200" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute -bottom-5 start-6 inline-flex items-center gap-2 rounded-2xl bg-[#0B1437] px-4 py-3 text-[13px] font-bold text-white shadow-xl">
-                  <Globe className="h-4 w-4 text-[#7DD3FC]" />{c.lecturers.domainLabel}
-                </div>
-              </div>
+              {/* the lecturer's dashboard on their own domain, with moving numbers */}
+              <DashboardMockup locale={locale} domain={c.lecturers.domain} domainLabel={c.lecturers.domainLabel} />
 
               <div>
                 <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2">
@@ -377,7 +334,7 @@ export default function LandingPage({ locale, plans }: { locale: LandingLocale; 
                   <a href="#pricing" className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2137D6] px-6 py-3.5 text-[16px] font-bold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-[#1C2EB8]">
                     {c.lecturers.cta}<Forward className="h-5 w-5" aria-hidden />
                   </a>
-                  <a href={joinHref} {...(joinExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-[16px] font-bold text-[#2137D6] ring-1 ring-[#2137D6]/25 transition hover:bg-[#EEF2FF]">
+                  <a href="#join" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-[16px] font-bold text-[#2137D6] ring-1 ring-[#2137D6]/25 transition hover:bg-[#EEF2FF]">
                     {c.nav.join}
                   </a>
                 </div>
@@ -462,8 +419,7 @@ export default function LandingPage({ locale, plans }: { locale: LandingLocale; 
                     </ul>
 
                     <a
-                      href={joinHref}
-                      {...(joinExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      href={`#join-${i}`}
                       className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[15.5px] font-bold transition ${hot ? 'bg-white text-[#1530C8] hover:bg-[#EEF2FF]' : 'bg-[#2137D6] text-white hover:bg-[#1C2EB8]'}`}
                     >
                       {c.pricing.cta}<Forward className="h-4 w-4" aria-hidden />
@@ -522,7 +478,7 @@ export default function LandingPage({ locale, plans }: { locale: LandingLocale; 
             <h2 className="text-[clamp(1.75rem,1.2rem+2.8vw,2.75rem)] font-extrabold leading-tight">{c.contact.title}</h2>
             <p className="mx-auto mt-4 max-w-2xl text-[17px] leading-8 text-[#C7D2FE]">{c.contact.lead}</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-              <a href={joinHref} {...(joinExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-7 py-4 text-[16px] font-bold text-[#1530C8] shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-[#EEF2FF]">
+              <a href="#join" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-7 py-4 text-[16px] font-bold text-[#1530C8] shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-[#EEF2FF]">
                 {c.contact.join}<Forward className="h-5 w-5" aria-hidden />
               </a>
               <a href="#download" className="inline-flex items-center justify-center gap-2 rounded-2xl px-7 py-4 text-[16px] font-bold ring-1 ring-white/30 transition hover:bg-white/10">
@@ -532,6 +488,8 @@ export default function LandingPage({ locale, plans }: { locale: LandingLocale; 
           </div>
         </section>
       </main>
+
+      <JoinDialog locale={locale} plans={plans} apiBaseUrl={apiBaseUrl} />
 
       {/* ================= Footer ================= */}
       <footer className="bg-[#040C33] text-[#94A3B8]">

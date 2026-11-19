@@ -56,7 +56,9 @@ import {
 
   Clock,
 
-  TrendingUp
+  TrendingUp,
+
+  Inbox
 
 } from 'lucide-react';
 
@@ -122,6 +124,7 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
     items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard' });
     items.push({ name: t('sidebar.activity'), icon: ClipboardList, path: '/activity' });
     items.push({ name: t('sidebar.pendingActivations'), icon: ClipboardList, path: '/pre-activations' });
+    items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests' });
   }
   if (role === 'Admin') {
     items.push({ name: t('sidebar.deviceApprovals'), icon: ClipboardList, path: '/activity' });

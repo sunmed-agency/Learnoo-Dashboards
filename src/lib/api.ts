@@ -104,6 +104,7 @@ import type {
 } from '@/src/types';
 import type { AppUpdateSettings } from './app-update-settings';
 import type { LandingPlans } from './landing-plans';
+import type { SubscriptionRequest, SubscriptionRequestPage, SubscriptionRequestStatus } from './subscription-requests';
 import type { EditedSnapshot, ExamActivitySnapshot, LiveSessionActivitySnapshot, NotificationActivity } from './staff-activity';
 import type {
   StudentNotificationCountResponse,
@@ -1383,6 +1384,18 @@ export const landingPlansApi = {
 };
 
 // ============================================
+// Lecturer join requests from the landing page (owner only)
+// ============================================
+
+export const subscriptionRequestsApi = {
+  list: (params: { status?: SubscriptionRequestStatus; search?: string; page?: number }) =>
+    get<SubscriptionRequestPage>('/v1/owner/subscription-requests', { status: params.status, search: params.search || undefined, page: params.page }),
+  update: (id: number, data: { status?: SubscriptionRequestStatus; owner_notes?: string | null }) =>
+    patch<{ data: SubscriptionRequest }>(`/v1/owner/subscription-requests/${id}`, data),
+  remove: (id: number) => del<unknown>(`/v1/owner/subscription-requests/${id}`),
+};
+
+// ============================================
 // Admin API
 // ============================================
 
@@ -1668,6 +1681,7 @@ export const api = {
   platformFeature: platformFeatureApi,
   appUpdate: appUpdateApi,
   landingPlans: landingPlansApi,
+  subscriptionRequests: subscriptionRequestsApi,
   socialLinks: socialLinksApi,
   appVersions: appVersionsApi,
   admin: adminApi,

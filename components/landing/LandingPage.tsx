@@ -58,9 +58,15 @@ const number = new Intl.NumberFormat('en-US');
 
 function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] font-bold ${dark ? 'bg-white/10 text-[#BFDBFE] ring-1 ring-white/15' : 'bg-[#2137D6]/[0.07] text-[#2137D6]'}`}>
-      <Sparkles className="h-3.5 w-3.5" aria-hidden />
-      {children}
+    <span className="inline-flex items-center gap-3">
+      <span aria-hidden className={`h-px w-6 sm:w-10 ${dark ? 'bg-gradient-to-l from-white/50 to-transparent' : 'bg-gradient-to-l from-[#2137D6]/45 to-transparent'} rtl:bg-gradient-to-r`} />
+      <span className={`inline-flex items-center gap-2 rounded-full py-1 pe-4 ps-1 text-[13.5px] font-bold shadow-sm ${dark ? 'bg-white/10 text-white ring-1 ring-white/20 backdrop-blur' : 'bg-white text-[#1530C8] ring-1 ring-[#2137D6]/15 shadow-[#2137D6]/10'}`}>
+        <span aria-hidden className={`grid h-6 w-6 place-items-center rounded-full ${dark ? 'bg-white/15 text-sky-200' : 'bg-gradient-to-br from-[#2137D6] to-[#3B82F6] text-white'}`}>
+          <Sparkles className="h-3.5 w-3.5" />
+        </span>
+        {children}
+      </span>
+      <span aria-hidden className={`h-px w-6 sm:w-10 ${dark ? 'bg-gradient-to-r from-white/50 to-transparent' : 'bg-gradient-to-r from-[#2137D6]/45 to-transparent'} rtl:bg-gradient-to-l`} />
     </span>
   );
 }
@@ -117,11 +123,10 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
     <div className="landing w-full overflow-x-clip bg-white text-[#0F172A] antialiased" data-locale={locale}>
       <style>{`
         html { scroll-behavior: smooth; }
-        .landing { --font-display: var(--font-landing-display-en); --font-text: var(--font-landing-text-en); font-family: var(--font-text), system-ui, sans-serif; text-rendering: optimizeLegibility; }
-        .landing[data-locale="ar"] { --font-display: var(--font-landing-display-ar); --font-text: var(--font-landing-text-ar); }
+        .landing { --font-display: var(--font-cairo), 'Cairo'; --font-text: var(--font-cairo), 'Cairo'; font-family: var(--font-text), system-ui, sans-serif; text-rendering: optimizeLegibility; }
         .landing :is(h1, h2, h3, summary, .font-display) { font-family: var(--font-display), var(--font-text), system-ui, sans-serif; }
         .landing[data-locale="ar"] :is(h1, h2, h3) { letter-spacing: 0; }
-        .landing [dir="ltr"] { font-family: var(--font-landing-display-en), var(--font-text), system-ui, sans-serif; }
+        .landing [dir="ltr"] { font-family: var(--font-text), system-ui, sans-serif; }
         .landing h1 { font-weight: 800; }
         .landing[data-locale="ar"] h1 { line-height: 1.35; }
         .landing[data-locale="ar"] :is(h2, h3) { line-height: 1.45; }

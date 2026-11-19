@@ -21,7 +21,7 @@ module.exports = {
       
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        sans: ["var(--font-platform, var(--font-cairo))", "Cairo", "sans-serif"],
       },
       keyframes: {
         fadeIn: {

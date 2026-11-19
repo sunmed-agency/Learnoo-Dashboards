@@ -1,20 +1,12 @@
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
-import { Alexandria, Inter, Plus_Jakarta_Sans, Readex_Pro } from 'next/font/google';
 import LandingPage from '@/components/landing/LandingPage';
 import { LANDING_CONTENT, type LandingLocale } from '@/components/landing/content';
 import { fetchLandingPlans } from '@/src/lib/landing-plans';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.learnoo.app';
 
-// Landing typography. Arabic: Alexandria headings + Readex Pro text. English: Plus Jakarta Sans headings + Inter text.
-// The "Learnoo" wordmark is always Plus Jakarta Sans, close to the rounded letters of the logo.
-const arabicDisplay = Alexandria({ subsets: ['arabic', 'latin'], weight: ['500', '600', '700', '800'], display: 'swap', variable: '--font-landing-display-ar' });
-const arabicText = Readex_Pro({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '600', '700'], display: 'swap', variable: '--font-landing-text-ar' });
-const latinDisplay = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['500', '600', '700', '800'], display: 'swap', variable: '--font-landing-display-en' });
-const latinText = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-landing-text-en', preload: false });
-
-const fontVariables = [arabicDisplay.variable, arabicText.variable, latinDisplay.variable, latinText.variable].join(' ');
+// Landing typography: Cairo, loaded once in app/layout.tsx for the whole system.
 
 /** Same order as the root layout: locale header, then the locale cookie. Visitors default to Arabic (proxy.ts sets the header). */
 async function landingLocale(): Promise<LandingLocale> {
@@ -39,7 +31,7 @@ export default async function Home() {
   const plans = await fetchLandingPlans(API_BASE_URL);
 
   return (
-    <div className={fontVariables}>
+    <div>
       <LandingPage locale={locale} plans={plans} apiBaseUrl={API_BASE_URL} />
     </div>
   );

@@ -16,7 +16,7 @@
   --border-color: #EEEEEE;
   --card-bg: #FFFFFF;
   --auth-bg: linear-gradient(135deg, #EFF6FF 25%, #FFFFFF 60.36%, #F9FAFB 95.71%);
-  --font-geist-sans: 'Inter', Arial, Helvetica, sans-serif;
+  --font-geist-sans: var(--font-cairo), 'Cairo', Arial, Helvetica, sans-serif;
   --font-geist-mono: 'Courier New', Courier, monospace;
 }
 

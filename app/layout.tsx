@@ -3,6 +3,10 @@ import { cookies, headers } from "next/headers";
 import "./globals.css";
 import Providers from "./providers";
 import { Toaster } from "sonner";
+import { Cairo } from "next/font/google";
+
+// Cairo is the typeface of the whole system (Arabic + Latin).
+const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["300", "400", "500", "600", "700", "800", "900"], display: "swap", variable: "--font-cairo" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://learnoo.app"),
@@ -57,7 +61,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={isRTL ? "rtl" : "ltr"}
-      className={`geist-sans geist-mono`}
+      className={`geist-sans geist-mono ${cairo.variable}`}
     >
       {/* Extensions (e.g. ColorZilla: cz-shortcut-listen) mutate <body> before hydration */}
       <body suppressHydrationWarning>

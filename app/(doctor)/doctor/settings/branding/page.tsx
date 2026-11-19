@@ -15,7 +15,7 @@ export default function BrandingSettingsPage() {
   const [formData, setFormData] = useState({
     primaryColor: '#2563EB',
     accentColor: '#10B981',
-    fontFamily: 'Inter',
+    fontFamily: 'Cairo',
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -33,7 +33,7 @@ export default function BrandingSettingsPage() {
       setFormData({
         primaryColor: getFeatureValue('primary_color', '#2563EB'),
         accentColor: getFeatureValue('accent_color', '#10B981'),
-        fontFamily: getFeatureValue('font_family', 'Inter'),
+        fontFamily: getFeatureValue('font_family', 'Cairo'),
       });
       // Load logo from API if exists (key is 'logo', not 'logo_url')
       const logoUrl = getFeatureValue('logo', '');
@@ -135,7 +135,7 @@ export default function BrandingSettingsPage() {
       setFormData({
         primaryColor: getFeatureValue('primary_color', '#2563EB'),
         accentColor: getFeatureValue('accent_color', '#10B981'),
-        fontFamily: getFeatureValue('font_family', 'Inter'),
+        fontFamily: getFeatureValue('font_family', 'Cairo'),
       });
       // Reset logo to saved value (key is 'logo')
       const savedLogoUrl = getFeatureValue('logo', '');

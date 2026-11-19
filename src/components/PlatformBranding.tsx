@@ -19,7 +19,7 @@ export default function PlatformBranding() {
     }
     if (accent && /^#[0-9a-f]{3,8}$/i.test(accent)) document.documentElement.style.setProperty('--accent', accent);
     const font = value('font_family');
-    if (!font || !/^[a-z0-9 -]+$/i.test(font)) return;
+    if (!font || !/^[a-z0-9 -]+$/i.test(font) || /^(inter|cairo)$/i.test(font.trim())) return;
     document.documentElement.style.setProperty('--font-platform', `"${font}", sans-serif`);
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';

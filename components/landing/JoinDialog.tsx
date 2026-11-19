@@ -76,7 +76,7 @@ type Form = { plan: string; name: string; phone: string; email: string; universi
 const EMPTY: Form = { plan: '', name: '', phone: '', email: '', university: '', faculty: '', subjects: '', students_count: '', message: '', website: '' };
 
 const number = new Intl.NumberFormat('en-US');
-const input = 'w-full rounded-xl border bg-white px-4 py-3 text-[15px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus:border-[#2137D6] focus:ring-4 focus:ring-[#2137D6]/10';
+const input = 'w-full rounded-xl border bg-white px-4 py-3 text-[15px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus:border-[#2D46E8] focus:ring-4 focus:ring-[#2D46E8]/10';
 
 /**
  * The lecturer sign-up form. Any link to `#join` opens it; `#join-2` opens it
@@ -185,11 +185,11 @@ export default function JoinDialog({ locale, plans, apiBaseUrl }: { locale: Land
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) close(); }}
       aria-labelledby="join-title"
-      className="m-auto w-[calc(100%-1.5rem)] max-w-2xl overflow-visible rounded-[28px] bg-transparent p-0 backdrop:bg-[#040C33]/70 backdrop:backdrop-blur-sm"
+      className="m-auto w-[calc(100%-1.5rem)] max-w-2xl overflow-visible rounded-[28px] bg-transparent p-0 backdrop:bg-[#070B26]/70 backdrop:backdrop-blur-sm"
     >
       <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-[28px] bg-white shadow-2xl" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#0A1A7A] via-[#1530C8] to-[#2563EB] px-6 pb-7 pt-6 text-white sm:px-8">
-          <div className="absolute -end-16 -top-20 h-56 w-56 rounded-full bg-[#38BDF8]/30 blur-3xl" aria-hidden />
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#141C66] via-[#1F33C4] to-[#4A62F5] px-6 pb-7 pt-6 text-white sm:px-8">
+          <div className="absolute -end-16 -top-20 h-56 w-56 rounded-full bg-[#FF7A45]/30 blur-3xl" aria-hidden />
           <button type="button" onClick={close} aria-label={t.close} className="absolute end-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
             <X className="h-5 w-5" />
           </button>
@@ -200,7 +200,7 @@ export default function JoinDialog({ locale, plans, apiBaseUrl }: { locale: Land
         {state === 'done' ? (
           <div className="px-6 py-12 text-center sm:px-8">
             <CheckCircle2 className="mx-auto h-16 w-16 text-emerald-500" aria-hidden />
-            <h3 className="mt-4 text-[22px] font-extrabold text-[#0B1437]">{t.doneTitle}</h3>
+            <h3 className="mt-4 text-[22px] font-extrabold text-[#0A1033]">{t.doneTitle}</h3>
             <p className="mx-auto mt-2 max-w-md text-[15.5px] leading-7 text-[#475569]">{t.doneText}</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               {plans.contact_url && (
@@ -208,7 +208,7 @@ export default function JoinDialog({ locale, plans, apiBaseUrl }: { locale: Land
                   <MessageCircle className="h-5 w-5" aria-hidden />{t.whatsapp}
                 </a>
               )}
-              <button type="button" onClick={close} className="rounded-2xl px-6 py-3 font-bold text-[#2137D6] ring-1 ring-[#2137D6]/25 transition hover:bg-[#EEF2FF]">{t.close}</button>
+              <button type="button" onClick={close} className="rounded-2xl px-6 py-3 font-bold text-[#2D46E8] ring-1 ring-[#2D46E8]/25 transition hover:bg-[#E9EDFD]">{t.close}</button>
             </div>
           </div>
         ) : (
@@ -242,7 +242,7 @@ export default function JoinDialog({ locale, plans, apiBaseUrl }: { locale: Land
 
             <div className="flex flex-col-reverse items-center gap-3 sm:col-span-2 sm:flex-row sm:justify-between">
               <p className="text-[12.5px] text-[#64748B]">{t.privacy}</p>
-              <button type="submit" disabled={state === 'sending'} className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2137D6] px-7 py-3.5 text-[16px] font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-[#1C2EB8] disabled:opacity-60 sm:w-auto">
+              <button type="submit" disabled={state === 'sending'} className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2D46E8] px-7 py-3.5 text-[16px] font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-[#1F33C4] disabled:opacity-60 sm:w-auto">
                 {state === 'sending' && <Loader2 className="h-5 w-5 animate-spin" aria-hidden />}
                 {state === 'sending' ? t.sending : t.submit}
               </button>

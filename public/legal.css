@@ -1,21 +1,58 @@
-:root { color-scheme: light; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1e293b; background: #f6f8fc; line-height: 1.85; }
+/* Learnoo public pages (privacy, support). Palette: Royal #2D46E8, Midnight #0A1033, Mist #F3F5FE, Sunset #FF7A45. */
+:root {
+  color-scheme: light;
+  --royal: #2D46E8; --royal-dark: #1F33C4; --midnight: #0A1033; --midnight-mid: #141C66;
+  --mist: #F3F5FE; --line: #E6EAF8; --sunset: #FF7A45; --sunset-soft: #FFB088;
+  --text: #334155; --muted: #64748B;
+  font-family: "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--text); background: var(--mist); line-height: 1.9;
+}
 * { box-sizing: border-box; }
-body { margin: 0; }
-header, main, footer { width: min(100% - 40px, 850px); margin-inline: auto; }
-header { padding-block: 28px 12px; }
-header img { display: block; object-fit: contain; }
-main { padding: 32px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; }
-h1 { margin: 0 0 12px; line-height: 1.4; font-size: clamp(1.8rem, 5vw, 2.5rem); }
-h2 { margin: 0 0 12px; line-height: 1.5; font-size: 1.25rem; }
-p { margin: 0 0 16px; }
-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
-ul { padding-inline-start: 24px; }
-li { margin-block: 8px; }
-a { color: #2137d6; text-underline-offset: 4px; overflow-wrap: anywhere; }
-a:hover { color: #14238d; }
-a:focus-visible { outline: 3px solid #2137d6; outline-offset: 5px; }
-.eyebrow { color: #2137d6; font-weight: 700; letter-spacing: .04em; }
-.button { display: inline-block; padding: 10px 20px; margin-bottom: 16px; border-radius: 10px; background: #2137d6; color: white; text-decoration: none; }
-.button:hover { background: #14238d; color: white; }
-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-block: 24px 40px; font-size: .9rem; }
-@media (max-width: 480px) { main { padding: 22px; } header, main, footer { width: calc(100% - 28px); } }
+body { margin: 0; background: var(--mist); }
+a { color: var(--royal); text-underline-offset: 4px; overflow-wrap: anywhere; }
+a:hover { color: var(--royal-dark); }
+a:focus-visible { outline: 3px solid var(--sunset); outline-offset: 4px; border-radius: 6px; }
+
+.hero { position: relative; overflow: hidden; color: #fff; padding: 22px 20px 96px;
+  background: radial-gradient(ellipse 70% 80% at 80% 0%, #3550F0 0%, transparent 60%), linear-gradient(160deg, var(--midnight) 0%, var(--midnight-mid) 60%, var(--royal-dark) 100%); }
+.hero::after { content: ""; position: absolute; inset: 0; opacity: .07; pointer-events: none;
+  background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 48px 48px; }
+.bar, .hero-inner { position: relative; z-index: 1; width: min(100%, 880px); margin-inline: auto; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 800; font-size: 1.2rem; }
+.brand img { width: 40px; height: 40px; border-radius: 12px; object-fit: contain; background: #fff; }
+.brand:hover { color: #fff; }
+.bar-link { color: #fff; text-decoration: none; font-weight: 700; font-size: .9rem; padding: 8px 16px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); white-space: nowrap; }
+.bar-link:hover { color: #fff; background: rgba(255,255,255,.2); }
+.hero-inner { padding-top: 48px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 4px 14px; border-radius: 999px; font-size: .85rem; font-weight: 700;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--sunset); box-shadow: 0 0 0 4px rgba(255,122,69,.25); }
+h1 { margin: 0 0 10px; line-height: 1.35; font-size: clamp(1.9rem, 5vw, 2.8rem); font-weight: 800; }
+.lead { margin: 0; max-width: 640px; color: #D6DCFF; font-size: 1.05rem; }
+
+main { position: relative; z-index: 2; width: min(100% - 32px, 880px); margin: -64px auto 0; display: grid; gap: 16px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 26px 28px; box-shadow: 0 18px 40px -28px rgba(10,16,51,.35); }
+.card h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; color: var(--midnight); font-size: 1.25rem; line-height: 1.5; font-weight: 800; }
+.card h2 .n { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; font-size: .95rem;
+  color: #fff; background: linear-gradient(135deg, var(--royal-dark), #5B73FF); }
+.card p { margin: 0 0 12px; }
+.card p:last-child { margin-bottom: 0; }
+.card ul { margin: 0 0 12px; padding-inline-start: 22px; }
+.card li { margin-block: 6px; }
+.card li::marker { color: var(--royal); }
+.meta { color: var(--muted); font-size: .95rem; }
+
+.contacts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 14px; }
+.contact { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 18px; text-decoration: none; color: var(--midnight); background: var(--mist); border: 1px solid var(--line); transition: transform .2s, border-color .2s; }
+.contact:hover { color: var(--midnight); transform: translateY(-2px); border-color: rgba(45,70,232,.35); }
+.contact .ic { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; color: #fff; background: var(--royal); }
+.contact.accent .ic { background: var(--sunset); }
+.contact small { display: block; color: var(--muted); font-size: .82rem; line-height: 1.4; }
+.contact b { display: block; font-size: 1rem; line-height: 1.5; direction: ltr; text-align: start; unicode-bidi: plaintext; }
+.note { padding: 14px 16px; border-radius: 14px; background: #FFF4EE; border: 1px solid #FFD3BD; color: #7A3412; font-size: .95rem; }
+
+.en { direction: ltr; text-align: left; }
+footer { width: min(100% - 32px, 880px); margin: 28px auto 0; padding: 0 0 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: .9rem; color: var(--muted); }
+footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+@media (max-width: 520px) { .card { padding: 20px; border-radius: 18px; } .hero { padding-bottom: 84px; } .hero-inner { padding-top: 32px; } .bar-link { padding: 6px 12px; } }

@@ -26,7 +26,7 @@ function AndroidLogo({ className = '' }: { className?: string }) {
 /** Logo for each item of the "Learnoo goes wherever you go" strip: Android, iPhone, Huawei, Web. */
 export function PlatformLogo({ index }: { index: number }) {
   if (index === 0) return <AndroidLogo className="h-[15px] w-[22px]" />;
-  if (index === 1) return <AppleLogo className="h-5 w-[17px] text-[#0B1437]" />;
+  if (index === 1) return <AppleLogo className="h-5 w-[17px] text-[#0A1033]" />;
   if (index === 2) return <Image src="/images/platforms/huawei-appgallery.png" alt="" width={22} height={22} className="h-[22px] w-[22px] rounded-[6px]" />;
-  return <Globe className="h-5 w-5 text-[#2137D6]" aria-hidden />;
+  return <Globe className="h-5 w-5 text-[#2D46E8]" aria-hidden />;
 }

@@ -7,13 +7,13 @@ export default function PhoneMockup({ c }: { c: LandingContent['mock'] }) {
   return (
     <div className="relative mx-auto w-[270px] sm:w-[300px]" aria-hidden>
       {/* glow */}
-      <div className="absolute -inset-10 rounded-full bg-[#3B82F6]/40 blur-3xl" />
+      <div className="absolute -inset-10 rounded-full bg-[#5B73FF]/40 blur-3xl" />
 
-      <div className="relative rounded-[2.6rem] border-[10px] border-[#0A1240] bg-[#F5F8FF] shadow-[0_40px_80px_-20px_rgba(2,8,60,0.7)] overflow-hidden">
+      <div className="relative rounded-[2.6rem] border-[10px] border-[#0A1240] bg-[#F3F5FE] shadow-[0_40px_80px_-20px_rgba(2,8,60,0.7)] overflow-hidden">
         <div className="absolute left-1/2 top-2 z-10 h-5 w-24 -translate-x-1/2 rounded-full bg-[#0A1240]" />
 
         {/* app header */}
-        <div className="bg-gradient-to-br from-[#1530C8] to-[#2563EB] px-5 pb-6 pt-10 text-white">
+        <div className="bg-gradient-to-br from-[#1F33C4] to-[#4A62F5] px-5 pb-6 pt-10 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Image src="/Logo.jpeg" alt="" width={28} height={28} className="rounded-lg" />
@@ -28,10 +28,10 @@ export default function PhoneMockup({ c }: { c: LandingContent['mock'] }) {
           <div className="rounded-2xl bg-white p-3.5 shadow-sm">
             <p className="text-[11px] font-medium text-[#64748B]">{c.continue}</p>
             <div className="mt-2 flex items-center gap-3">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#EEF2FF] text-[#2137D6]"><PlayCircle className="h-6 w-6" /></div>
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#E9EDFD] text-[#2D46E8]"><PlayCircle className="h-6 w-6" /></div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-bold text-[#0F172A]">{c.course}</p>
-                <div className="mt-1.5 h-1.5 rounded-full bg-[#E2E8F0]"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-[#2137D6] to-[#38BDF8] rtl:bg-gradient-to-l" /></div>
+                <div className="mt-1.5 h-1.5 rounded-full bg-[#E2E8F0]"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-[#2D46E8] to-[#FF7A45] rtl:bg-gradient-to-l" /></div>
                 <p className="mt-1 text-[10px] text-[#64748B]">{c.progress}</p>
               </div>
             </div>

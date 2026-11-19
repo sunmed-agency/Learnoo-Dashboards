@@ -23,11 +23,11 @@ export default function MobileMenu({ label, links, login, join }: Props) {
       </summary>
       <div className="absolute end-0 top-12 w-60 rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5">
         {links.map((l) => (
-          <a key={l.href} href={l.href} onClick={close} className="block rounded-xl px-4 py-2.5 text-[15px] font-semibold text-[#0F172A] hover:bg-[#F1F5FF]">{l.label}</a>
+          <a key={l.href} href={l.href} onClick={close} className="block rounded-xl px-4 py-2.5 text-[15px] font-semibold text-[#0F172A] hover:bg-[#F3F5FE]">{l.label}</a>
         ))}
         <div className="my-2 h-px bg-[#E2E8F0]" />
-        <Link href="/login" className="block rounded-xl px-4 py-2.5 text-[15px] font-semibold text-[#2137D6] hover:bg-[#F1F5FF]">{login}</Link>
-        <a href="#pricing" onClick={close} className="mt-1 block rounded-xl bg-[#2137D6] px-4 py-2.5 text-center text-[15px] font-bold text-white">{join}</a>
+        <Link href="/login" className="block rounded-xl px-4 py-2.5 text-[15px] font-semibold text-[#2D46E8] hover:bg-[#F3F5FE]">{login}</Link>
+        <a href="#lecturers" onClick={close} className="mt-1 block rounded-xl bg-[#2D46E8] px-4 py-2.5 text-center text-[15px] font-bold text-white">{join}</a>
       </div>
     </details>
   );

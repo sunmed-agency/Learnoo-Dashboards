@@ -62,3 +62,13 @@ html[lang="ar"] [data-lang="en"], html[lang="en"] [data-lang="ar"] { display: no
 html[lang="en"] body { direction: ltr; }
 .bar-actions { display: flex; align-items: center; gap: 8px; }
 .lang-btn { font: inherit; cursor: pointer; }
+
+/* Footer: brand + copyright on one side, links as soft pill buttons on the other */
+footer { margin: 32px auto 0; padding: 18px 20px; border-radius: 20px; align-items: center; background: #fff; border: 1px solid var(--line); box-shadow: 0 14px 34px -28px rgba(10,16,51,.35); }
+footer > span { display: inline-flex; align-items: center; gap: 10px; color: var(--midnight); font-weight: 700; }
+footer > span::before { content: ""; width: 28px; height: 28px; border-radius: 9px; background: url(/Logo.jpeg) center / cover no-repeat; flex: none; }
+footer nav { gap: 8px; }
+footer nav a { display: inline-flex; align-items: center; padding: 7px 16px; border-radius: 999px; font-weight: 700; font-size: .88rem; text-decoration: none; color: var(--royal); background: var(--mist); border: 1px solid var(--line); transition: background .2s, color .2s, border-color .2s; }
+footer nav a:hover { color: #fff; background: var(--royal); border-color: var(--royal); }
+body { padding-bottom: 32px; }
+@media (max-width: 520px) { footer { flex-direction: column; text-align: center; padding: 18px 16px; } footer nav { justify-content: center; } }

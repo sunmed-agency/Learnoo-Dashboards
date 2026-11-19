@@ -7,6 +7,7 @@ import MyCoursesSection from "@/src/components/student/home/MyCoursesSection";
 import MySubjectSection from "@/src/components/student/home/MySubjectSection";
 import NewestExams from "@/src/components/student/home/NewestExams";
 import StudentHero from "@/components/student/home/StudentHero";
+import StudentSchedulesSection from "@/components/student/home/StudentSchedulesSection";
 import { getCategories } from "@/src/services/student/department.service";
 import { getLatestStudentExams } from "@/src/services/student/exam.service";
 import { getLibrary } from "@/src/services/student/library.service";
@@ -147,11 +148,17 @@ export default async function StudentPage() {
       <LatestPostsSection posts={latestPosts} courseTitleById={courseTitleById} />
       <NewestExams exams={filteredLatestExams.slice(0, 4)} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-        <div className="min-w-0">
+        {/* Two aligned rows: live sessions | notes, then schedules | library (each card fills its row) */}
+        <div className="min-w-0 [&>*]:!h-full">
           <UpcomingLiveClasses sessions={filteredLiveSessions} />
         </div>
-        <div className="flex min-w-0 w-full flex-col gap-4">
+        <div className="min-w-0 [&>*]:!h-full">
           <GetStudentNotes notes={enrolledNotes} />
+        </div>
+        <div className="min-w-0 [&>*]:!h-full">
+          <StudentSchedulesSection />
+        </div>
+        <div className="min-w-0 [&>*]:!h-full">
           <LibrarySection library={filteredLibrary} />
         </div>
       </div>

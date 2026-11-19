@@ -134,11 +134,11 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
 
       {/* ================= Header ================= */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#071450]/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Learnoo">
               <Image src="/Logo.jpeg" alt="" width={38} height={38} className="rounded-xl shadow-lg shadow-blue-500/30" priority />
-              <span className="hidden text-[21px] font-extrabold tracking-tight text-white min-[380px]:inline" dir="ltr">Learnoo</span>
+              <span className="hidden text-[21px] font-extrabold tracking-tight text-white min-[440px]:inline" dir="ltr">Learnoo</span>
             </Link>
             {/* Mobile: sign-in always visible beside the logo */}
             <Link href="/login" className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] font-extrabold text-[#1530C8] shadow-lg shadow-black/20 ring-2 ring-white/30 transition hover:bg-[#EEF2FF] sm:hidden">
@@ -152,7 +152,7 @@ export default function LandingPage({ locale, plans, apiBaseUrl }: { locale: Lan
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <LangToggle to={ar ? 'en' : 'ar'} label={c.langSwitch} className="text-white/85 hover:bg-white/10 hover:text-white" />
             <Link href="/login" className="hidden items-center gap-2 whitespace-nowrap rounded-full bg-white px-5 py-2.5 text-sm font-extrabold text-[#1530C8] shadow-lg shadow-black/20 ring-2 ring-white/30 transition hover:bg-[#EEF2FF] sm:inline-flex">
               <LogIn className="h-4 w-4 rtl:-scale-x-100" aria-hidden />{c.nav.login}

@@ -1,7 +1,8 @@
 "use client";
 
-import { BookOpen, FileText, GraduationCap, Video } from "lucide-react";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { BookOpen, ClipboardList, FileText, GraduationCap, Video } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import type { IStudent } from "@/src/interfaces/student.interface";
 
 type StudentHeroProps = {
@@ -9,21 +10,25 @@ type StudentHeroProps = {
   coursesCount: number;
   notesCount: number;
   liveSessionsCount: number;
+  /** Available (not expired) exams in the student's courses. */
+  examsCount?: number;
 };
 
 /**
  * Student home hero: the same greeting and counts as the old WelcomeSection, in the Learnoo identity
  * (Midnight → Royal with Coral accents) and with an original study illustration. Looks only.
  */
-export default function StudentHero({ student, coursesCount, notesCount, liveSessionsCount }: StudentHeroProps) {
+export default function StudentHero({ student, coursesCount, notesCount, liveSessionsCount, examsCount = 0 }: StudentHeroProps) {
+  const locale = useLocale();
   const t = useTranslations("students.home.welcome");
   const tC = useTranslations("universities");
   const university = student?.university?.data?.attributes?.name || tC("notFound");
 
-  const stats = [
+  const stats: { icon: typeof BookOpen; value: number; label: string; tone: string; href?: string }[] = [
     { icon: BookOpen, value: coursesCount, label: t("activeCourses"), tone: "bg-white/15 text-white" },
     { icon: Video, value: liveSessionsCount, label: t("liveToday"), tone: "bg-[#E8766A] text-white" },
     { icon: FileText, value: notesCount, label: t("notes"), tone: "bg-[#14B8A6] text-white" },
+    { icon: ClipboardList, value: examsCount, label: t("exams"), tone: "bg-[#F5A524] text-white", href: `/${locale}/student/exams` },
   ];
 
   return (
@@ -46,9 +51,10 @@ export default function StudentHero({ student, coursesCount, notesCount, liveSes
             <span aria-hidden>👋</span>
           </h2>
 
-          <ul className="mt-6 grid grid-cols-3 gap-2 sm:gap-3 xl:max-w-xl">
-            {stats.map(({ icon: Icon, value, label, tone }) => (
-              <li key={label} className="flex min-w-0 flex-col gap-2 rounded-2xl bg-white/[0.08] p-3 ring-1 ring-white/10 backdrop-blur sm:flex-row sm:items-center sm:gap-3 sm:p-3.5">
+          <ul className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 xl:max-w-3xl">
+            {stats.map(({ icon: Icon, value, label, tone, href }) => {
+              const body = (
+              <>
                 <span className={`grid size-9 shrink-0 place-items-center rounded-xl sm:size-10 ${tone}`}>
                   <Icon className="size-[18px]" aria-hidden />
                 </span>
@@ -56,8 +62,19 @@ export default function StudentHero({ student, coursesCount, notesCount, liveSes
                   <span className="block text-xl font-extrabold leading-none sm:text-2xl" dir="ltr">{value}</span>
                   <span className="mt-1 block text-[11.5px] leading-snug text-white/75 sm:text-[12.5px] xl:truncate">{label}</span>
                 </span>
-              </li>
-            ))}
+              </>
+              );
+              const box = "flex h-full min-w-0 flex-col gap-2 rounded-2xl bg-white/[0.08] p-3 ring-1 ring-white/10 backdrop-blur sm:flex-row sm:items-center sm:gap-3 sm:p-3.5";
+              return (
+                <li key={label}>
+                  {href ? (
+                    <Link href={href} className={`${box} transition hover:bg-white/[0.14] hover:ring-white/25`}>{body}</Link>
+                  ) : (
+                    <div className={box}>{body}</div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
 

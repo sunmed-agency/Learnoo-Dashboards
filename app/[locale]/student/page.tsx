@@ -36,7 +36,8 @@ export default async function StudentPage() {
       getStudentNotes(),
       getLibrary(),
       getCategories(),
-      getLatestStudentExams(4),
+      // A wider page so the hero can count the available exams; the exams section still shows 4.
+      getLatestStudentExams(50),
     ]);
 
   const student = studentResult.success ? studentResult.data?.data?.attributes ?? null : null;
@@ -135,6 +136,7 @@ export default async function StudentPage() {
         notesCount={enrolledNotes.length}
         student={student}
         liveSessionsCount={liveSessionsCount}
+        examsCount={filteredLatestExams.length}
       />
 
       <ContinueWatchingSection progress={filteredProgress} />
@@ -143,7 +145,7 @@ export default async function StudentPage() {
 
       <MyCoursesSection />
       <LatestPostsSection posts={latestPosts} courseTitleById={courseTitleById} />
-      <NewestExams exams={filteredLatestExams} />
+      <NewestExams exams={filteredLatestExams.slice(0, 4)} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
         <div className="min-w-0">
           <UpcomingLiveClasses sessions={filteredLiveSessions} />

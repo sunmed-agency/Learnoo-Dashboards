@@ -93,30 +93,31 @@ function NavItem({
           : undefined
       }
       onClick={onNavigate}
-      className={`group relative flex items-center rounded-xl border border-transparent text-sm font-medium transition-all duration-200 ${collapsed ? "justify-center py-3" : "gap-3 px-3 py-2.5"
+      className={`group relative flex items-center rounded-2xl text-sm font-medium transition-all duration-200 ${collapsed ? "justify-center p-1.5" : "gap-3 p-1.5 pe-3"
         } ${active
-          ? "border-blue-100 bg-blue-50 shadow-sm"
-          : "hover:border-blue-100 hover:bg-blue-50/70"
+          ? "bg-gradient-to-l from-[var(--primary)] to-[#5B73FF] text-white shadow-[0_10px_24px_-12px_rgba(45,70,232,0.75)] ltr:bg-gradient-to-r"
+          : "hover:bg-[#EAEEFE]"
         }`}
     >
       <span
-        className={`absolute start-0 top-1/2 w-1 -translate-y-1/2 rounded-e-full bg-[var(--primary)] transition-all duration-200 ${active
-          ? "h-6 opacity-100"
-          : "h-0 opacity-0 group-hover:h-5 group-hover:opacity-70"
+        className={`grid size-9 shrink-0 place-items-center rounded-xl transition-all duration-200 ${active
+          ? "bg-white/20 text-white"
+          : "bg-[#F4F6FD] text-[var(--primary)] group-hover:bg-white group-hover:shadow-sm"
           }`}
-      />
+      >
+        <Icon size={18} className="transition-transform duration-200 group-hover:scale-105" />
+      </span>
 
-      <Icon
-        size={18}
-        className="shrink-0 text-[var(--primary)] transition-all duration-200 group-hover:scale-105"
-      />
+      {active && !collapsed ? (
+        <span className="absolute end-3 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[#FFD2CB] shadow-[0_0_0_3px_rgba(232,118,106,0.35)]" aria-hidden />
+      ) : null}
 
       {!collapsed && (
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <span
             className={`min-w-0 truncate transition-all duration-200 ${active
-              ? "font-semibold text-[var(--primary)]"
-              : "text-[var(--text-muted)] group-hover:text-[var(--primary)]"
+              ? "font-bold text-white"
+              : "text-[#475569] group-hover:text-[var(--primary)]"
               }`}
           >
             {label}
@@ -242,33 +243,47 @@ export default function Sidebar({
       <div className="flex min-h-full flex-col">
         <Link
           href={withLocale("/student")}
-          className="mb-6 flex items-center justify-center"
+          className="mb-5 flex items-center justify-center rounded-2xl py-2"
           onClick={onItemNavigate}
         >
-          <div className="flex items-center">
-            <div className="relative size-12 shrink-0">
-              <Image
-                src={logo || "/Logo.jpeg"}
-                unoptimized
-                alt={platformName}
-                fill
-                sizes="48px"
-                className="object-contain"
-                priority
-              />
-            </div>
+          {logo ? (
+            <div className="flex items-center gap-2">
+              <div className="relative size-12 shrink-0">
+                <Image
+                  src={logo}
+                  unoptimized
+                  alt={platformName}
+                  fill
+                  sizes="48px"
+                  className="object-contain"
+                  priority
+                />
+              </div>
 
-            {!effectiveCollapsed && (
-              <span className="text-xl font-bold text-[var(--primary)]">
-                {platformName}
-              </span>
-            )}
-          </div>
+              {!effectiveCollapsed && (
+                <span className="text-xl font-bold text-[var(--primary)]">
+                  {platformName}
+                </span>
+              )}
+            </div>
+          ) : (
+            // Official Learnoo logo (mark + wordmark) when no custom logo is set
+            <Image
+              src="/brand/learnoo-logo-blue.svg"
+              unoptimized
+              alt={platformName}
+              width={545}
+              height={478}
+              priority
+              className={effectiveCollapsed ? "h-11 w-auto" : "h-16 w-auto"}
+            />
+          )}
         </Link>
 
         <div className="flex-1">
           {!effectiveCollapsed && (
-            <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-placeholder)]">
+            <p className="mb-2.5 flex items-center gap-2 px-3 text-[11px] font-bold uppercase tracking-wide text-[#94A3B8]">
+              <span className="size-1.5 rounded-full bg-[#E8766A]" aria-hidden />
               {common("mainMenu")}
             </p>
           )}
@@ -323,17 +338,17 @@ export default function Sidebar({
             <Link
               href={withLocale("/student/profile")}
               onClick={onItemNavigate}
-              className="mb-3 flex items-center gap-2.5 rounded-2xl border border-[var(--border-color)] bg-white p-2.5 shadow-sm transition hover:bg-[#F8FAFC]"
+              className="mb-3 flex items-center gap-2.5 rounded-2xl border border-[var(--border-color)] bg-gradient-to-br from-white to-[#F4F6FD] p-2.5 shadow-sm transition hover:shadow-md"
             >
               {avatarSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avatarSrc}
                   alt=""
-                  className="size-9 shrink-0 rounded-full object-cover"
+                  className="size-10 shrink-0 rounded-full object-cover ring-2 ring-[#E8766A]/60 ring-offset-2"
                 />
               ) : (
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[#E8766A] text-xs font-bold text-white ring-2 ring-white">
                   {initials}
                 </div>
               )}
@@ -371,7 +386,7 @@ export default function Sidebar({
           aria-label="Open menu"
           aria-expanded={mobileOpen}
           aria-controls="student-sidebar-drawer"
-          className={`fixed end-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] z-[100] flex size-11 items-center justify-center rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--primary)] shadow-md shadow-black/10 transition hover:bg-blue-50 ${mobileOpen ? "pointer-events-none opacity-0" : ""
+          className={`fixed end-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] z-[100] flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[#5B73FF] text-white shadow-[0_12px_28px_-10px_rgba(45,70,232,0.7)] ring-4 ring-white transition active:scale-95 ${mobileOpen ? "pointer-events-none opacity-0" : ""
             }`}
         >
           <Menu size={22} />
@@ -408,7 +423,7 @@ export default function Sidebar({
       </div>
 
       <aside
-        className={`sticky top-0 z-50 hidden h-screen shrink-0 border-e border-[var(--border-color)] bg-[var(--card-bg)] transition-all duration-300 md:block ${collapsed ? "w-[100px]" : "w-[240px]"
+        className={`sticky top-0 z-50 hidden h-screen shrink-0 border-e border-[var(--border-color)] bg-white/85 backdrop-blur-xl transition-all duration-300 md:block ${collapsed ? "w-[92px]" : "w-[252px]"
           }`}
       >
         <button

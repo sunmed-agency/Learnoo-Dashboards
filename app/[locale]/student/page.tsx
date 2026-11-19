@@ -6,7 +6,7 @@ import UpcomingLiveClasses from "@/src/components/student/home/LiveSessions";
 import MyCoursesSection from "@/src/components/student/home/MyCoursesSection";
 import MySubjectSection from "@/src/components/student/home/MySubjectSection";
 import NewestExams from "@/src/components/student/home/NewestExams";
-import WelcomeSection from "@/src/components/student/home/WelcomeSection";
+import StudentHero from "@/components/student/home/StudentHero";
 import { getCategories } from "@/src/services/student/department.service";
 import { getLatestStudentExams } from "@/src/services/student/exam.service";
 import { getLibrary } from "@/src/services/student/library.service";
@@ -130,7 +130,7 @@ export default async function StudentPage() {
 
   return (
     <div className="flex max-w-full flex-col gap-4 sm:gap-6">
-      <WelcomeSection
+      <StudentHero
         coursesCount={coursesCount}
         notesCount={enrolledNotes.length}
         student={student}

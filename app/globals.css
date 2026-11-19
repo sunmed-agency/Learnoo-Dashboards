@@ -75,3 +75,66 @@ html[data-platform-branding="true"] :is([class~="via-[#6366F1]"], [class~="to-[#
 @media (prefers-reduced-motion: reduce) {
   .auth-float, .auth-float-delayed, .auth-spin, .auth-check, .auth-caret { animation: none; }
 }
+
+/* ============================================================
+   Learnoo student identity (student area only, `.student-theme`)
+   Royal #2D46E8 + Coral #E8766A (red logo) on Midnight #0A1033 / Mist #F4F6FD,
+   with Mint #14B8A6 (progress, success) and Amber #F5A524 (alerts).
+   Only looks: no layout logic or features change. Tenant branding (--primary) still wins.
+   ============================================================ */
+.student-theme {
+  --lr-royal: #2D46E8; --lr-royal-dark: #1F33C4; --lr-royal-light: #5B73FF; --lr-royal-soft: #EAEEFE;
+  --lr-coral: #E8766A; --lr-coral-dark: #D2584B; --lr-coral-soft: #FDEEEB;
+  --lr-midnight: #0A1033; --lr-mist: #F4F6FD; --lr-line: #E6EAF6;
+  --lr-mint: #14B8A6; --lr-mint-soft: #E6F7F4; --lr-amber: #F5A524;
+  --lr-shadow: 0 1px 2px rgba(10,16,51,.04), 0 10px 30px -18px rgba(45,70,232,.28);
+  --lr-shadow-hover: 0 2px 4px rgba(10,16,51,.05), 0 22px 44px -22px rgba(45,70,232,.42);
+  --border-color: var(--lr-line);
+  --text-dark: var(--lr-midnight);
+  background: var(--lr-mist);
+}
+.student-theme .bg-gray-50 { background-color: var(--lr-mist); }
+
+/* Cards and sections: softer corners, brand-tinted shadow */
+.student-theme main section.rounded-2xl,
+.student-theme main .rounded-2xl.border.bg-white {
+  border-color: var(--lr-line);
+  box-shadow: var(--lr-shadow);
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+.student-theme main section.rounded-2xl:hover { box-shadow: var(--lr-shadow-hover); }
+
+/* Section titles get a small Royal → Coral accent bar */
+.student-theme main section h2.text-lg {
+  display: inline-flex; align-items: center; gap: .6rem; color: var(--lr-midnight);
+}
+.student-theme main section h2.text-lg::before {
+  content: ""; width: .35rem; height: 1.15rem; border-radius: 99px; flex: none;
+  background: linear-gradient(180deg, var(--lr-royal), var(--lr-coral));
+}
+
+/* Old purple gradients → brand gradient */
+.student-theme :is([class~="from-[#4F46E5]"], [class~="from-[#6366F1]"]) { --tw-gradient-from: var(--lr-royal) var(--tw-gradient-from-position); --tw-gradient-to: rgb(45 70 232 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.student-theme :is([class~="to-[#7C3AED]"], [class~="to-[#8B5CF6]"]) { --tw-gradient-to: var(--lr-coral) var(--tw-gradient-to-position); }
+
+/* Inputs and buttons: brand focus ring */
+.student-theme :is(input, select, textarea):focus-visible { outline: none; border-color: var(--lr-royal-light); box-shadow: 0 0 0 3px rgba(45,70,232,.15); }
+
+/* Thin brand scrollbars */
+.student-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
+.student-theme ::-webkit-scrollbar-thumb { background: #CBD3F2; border-radius: 99px; }
+.student-theme ::-webkit-scrollbar-thumb:hover { background: #A9B5EC; }
+
+/* Decorative background (fixed, behind content) */
+.student-bg-art { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.student-bg-art::before, .student-bg-art::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; }
+.student-bg-art::before { width: 42vw; height: 42vw; max-width: 560px; max-height: 560px; top: -12vw; inset-inline-end: -10vw; background: radial-gradient(circle, rgba(91,115,255,.35), transparent 70%); }
+.student-bg-art::after { width: 36vw; height: 36vw; max-width: 480px; max-height: 480px; bottom: -14vw; inset-inline-start: 10vw; background: radial-gradient(circle, rgba(232,118,106,.28), transparent 70%); }
+
+/* Hero motion */
+@keyframes lr-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes lr-spin { to { transform: rotate(360deg); } }
+.lr-float { animation: lr-float 6s ease-in-out infinite; }
+.lr-float-slow { animation: lr-float 8s ease-in-out 1.2s infinite; }
+.lr-spin { transform-box: fill-box; transform-origin: center; animation: lr-spin 50s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .lr-float, .lr-float-slow, .lr-spin { animation: none; } }

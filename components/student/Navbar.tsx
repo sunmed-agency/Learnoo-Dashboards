@@ -194,7 +194,7 @@ export default function Navbar({
   };
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-[var(--border-color)] bg-[var(--card-bg)] px-3 sm:h-16 sm:gap-3 sm:px-5">
+    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-[var(--border-color)] bg-white/75 px-3 shadow-[0_8px_24px_-20px_rgba(10,16,51,0.35)] backdrop-blur-xl sm:h-16 sm:gap-3 sm:px-5">
       <div className="relative min-w-0 max-w-[760px] flex-1">
         <SearchBox />
       </div>

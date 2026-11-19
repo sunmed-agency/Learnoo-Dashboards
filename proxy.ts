@@ -28,7 +28,15 @@ function redirectTo(request: NextRequest, href: string) {
 
 function nextForRequest(request: NextRequest) {
   const locale = getPathLocale(request);
-  if (!locale) return NextResponse.next();
+  if (!locale) {
+    // The public landing page (/) opens in Arabic for visitors who never picked a language.
+    if (normalizePathname(request.nextUrl.pathname) === '/' && !request.cookies.get('locale')?.value) {
+      const headers = new Headers(request.headers);
+      headers.set('x-learnoo-locale', 'ar');
+      return NextResponse.next({ request: { headers } });
+    }
+    return NextResponse.next();
+  }
 
   const headers = new Headers(request.headers);
   headers.set('x-learnoo-locale', locale);

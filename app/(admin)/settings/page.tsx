@@ -65,6 +65,12 @@ export default function PlatformSettingsPage() {
       titleKey: 'appUpdate',
       href: '/settings/app-update',
       adminOnly: true
+    },
+    {
+      icon: 'CreditCard' as const,
+      titleKey: 'landingPlans',
+      href: '/settings/landing-plans',
+      adminOnly: true
     }
   ];
 

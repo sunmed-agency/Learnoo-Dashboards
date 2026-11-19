@@ -195,6 +195,7 @@ export { usePreActivations, useUploadPreActivation, useDeletePreActivation } fro
 export { useDashboardStats, useActivityData, useEngagementData, useRecentActivity } from './useDashboard';
 export { usePlatformFeature, useUpdatePlatformFeature } from './usePlatformFeature';
 export { useAppUpdateSettings, useSaveAppUpdateSettings } from './useAppUpdateSettings';
+export { useLandingPlans, useSaveLandingPlans } from './useLandingPlans';
 export * from './useDepartments';
 export * from './useFaculties';
 export * from './useUniversities';

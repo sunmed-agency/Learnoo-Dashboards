@@ -103,6 +103,7 @@ import type {
   StudentQuestion,
 } from '@/src/types';
 import type { AppUpdateSettings } from './app-update-settings';
+import type { LandingPlans } from './landing-plans';
 import type { EditedSnapshot, ExamActivitySnapshot, LiveSessionActivitySnapshot, NotificationActivity } from './staff-activity';
 import type {
   StudentNotificationCountResponse,
@@ -1373,6 +1374,15 @@ export const appUpdateApi = {
 };
 
 // ============================================
+// learnoo landing page plans (public read, admin write)
+// ============================================
+
+export const landingPlansApi = {
+  get: () => get<{ data: LandingPlans }>('/v1/landing-plans'),
+  update: (data: LandingPlans) => put<{ data: LandingPlans }>('/v1/landing-plans', data),
+};
+
+// ============================================
 // Admin API
 // ============================================
 
@@ -1657,6 +1667,7 @@ export const api = {
   dashboard: dashboardApi,
   platformFeature: platformFeatureApi,
   appUpdate: appUpdateApi,
+  landingPlans: landingPlansApi,
   socialLinks: socialLinksApi,
   appVersions: appVersionsApi,
   admin: adminApi,

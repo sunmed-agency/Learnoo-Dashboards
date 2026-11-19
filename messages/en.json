@@ -1,4 +1,44 @@
 {
+  "landingPlansSettings": {
+    "title": "Landing Page Plans",
+    "description": "The lecturer plans on the public Learnoo page. Changes show on the page within a minute of saving.",
+    "contactTitle": "Join button",
+    "contactUrl": "\"Join as a lecturer\" link",
+    "contactUrlHelp": "A WhatsApp link (https://wa.me/20…) or a form. Leave empty to send visitors to the page's contact section.",
+    "contactUrlInvalid": "Enter a full https:// link.",
+    "plan": "Plan {number}",
+    "nameAr": "Name (Arabic)",
+    "nameEn": "Name (English)",
+    "descriptionAr": "Short description (Arabic)",
+    "descriptionEn": "Short description (English)",
+    "price": "Monthly price (EGP)",
+    "priceHelp": "Leave empty to show \"Contact us\" instead of a price.",
+    "maxStudents": "Up to how many students",
+    "badgeAr": "Badge (Arabic)",
+    "badgeEn": "Badge (English)",
+    "badgeHelp": "Optional, like \"Most popular\".",
+    "highlighted": "Highlight this plan",
+    "featuresAr": "Features (Arabic), one per line",
+    "featuresEn": "Features (English), one per line",
+    "required": "Required.",
+    "featuresRequired": "Add at least one feature.",
+    "numberInvalid": "Enter a whole number of 1 or more.",
+    "priceInvalid": "Enter 0 or more, or leave empty.",
+    "addPlan": "Add plan",
+    "removePlan": "Remove plan",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "resetDefaults": "Use the default plans",
+    "preview": "Open the landing page",
+    "invalid": "Check the highlighted fields.",
+    "saved": "Plans saved.",
+    "saveFailed": "Could not save the plans.",
+    "loadFailed": "Could not load the plans.",
+    "retry": "Try again",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel"
+  },
   "appUpdateSettings": {
     "title": "App Update",
     "description": "Stop old app versions from opening until the student updates from the store.",
@@ -2905,6 +2945,10 @@
     "appUpdate": {
       "title": "App Update",
       "description": "Minimum app version per store and the store links."
+    },
+    "landingPlans": {
+      "title": "Landing Page Plans",
+      "description": "Lecturer plans, prices and student limits shown on the Learnoo landing page."
     },
     "soon": "Soon"
   },

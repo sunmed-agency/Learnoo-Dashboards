@@ -11,7 +11,8 @@ import {
   Image,
   User,
   Smartphone,
-  ChevronRight 
+  CreditCard,
+  ChevronRight
 } from 'lucide-react';
 
 const iconMap = {
@@ -23,6 +24,7 @@ const iconMap = {
   Image,
   User,
   Smartphone,
+  CreditCard,
 };
 
 type IconName = keyof typeof iconMap;

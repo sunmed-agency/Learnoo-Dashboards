@@ -51,8 +51,11 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
         {notification.recipients !== undefined && <> · {ar ? 'عدد الطلاب المستلمين' : 'Students reached'}: {notification.recipients}</>}
       </p>
     </div>}
-    {exam && <SavedContent heading={`${ar ? 'الامتحان' : 'Exam'}: ${exam.title} #${exam.id}`} rows={examActivityRows(exam, locale)} changes={examChangeRows(exam, locale)}
-      href={`/exams/${exam.id}/edit`} linkLabel={ar ? 'فتح الامتحان' : 'Open exam'} changesLabel={changesLabel} />}
+    {exam && <>
+      {details.exam_context_current && <p className="mt-2 text-xs text-gray-500">{ar ? 'تفاصيل الامتحان الحالية؛ لم تُحفظ التفاصيل وقت العملية القديمة.' : 'Current exam details; no snapshot was saved for this older activity.'}</p>}
+      <SavedContent heading={`${ar ? 'الامتحان' : 'Exam'}: ${exam.title} #${exam.id}`} rows={examActivityRows(exam, locale)} changes={examChangeRows(exam, locale)}
+        href={`/exams/${exam.id}/edit`} linkLabel={ar ? 'فتح الامتحان' : 'Open exam'} changesLabel={changesLabel} />
+    </>}
     {live && <SavedContent heading={`${ar ? 'جلسة البث المباشر' : 'Live session'}: ${live.title} #${live.id}`} rows={liveSessionActivityRows(live, locale)} changes={liveSessionChangeRows(live, locale)}
       href={`/live-sessions/${live.id}`} linkLabel={ar ? 'فتح جلسة البث' : 'Open live session'} changesLabel={changesLabel} />}
     {before && <details className="mt-2 rounded-lg bg-slate-50 p-3 text-sm">

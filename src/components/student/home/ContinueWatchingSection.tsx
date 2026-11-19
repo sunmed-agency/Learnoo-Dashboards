@@ -6,148 +6,145 @@ import { useLocale, useTranslations } from "next-intl";
 import { IUserProgress } from "@/src/interfaces/progress.interface";
 import { isChapterHiddenFromStudent } from "@/src/lib/student-chapter-access";
 import type { Chapter } from "@/src/types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getCourseById } from "@/src/services/student/course.service";
 import { ICourse } from "@/src/interfaces/courses.interface";
+
+/** How many in-progress lessons the row shows. */
+const MAX_ITEMS = 10;
+
+const durationToSeconds = (duration?: string) => {
+  if (!duration) return 0;
+  const parts = duration.split(":").map(Number);
+  if (parts.length === 2) {
+    const [minutes = 0, seconds = 0] = parts;
+    return minutes * 60 + seconds;
+  }
+  if (parts.length === 3) {
+    const [hours = 0, minutes = 0, seconds = 0] = parts;
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+  return 0;
+};
+
+const formatSeconds = (seconds = 0) => {
+  const safeSeconds = Math.max(0, seconds);
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainingSeconds = safeSeconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
+
+/** Shown when neither the lesson nor the course has an image (inline: src/ is not scanned by Tailwind). */
+const COVER_FALLBACK =
+  "radial-gradient(ellipse 70% 90% at 85% 10%, #3550F0 0%, transparent 60%), radial-gradient(ellipse 55% 70% at 5% 100%, rgba(232,118,106,0.55) 0%, transparent 60%), linear-gradient(135deg, #0A1033 0%, #141C66 55%, #1F33C4 100%)";
 
 export default function ContinueWatchingSection({
   progress,
 }: {
   progress?: IUserProgress[] | null;
 }) {
-  const [courseDetails, setCourseDetails] = useState<ICourse | null>(null);
+  const [courseById, setCourseById] = useState<Record<string, ICourse | null>>({});
 
   const t = useTranslations("students.home.continueWatching");
   const locale = useLocale();
 
   // A chapter the server marks as not published (or still scheduled) must never
-  // surface in the student UI, so "continue watching" resumes the most recent
-  // lesson that is actually visible instead of blindly taking the newest row.
-  const list = (Array.isArray(progress) ? progress : []).filter((entry) => {
-    const chapterData = entry?.attributes?.chapter?.data;
-    if (!chapterData) return false;
-    return !isChapterHiddenFromStudent(chapterData as unknown as Chapter);
-  });
-  const latest = list[0];
-  const lastChapter = latest?.attributes?.chapter?.data?.attributes;
-  const chapterProgressId = latest?.attributes?.chapter?.data?.id;
+  // surface in the student UI, so only lessons that are actually visible are listed
+  // (newest first, as the API returns them).
+  const list = useMemo(
+    () =>
+      (Array.isArray(progress) ? progress : [])
+        .filter((entry) => {
+          const chapterData = entry?.attributes?.chapter?.data;
+          if (!chapterData?.attributes) return false;
+          return !isChapterHiddenFromStudent(chapterData as unknown as Chapter);
+        })
+        .slice(0, MAX_ITEMS),
+    [progress],
+  );
 
-  const courseId = lastChapter?.course_id;
+  // One request per course (not per lesson) for the course titles / images.
+  const courseIdsKey = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          list
+            .map((e) => e.attributes.chapter.data.attributes.course_id)
+            .filter((id) => id != null)
+            .map(String),
+        ),
+      ).join(","),
+    [list],
+  );
 
   useEffect(() => {
-    if (courseId == null) return;
-
-    const getCourse = async () => {
-      const res = await getCourseById(courseId);
-      const course = res?.data?.data ?? res?.data ?? null;
-      setCourseDetails(course as ICourse | null);
+    if (!courseIdsKey) return;
+    let cancelled = false;
+    Promise.all(
+      courseIdsKey.split(",").map(async (id) => {
+        const res = await getCourseById(id);
+        const course = (res?.data?.data ?? res?.data ?? null) as ICourse | null;
+        return [id, course] as const;
+      }),
+    ).then((pairs) => {
+      if (!cancelled) setCourseById(Object.fromEntries(pairs));
+    });
+    return () => {
+      cancelled = true;
     };
+  }, [courseIdsKey]);
 
-    getCourse();
-  }, [courseId]);
+  if (!list.length) return null;
 
-  if (!latest?.attributes || !lastChapter) {
-    return null;
-  }
+  const renderCard = (entry: IUserProgress, wide: boolean) => {
+    const lastChapter = entry.attributes.chapter.data.attributes;
+    const chapterProgressId = entry.attributes.chapter.data.id;
+    const course = courseById[String(lastChapter.course_id)] ?? null;
 
-  const userProgress = latest.attributes;
+    const watchedSeconds = entry.attributes?.progress_seconds ?? 0;
+    const totalSeconds = durationToSeconds(lastChapter?.duration);
+    const progressPercent = totalSeconds ? Math.min((watchedSeconds / totalSeconds) * 100, 100) : 0;
 
-  const durationToSeconds = (duration?: string) => {
-    if (!duration) return 0;
+    const videoSrc = lastChapter.video ?? "";
+    // `video_ready` covers both real HLS and the temporary original-file
+    // fallback (see ChapterResource on the backend) — requiring
+    // video_status === "ready" on top of it would block resuming a lesson
+    // that's watchable right now via the fallback stream.
+    const canContinue =
+      lastChapter.watch_access_state === "available" &&
+      lastChapter.video_ready &&
+      Boolean(videoSrc) &&
+      chapterProgressId != null;
+    const watchHref = canContinue ? `/${locale}/student/courses/watch/${chapterProgressId}` : null;
+    const unavailableMessage =
+      lastChapter.watch_access_state === "activation_required"
+        ? t("activationRequired")
+        : lastChapter.watch_access_state === "view_limit_reached"
+          ? t("viewLimitReached")
+          : t("notPublished");
+    // The lesson image (or the course image) instead of a black video frame.
+    const coverSrc =
+      lastChapter.thumbnail?.trim() ||
+      (course?.attributes as { thumbnail?: string | null } | undefined)?.thumbnail?.trim() ||
+      "";
 
-    const parts = duration.split(":").map(Number);
-
-    if (parts.length === 2) {
-      const [minutes = 0, seconds = 0] = parts;
-      return minutes * 60 + seconds;
-    }
-
-    if (parts.length === 3) {
-      const [hours = 0, minutes = 0, seconds = 0] = parts;
-      return hours * 3600 + minutes * 60 + seconds;
-    }
-
-    return 0;
-  };
-
-  const formatSeconds = (seconds = 0) => {
-    const safeSeconds = Math.max(0, seconds);
-    const minutes = Math.floor(safeSeconds / 60);
-    const remainingSeconds = safeSeconds % 60;
-
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
-
-  const watchedSeconds = userProgress?.progress_seconds ?? 0;
-  const totalSeconds = durationToSeconds(lastChapter?.duration);
-
-  const progressPercent = totalSeconds
-    ? Math.min((watchedSeconds / totalSeconds) * 100, 100)
-    : 0;
-
-  const videoSrc = lastChapter.video ?? "";
-  // `video_ready` covers both real HLS and the temporary original-file
-  // fallback (see ChapterResource on the backend) — requiring
-  // video_status === "ready" on top of it would block resuming a lesson
-  // that's watchable right now via the fallback stream.
-  const canContinue =
-    lastChapter.watch_access_state === "available" &&
-    lastChapter.video_ready &&
-    Boolean(videoSrc) &&
-    chapterProgressId != null;
-  const watchHref = canContinue
-    ? `/${locale}/student/courses/watch/${chapterProgressId}`
-    : null;
-  const unavailableMessage =
-    lastChapter.watch_access_state === "activation_required"
-      ? t("activationRequired")
-      : lastChapter.watch_access_state === "view_limit_reached"
-        ? t("viewLimitReached")
-        : t("notPublished");
-  const UnavailableIcon = Lock;
-  // The lesson image (or the course image) instead of a black video frame.
-  const coverSrc =
-    lastChapter.thumbnail?.trim() ||
-    (courseDetails?.attributes as { thumbnail?: string | null } | undefined)?.thumbnail?.trim() ||
-    "";
-
-  return (
-    <section className="rounded-2xl  border border-[var(--border-color)] bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-4">
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-bold text-[var(--text-dark)]">
-          {t("title")}
-        </h2>
-
-        <Link
-          href={`/${locale}/student/courses`}
-          className="text-sm font-bold leading-6 text-primary transition duration-300 hover:text-primary-blue sm:shrink-0"
-        >
-          {t("viewAll")}
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 rounded-xl bg-[#F7F8FA] p-3 sm:p-4 lg:grid lg:grid-cols-4 lg:items-center lg:gap-4">
-        <div className="relative w-full min-w-0 overflow-hidden rounded-2xl bg-[#0A1033] lg:col-span-1">
-          <div className="relative aspect-video w-full max-h-[40vh] sm:max-h-[20rem] lg:max-h-none">
+    return (
+      <div
+        className={`h-full rounded-xl p-3 sm:p-4 ${wide ? "grid grid-cols-1 gap-4 lg:grid-cols-[380px_1fr] lg:items-center" : "flex flex-col gap-3"}`}
+        style={{ background: "#F7F8FA" }}
+      >
+        <div className={`relative w-full min-w-0 overflow-hidden rounded-2xl bg-[#0A1033]`}>
+          <div className="relative aspect-video w-full">
             {watchHref ? (
               coverSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element -- remote API URLs
-                <img
-                  src={coverSrc}
-                  alt={lastChapter.title || ""}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                <img src={coverSrc} alt={lastChapter.title || ""} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
               ) : (
-                <div
-                  className="absolute inset-0"
-                  style={{ background: "radial-gradient(ellipse 70% 90% at 85% 10%, #3550F0 0%, transparent 60%), radial-gradient(ellipse 55% 70% at 5% 100%, rgba(232,118,106,0.55) 0%, transparent 60%), linear-gradient(135deg, #0A1033 0%, #141C66 55%, #1F33C4 100%)" }}
-                  aria-hidden
-                />
+                <div className="absolute inset-0" style={{ background: COVER_FALLBACK }} aria-hidden />
               )
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-800 px-4 text-center text-xs font-medium text-white/80">
-                <UnavailableIcon className="size-6" aria-hidden />
+                <Lock className="size-6" aria-hidden />
                 <span>{unavailableMessage}</span>
               </div>
             )}
@@ -161,62 +158,76 @@ export default function ContinueWatchingSection({
             {watchHref ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="flex size-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-white/90 p-3 shadow-lg transition duration-300 active:scale-95 sm:hover:scale-105">
-                <Link
-                  href={watchHref}
-                  className="flex items-center justify-center"
-                  aria-label={t("continue")}
-                >
-                  <Play
-                    size={24}
-                    fill="currentColor"
-                    className="ms-0.5 text-[var(--primary)] rtl:ms-0 rtl:me-0.5"
-                  />
-                </Link>
+                  <Link href={watchHref} className="flex items-center justify-center" aria-label={t("continue")}>
+                    <Play size={24} fill="currentColor" className="ms-0.5 text-[var(--primary)] rtl:ms-0 rtl:me-0.5" />
+                  </Link>
                 </div>
               </div>
             ) : null}
           </div>
         </div>
 
-        <div className="flex min-w-0 grid-cols-3 w-full  flex-col justify-center gap-1 lg:col-span-3">
-          <p className="text-sm font-medium text-[var(--text-muted)]">
-            {courseDetails?.attributes.title}
-          </p>
+        <div className={`flex w-full min-w-0 flex-col justify-center gap-1`}>
+          <p className="truncate text-sm font-medium text-[var(--text-muted)]">{course?.attributes.title}</p>
 
-          <h3 className="text-base font-bold leading-snug text-[var(--text-dark)] sm:text-lg">
+          <h3 className={`font-bold leading-snug text-[var(--text-dark)] ${wide ? "text-base sm:text-lg" : "line-clamp-1 text-base"}`}>
             {lastChapter.title}
           </h3>
 
-          <div className="mt-3 sm:mt-4">
+          <div className="mt-3">
             <div className="mb-1 flex items-center justify-between text-xs text-[var(--text-muted)]">
               <span>{formatSeconds(watchedSeconds)}</span>
               <span>{lastChapter?.duration || "0:00"}</span>
             </div>
-
             <div className="h-1.5 overflow-hidden rounded-full bg-gray-200">
-              <div
-                className="h-full rounded-full bg-[var(--primary)]"
-                style={{ width: `${progressPercent}%` }}
-              />
+              <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${progressPercent}%` }} />
             </div>
           </div>
 
           {watchHref ? (
             <Link
               href={watchHref}
-              className="mt-3 inline-flex h-11 min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 text-sm font-medium text-white transition hover:opacity-90 sm:w-auto"
+              className={`mt-3 inline-flex h-11 min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 text-sm font-medium text-white transition hover:opacity-90 ${wide ? "sm:w-auto" : ""}`}
             >
               <Play size={15} />
               {t("continue")}
             </Link>
           ) : (
-            <span className="mt-3 inline-flex h-11 min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-slate-100 px-4 text-sm font-medium text-slate-600 sm:w-auto">
-              <UnavailableIcon size={15} />
+            <span
+              className={`mt-3 inline-flex h-11 min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-slate-100 px-4 text-sm font-medium text-slate-600 ${wide ? "sm:w-auto" : ""}`}
+            >
+              <Lock size={15} />
               {unavailableMessage}
             </span>
           )}
         </div>
       </div>
+    );
+  };
+
+  return (
+    <section className="rounded-2xl border border-[var(--border-color)] bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-4">
+      <h2 className="mb-4 text-lg font-bold text-[var(--text-dark)]">{t("title")}</h2>
+
+      {list.length === 1 ? (
+        renderCard(list[0], true)
+      ) : (
+        // Several lessons: one row side by side that scrolls sideways (swipe on phones), no visible bar
+        <div
+          className="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
+        >
+          {list.map((entry) => (
+            <div
+              key={entry.id ?? entry.attributes.chapter.data.id}
+              className="shrink-0"
+              style={{ width: "min(78vw, 300px)", scrollSnapAlign: "start" }}
+            >
+              {renderCard(entry, false)}
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

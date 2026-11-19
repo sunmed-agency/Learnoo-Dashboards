@@ -97,45 +97,90 @@ export default function ContinueWatchingSection({
   // ---- Row of several lessons: moves on its own, the card in the middle is bigger.
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  /** True for a moment while the row hops between copies, so the size change is not animated. */
+  const [noAnim, setNoAnim] = useState(false);
   const pausedRef = useRef(false);
   const resumeTimerRef = useRef<number | null>(null);
   const isRow = list.length > 1;
 
-  // The card nearest the row's middle is the active one.
+  // Endless loop: the lessons are rendered three times in a row (A A A). The row starts on the
+  // middle copy and only ever moves forward; whenever it drifts into the first or last copy it
+  // jumps (instantly, invisibly) to the same card in the middle copy, so the first lesson always
+  // follows the last one and there is never an empty space at either end.
+  const loopCount = list.length;
+
+  const cardNearestMiddle = (el: HTMLElement) => {
+    const box = el.getBoundingClientRect();
+    const mid = box.left + box.width / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    Array.from(el.children).forEach((child, i) => {
+      const r = child.getBoundingClientRect();
+      const d = Math.abs(r.left + r.width / 2 - mid);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    });
+    return { index: best, mid };
+  };
+
+  /** Puts card `index` in the middle of the row. */
+  const centerCard = (el: HTMLElement, index: number, smooth: boolean) => {
+    const card = el.children[index] as HTMLElement | undefined;
+    if (!card) return;
+    const box = el.getBoundingClientRect();
+    const r = card.getBoundingClientRect();
+    el.scrollBy({ left: r.left + r.width / 2 - (box.left + box.width / 2), behavior: smooth ? "smooth" : "instant" });
+  };
+
+  // Start on the first lesson of the middle copy.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || !isRow) return;
+    const frame = requestAnimationFrame(() => {
+      centerCard(el, loopCount, false);
+      setActiveIndex(loopCount);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isRow, loopCount]);
+
+  // Track the middle card; once the row settles in an outer copy, hop back to the middle copy.
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el || !isRow) return;
     let frame = 0;
+    let settleTimer = 0;
     const measure = () => {
       frame = 0;
-      const box = el.getBoundingClientRect();
-      const mid = box.left + box.width / 2;
-      let best = 0;
-      let bestDist = Infinity;
-      Array.from(el.children).forEach((child, i) => {
-        const r = child.getBoundingClientRect();
-        const d = Math.abs(r.left + r.width / 2 - mid);
-        if (d < bestDist) {
-          bestDist = d;
-          best = i;
-        }
-      });
-      setActiveIndex(best);
+      setActiveIndex(cardNearestMiddle(el).index);
+    };
+    const settle = () => {
+      const { index } = cardNearestMiddle(el);
+      if (index < loopCount || index >= loopCount * 2) {
+        const same = loopCount + (index % loopCount);
+        setNoAnim(true);
+        centerCard(el, same, false);
+        setActiveIndex(same);
+        requestAnimationFrame(() => requestAnimationFrame(() => setNoAnim(false)));
+      }
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(measure);
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settle, 160);
     };
-    measure();
     el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
       el.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (frame) cancelAnimationFrame(frame);
+      window.clearTimeout(settleTimer);
     };
-  }, [isRow, list.length]);
+  }, [isRow, loopCount]);
 
-  // Every 3.5s bring the next card to the middle (back to the first after the last).
+  // Every 3.5s the next card comes to the middle, always in the same direction.
   // Stops while the student hovers / touches the row, and for reduced-motion users.
   useEffect(() => {
     const el = scrollerRef.current;
@@ -143,26 +188,11 @@ export default function ContinueWatchingSection({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => {
       if (pausedRef.current || document.hidden) return;
-      const cards = Array.from(el.children) as HTMLElement[];
-      if (!cards.length) return;
-      const box = el.getBoundingClientRect();
-      const mid = box.left + box.width / 2;
-      let current = 0;
-      let bestDist = Infinity;
-      cards.forEach((c, i) => {
-        const r = c.getBoundingClientRect();
-        const d = Math.abs(r.left + r.width / 2 - mid);
-        if (d < bestDist) {
-          bestDist = d;
-          current = i;
-        }
-      });
-      const next = cards[(current + 1) % cards.length];
-      const r = next.getBoundingClientRect();
-      el.scrollBy({ left: r.left + r.width / 2 - mid, behavior: "smooth" });
+      const { index } = cardNearestMiddle(el);
+      centerCard(el, index + 1, true);
     }, 3500);
     return () => window.clearInterval(id);
-  }, [isRow, list.length]);
+  }, [isRow, loopCount]);
 
   const pauseRow = () => {
     pausedRef.current = true;
@@ -299,7 +329,7 @@ export default function ContinueWatchingSection({
       {list.length === 1 ? (
         renderCard(list[0], true)
       ) : (
-        // Several lessons: one row that moves on its own (swipe on phones), no visible bar.
+        // Several lessons: an endless row that moves on its own in one direction (swipe on phones), no visible bar.
         // The card in the middle grows; the others go back to normal size.
         <div
           ref={scrollerRef}
@@ -309,8 +339,6 @@ export default function ContinueWatchingSection({
             WebkitOverflowScrolling: "touch",
             paddingTop: 14,
             paddingBottom: 18,
-            // side space so the first and last cards can sit in the middle too
-            paddingInline: "max(0px, calc(50% - min(39vw, 150px)))",
           }}
           onMouseEnter={pauseRow}
           onMouseLeave={() => resumeRowSoon(1500)}
@@ -319,18 +347,18 @@ export default function ContinueWatchingSection({
           onFocusCapture={pauseRow}
           onBlurCapture={() => resumeRowSoon()}
         >
-          {list.map((entry, i) => {
+          {[0, 1, 2].flatMap((copy) => list.map((entry, j) => ({ copy, entry, i: copy * loopCount + j }))).map(({ copy, entry, i }) => {
             const active = i === activeIndex;
             return (
               <div
-                key={entry.id ?? entry.attributes.chapter.data.id}
+                key={`${copy}-${entry.id ?? entry.attributes.chapter.data.id}`}
                 className="shrink-0"
                 style={{
                   width: "min(78vw, 300px)",
                   scrollSnapAlign: "center",
                   transform: active ? "scale(1.06)" : "scale(0.92)",
                   opacity: active ? 1 : 0.75,
-                  transition: "transform 450ms cubic-bezier(.2,.8,.2,1), opacity 450ms ease, box-shadow 450ms ease",
+                  transition: noAnim ? "none" : "transform 450ms cubic-bezier(.2,.8,.2,1), opacity 450ms ease, box-shadow 450ms ease",
                   borderRadius: 12,
                   boxShadow: active ? "0 18px 36px -20px rgba(45,70,232,0.55)" : "none",
                   position: "relative",

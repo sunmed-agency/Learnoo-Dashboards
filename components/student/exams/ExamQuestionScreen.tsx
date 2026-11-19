@@ -194,7 +194,8 @@ export function ExamQuestionScreen({
       dir={dir}
       {...copyGuardProps}
     >
-      {headerBleed ? (
+      {/* With a banner image, the banner carries the title, progress and timer on one line (no separate header). */}
+      {bannerUrl ? null : headerBleed ? (
         <div className="-mx-4 -mt-4 mb-4 w-[calc(100%+2rem)] max-w-none shrink-0 sm:-mx-5 sm:-mt-5 sm:w-[calc(100%+2.5rem)] lg:-mx-16 lg:w-[calc(100%+8rem)]">
           {headerInner}
         </div>
@@ -202,10 +203,17 @@ export function ExamQuestionScreen({
         <div className="mb-4 w-full shrink-0">{headerInner}</div>
       )}
 
-      <div className="mx-auto   flex w-full max-w-[832px] flex-col gap-4 sm:gap-5">
-        {/* On question pages the banner shows only when the exam has an image (the header already names the exam). */}
+      <div className={`mx-auto flex w-full max-w-[832px] flex-col gap-3 sm:gap-4${bannerUrl ? " pt-1" : ""}`}>
+        {/* On question pages the banner shows only when the exam has an image (otherwise the header names the exam). */}
         {bannerUrl ? (
-          <ExamBanner src={bannerUrl} alt={examTitle} courseTitle={bannerCourseTitle} instructor={bannerInstructor} />
+          <ExamBanner
+            src={bannerUrl}
+            alt={examTitle}
+            courseTitle={bannerCourseTitle}
+            instructor={bannerInstructor}
+            subtitle={questionProgressText}
+            aside={headerAside}
+          />
         ) : null}
 
         <article
@@ -218,7 +226,7 @@ export function ExamQuestionScreen({
             ) : null}
 
             <div
-              className="relative min-h-[min(38vh,300px)] flex-1 overflow-hidden sm:min-h-[min(42vh,340px)]"
+              className="relative min-h-[min(30vh,240px)] flex-1 overflow-hidden sm:min-h-[min(34vh,280px)]"
               aria-label={examTitle}
             >
               <div className="relative z-0 flex flex-col gap-4 sm:gap-5">

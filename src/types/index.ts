@@ -4216,6 +4216,9 @@ export interface FinishQuizAttemptRequest {
 
   total_score: number;
 
+  /** Every answer of the attempt, saved by the server with the finish (one request instead of many). */
+  answers?: { question_id: number; answer_text: string }[];
+
 
 
 }

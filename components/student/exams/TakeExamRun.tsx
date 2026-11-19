@@ -215,22 +215,28 @@ export default function TakeExamRun({
     }
   };
 
+  /** The text saved for a question: the short answer, or the chosen options' text joined with ", ". */
+  const answerTextFor = (q: (typeof questions)[number]): string => {
+    const qid = String(q.id);
+    if (isShortAnswer(q)) return (shortTextsRef.current[qid] ?? '').trim();
+    const selectedIds = selectionsRef.current[qid] ?? [];
+    const ansList = questionAnswers(q);
+    return selectedIds
+      .map((id) => ansList.find((a) => String(a.id) === id)?.attributes?.text?.trim() ?? '')
+      .filter(Boolean)
+      .join(', ');
+  };
+
+  /** Every answered question, sent with the finish request so finishing never waits on queued saves. */
+  const allAnswersPayload = () =>
+    questions
+      .map((q) => ({ question_id: Number(q.id), answer_text: answerTextFor(q) }))
+      .filter((a) => Number.isFinite(a.question_id) && a.answer_text !== '');
+
   const flushCurrentAnswer = async (qid: string): Promise<boolean> => {
     const q = questions.find((x) => String(x.id) === qid);
     if (!q) return true;
-
-    let textToSave = '';
-    if (isShortAnswer(q)) {
-      textToSave = (shortTextsRef.current[qid] ?? '').trim();
-    } else {
-      const selectedIds = selectionsRef.current[qid] ?? [];
-      const ansList = questionAnswers(q);
-      textToSave = selectedIds
-        .map((id) => ansList.find((a) => String(a.id) === id)?.attributes?.text?.trim() ?? '')
-        .filter(Boolean)
-        .join(', ');
-    }
-
+    const textToSave = answerTextFor(q);
     return textToSave ? persistAnswer(qid, textToSave) : true;
   };
 
@@ -261,15 +267,6 @@ export default function TakeExamRun({
     return run;
   };
 
-  /** Waits for the queued saves and retries the ones that failed. True when everything is saved. */
-  const settleSaves = async (): Promise<boolean> => {
-    await saveChainRef.current;
-    for (const qid of Array.from(unsavedRef.current)) {
-      await queueSave(qid);
-    }
-    return unsavedRef.current.size === 0;
-  };
-
   /** Moving between questions never waits on a save any more. */
   const isGoingNext = false;
 
@@ -277,7 +274,8 @@ export default function TakeExamRun({
     if (!current) return;
     if (!isQuestionAnswered(current, selectedForCurrent, currentShortText)) return;
     void queueSave(String(current.id)).then((ok) => {
-      if (!ok) toast.error(t('answerSaveFailed'), { id: 'answer-save-failed' });
+      // After finishing, the server already has every answer (sent with the submit); a late save is refused harmlessly.
+        if (!ok && !isFinished.current) toast.error(t('answerSaveFailed'), { id: 'answer-save-failed' });
     });
     if (!isLast) setCurrentIndex((i) => Math.min(i + 1, total - 1));
   };
@@ -287,7 +285,8 @@ export default function TakeExamRun({
     // Keep what the student picked here; the attempt is re-graded from the saved answers when it ends.
     if (isQuestionAnswered(current, selectedForCurrent, currentShortText)) {
       void queueSave(String(current.id)).then((ok) => {
-        if (!ok) toast.error(t('answerSaveFailed'), { id: 'answer-save-failed' });
+        // After finishing, the server already has every answer (sent with the submit); a late save is refused harmlessly.
+        if (!ok && !isFinished.current) toast.error(t('answerSaveFailed'), { id: 'answer-save-failed' });
       });
     }
     setCurrentIndex((i) => Math.max(i - 1, 0));
@@ -297,23 +296,11 @@ export default function TakeExamRun({
     if (!quiz || !attemptId || isFinished.current) return;
     isFinished.current = true;
 
-    if (current) {
-      const qid = String(current.id);
-      let saved = await queueSave(qid);
-      for (let attempt = 0; !saved && attempt < 2; attempt += 1) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        saved = await queueSave(qid);
-      }
-      // Earlier questions still saving in the background (or that failed) are settled too.
-      await settleSaves().catch(() => false);
-      if (!saved) {
-        console.error('[quiz-user-answer] auto-submit: could not save the current answer after retries');
-      }
-    }
-
+    // Every answer goes with the submit itself (the server saves them before grading), so nothing
+    // has to wait for the per-answer saves still in flight.
     const { score, total_score } = computeExamScore(questions, selectionsRef.current, shortTextsRef.current);
     try {
-      await api.quizAttempts.submit(attemptId, { score, total_score }, { keepalive: true });
+      await api.quizAttempts.submit(attemptId, { score, total_score, answers: allAnswersPayload() }, { keepalive: true });
       clearStudentTakePayload(quizId);
     } catch (err) {
       console.error('Auto-submit failed:', err);
@@ -331,19 +318,15 @@ export default function TakeExamRun({
 
     setFinishing(true);
     try {
-      void queueSave(String(current.id));
-      // Every answer (this one and any still saving in the background) must be saved before submitting.
-      const saved = await settleSaves();
-      if (!saved) {
-        toast.error(t('answerSaveFailed'));
-        return;
-      }
+      // One request: every answer goes with the submit and the server saves them before grading,
+      // so finishing no longer waits for each per-answer save to reach the server first.
       const { score, total_score } = computeExamScore(questions, selectionsRef.current, shortTextsRef.current);
       isFinished.current = true;
 
       const res = (await api.quizAttempts.submit(attemptId, {
         score,
         total_score,
+        answers: allAnswersPayload(),
       })) as FinishQuizAttemptResponse;
 
       writeStudentQuizResultPayload(quizId, {

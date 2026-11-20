@@ -204,7 +204,6 @@ const filterForUser = (items: MenuItem[], user: Parameters<typeof can>[0]): Menu
     if (!supervisor || !item.permission) return !item.supervisorsOnly || supervisor;
     return item.permission !== '-' && can(user, item.permission);
   });
-  if (supervisor) visible.push({ name: '', icon: Settings, path: '/settings/profile', hidden: true });
   return visible.filter((item, i) => !item.section || (visible[i + 1] && !visible[i + 1].section));
 };
 
@@ -357,7 +356,9 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
     const Icon = item.icon;
 
-    const isActive = pathname === item.path || (item.path === '/dashboard' && pathname === '/');
+    // Inner pages (e.g. /students/123) keep their section highlighted.
+    const isActive = pathname === item.path || (item.path === '/dashboard' && pathname === '/')
+      || (!!item.path && item.path !== '/dashboard' && item.path !== '/settings' && pathname.startsWith(`${item.path}/`));
 
     const hasChildren = !!item.children;
 

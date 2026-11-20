@@ -36,7 +36,8 @@ export default function AdminLayout({
       </div>
 
       {/* Main Content Area - Scrollable independently */}
-      <div className="relative z-[1] flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      {/* No z-index here: popups (fixed, z-50) inside a page must rise above the sidebar (z-[2]). */}
+      <div className="relative flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
           <div className="w-full mx-auto">

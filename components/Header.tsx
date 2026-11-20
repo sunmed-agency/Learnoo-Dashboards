@@ -35,6 +35,14 @@ const getPageTitle = (pathname: string, t: (key: string) => string): string => {
     'settings': t('header.titles.settings'),
     'feature-control': t('header.titles.featureControl'),
     'activation': t('header.titles.activation'),
+    'supervisors': t('sidebar.supervisors'),
+    'activity': t('sidebar.activity'),
+    'subscription-requests': t('sidebar.subscriptionRequests'),
+    'pre-activations': t('sidebar.pendingActivations'),
+    'guardians': t('sidebar.guardians'),
+    'schedules': t('sidebar.schedules'),
+    'discussions': t('sidebar.discussions'),
+    'instructors': t('sidebar.instructors'),
   };
 
   // Get first meaningful segment

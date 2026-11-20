@@ -561,11 +561,12 @@ export default function CourseDetailsView({ courseId }: { courseId: string }) {
   }, [instructorName, centerName, subTitle, lectureStatCount, t]);
 
   const tabs: { key: DetailTab; label: string }[] = [
+    // Order: lectures & files, exams, community, live, notes, library.
     { key: "lectures", label: t("tabs.lectures") },
     { key: "exams", label: t("tabs.exams") },
-    { key: "notes", label: t("tabs.notes") },
-    { key: "liveSession", label: t("tabs.liveSession") },
     { key: "community", label: t("tabs.community") },
+    { key: "liveSession", label: t("tabs.liveSession") },
+    { key: "notes", label: t("tabs.notes") },
     { key: "library", label: t("tabs.library") },
   ];
 
@@ -728,7 +729,7 @@ export default function CourseDetailsView({ courseId }: { courseId: string }) {
                       <Radio className="size-7" strokeWidth={1.75} />
                     </div>
                     <p className="max-w-md text-sm font-medium text-[#64748B] sm:text-base">
-                      {locale === "ar" ? "لا توجد جلسات مباشرة لهذا الكورس" : "No live sessions for this course"}
+                      {locale === "ar" ? "لا توجد جلسات مباشرة لهذه المادة" : "No live sessions for this course"}
                     </p>
                   </div>
                 );
@@ -1122,9 +1123,8 @@ function ChapterRow({
               <Eye className="size-3.5 shrink-0 opacity-80" strokeWidth={2} />
               {viewsLabel}
             </span>
-            <span className="font-medium">
-              {t("partsCount", { count: partCount })}
-            </span>
+            {/* The lecture's lesson count ("4 دروس") repeated on every lesson is removed: it was the
+                same number on each row and read as if the lesson itself had parts. */}
           </div>
           <div className="mt-3 flex flex-wrap gap-2 sm:mt-4 sm:gap-2.5">
             {chapterHasExam && (

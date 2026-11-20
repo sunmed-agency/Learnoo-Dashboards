@@ -147,9 +147,9 @@ export default function StudentElectronicLibrary() {
 
       <div className="mb-5 rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-sm sm:mb-6 sm:p-5">
         <label className="mb-4 block text-sm">
-          {locale === 'ar' ? 'تصفية حسب الدورة' : 'Filter by course'}
+          {locale === 'ar' ? 'تصفية حسب المادة' : 'Filter by course'}
           <select value={courseId} onChange={e => setCourseId(e.target.value)} className="mt-2 w-full rounded-xl border p-3">
-            <option value="all">{locale === 'ar' ? 'كل الدورات' : 'All courses'}</option>
+            <option value="all">{locale === 'ar' ? 'كل المواد' : 'All courses'}</option>
             {(courses ?? []).map(course => <option key={course.id} value={String(course.id)}>{course.attributes.title}</option>)}
           </select>
         </label>

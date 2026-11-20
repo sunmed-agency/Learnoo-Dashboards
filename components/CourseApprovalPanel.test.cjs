@@ -50,7 +50,7 @@ for (const role of ['Super Admin']) {
       await elements(tree).find(node => node.type === 'button' && node.props.children === s.messages.courses.review.reject).props.onClick();
       assert.deepEqual(s.requests[1], [41, 2, 'Fix lesson title']);
       assert.equal(s.refreshed(), 2);
-      assert.match(renderToStaticMarkup(s.render()), locale === 'ar' ? /مخفي عن الطلاب/ : /Hidden from students/);
+      assert.match(renderToStaticMarkup(s.render()), locale === 'ar' ? /مخفية عن الطلاب/ : /Hidden from students/);
     });
   }
 }

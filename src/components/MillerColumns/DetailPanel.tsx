@@ -175,7 +175,7 @@ export function DetailPanel({
 
         {node.type === "course" && (
           <div className="space-y-4">
-            {!isAdmin && <a href={`${isInstructor ? '/doctor' : ''}/courses/${node.data.id}#course-review`} className="block text-sm font-medium text-primary">{locale === 'ar' ? 'مراجعة الكورس وحالة الموافقة' : 'Course review and approval status'}</a>}
+            {!isAdmin && <a href={`${isInstructor ? '/doctor' : ''}/courses/${node.data.id}#course-review`} className="block text-sm font-medium text-primary">{locale === 'ar' ? 'مراجعة المادة وحالة الموافقة' : 'Course review and approval status'}</a>}
             {node.meta?.thumbnail && (
               <div className="w-full h-32 overflow-hidden rounded-lg border border-gray-100">
                 <img
@@ -215,7 +215,7 @@ export function DetailPanel({
                 <p className="text-xs text-gray-700">
                   {(node.data as Course).attributes.max_views_per_student}
                 </p>
-                <p className="mt-1 text-[10px] text-gray-500">{locale === 'ar' ? 'حد المشاهدات لكل طالب في كل محاضرة. يُطبّق الأقل من حد الكورس وحد المحاضرة؛ صفر يعني بلا حد.' : 'Views per student for each lesson. The lower positive course or lesson limit applies; zero means unlimited.'}</p>
+                <p className="mt-1 text-[10px] text-gray-500">{locale === 'ar' ? 'حد المشاهدات لكل طالب في كل محاضرة. يُطبّق الأقل من حد المادة وحد المحاضرة؛ صفر يعني بلا حد.' : 'Views per student for each lesson. The lower positive course or lesson limit applies; zero means unlimited.'}</p>
               </div>}
               <div className="col-span-2 border-t border-gray-100 pt-2 flex justify-between">
                 <div>

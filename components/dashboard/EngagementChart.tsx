@@ -18,7 +18,7 @@ export default function EngagementChart({ data }: EngagementChartProps) {
 
   return (
     <div className="bg-white border border-[#EEEEEE] rounded-xl p-8 shadow-sm flex flex-col gap-6 h-[404px]">
-      <h4 className="text-[15.3px] font-medium text-[#111827]">{ar ? 'التفاعل مع الكورسات' : 'Course Engagement'}</h4>
+      <h4 className="text-[15.3px] font-medium text-[#111827]">{ar ? 'التفاعل مع المواد' : 'Course Engagement'}</h4>
       
       <div className="flex-1 relative mt-4">
         {/* Y-Axis Labels */}

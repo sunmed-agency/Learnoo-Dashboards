@@ -25,7 +25,7 @@ export const LANDING_CONTENT = {
       course: 'التشريح · المحاضرة 4',
       progress: '68% خلّصت',
       live: 'مباشر الآن',
-      liveTitle: 'مراجعة الفصل الثالث',
+      liveTitle: 'مراجعة الدرس الثالث',
       exam: 'اختبار قصير',
       examScore: '18 / 20',
       summary: 'ملخص جديد',

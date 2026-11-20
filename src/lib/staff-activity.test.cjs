@@ -16,7 +16,7 @@ test('client login and lecture examples have readable bilingual labels', () => {
 });
 
 test('resource updates and deletions hide numeric and ULID identifiers', () => {
-  assert.equal(format('PATCH /api/v1/course/123?source=dashboard', 'ar'), 'تعديل دورة');
+  assert.equal(format('PATCH /api/v1/course/123?source=dashboard', 'ar'), 'تعديل مادة');
   assert.equal(format('DELETE v1/student/01m4xsdmyvgpesc873pzeghed8', 'en'), 'Delete user account');
   assert.equal(format('PUT v1/live-room/139', 'ar'), 'تعديل جلسة بث مباشر');
 });
@@ -57,7 +57,7 @@ test('exam, live session and notification entries have readable labels', () => {
 
 test('an exam entry lists every setting the Owner asked for in Arabic and English', () => {
   assert.deepEqual(rows(examActivityRows(exam, 'ar')), {
-    'النوع': 'امتحان', 'حالة النشر': 'منشور', 'الإتاحة': 'مشمول مع الدورة', 'عدد الأسئلة': '2', 'الدرجة الكلية': '10',
+    'النوع': 'امتحان', 'حالة النشر': 'منشور', 'الإتاحة': 'مشمول مع المادة', 'عدد الأسئلة': '2', 'الدرجة الكلية': '10',
     'درجة النجاح': '60%', 'المدة': '45 دقيقة', 'عدد المحاولات': '2', 'يفتح': new Date(exam.start_time).toLocaleString('ar'), 'يغلق': 'بدون موعد إغلاق',
   });
   const en = rows(examActivityRows({ ...exam, type: 'homework', status: 'draft', is_public: 'false', start_time: null, courses: [course(1, 'Accounting'), course(2, 'Economics')] }, 'en'));
@@ -67,7 +67,7 @@ test('an exam entry lists every setting the Owner asked for in Arabic and Englis
   assert.equal(en.Duration, '45 min');
   assert.equal(en.Opens, 'Open right away');
   assert.equal(en.Courses, 'Accounting, Economics');
-  assert.equal(rows(examActivityRows({ ...exam, courses: [] }, 'ar'))['الدورات'], 'غير مرتبط بدورة');
+  assert.equal(rows(examActivityRows({ ...exam, courses: [] }, 'ar'))['المواد'], 'غير مرتبط بمادة');
 });
 
 test('an exam edit lists only what changed, from the old value to the new one', () => {
@@ -85,7 +85,7 @@ test('a live session entry shows access, publication, times and course changes',
   const live = { id: 3, title: 'Revision', is_public: 'true', publication_status: 'draft', started_at: '2026-12-05T18:00:00+02:00', ended_at: null,
     courses: [course(1, 'Accounting'), course(2, 'Economics')], previous: { is_public: 'false', courses: [course(1, 'Accounting')] } };
   assert.deepEqual(rows(liveSessionActivityRows(live, 'ar')), {
-    'الإتاحة': 'عام', 'حالة النشر': 'مسودة', 'يبدأ': new Date(live.started_at).toLocaleString('ar'), 'ينتهي': '—', 'الدورات': 'Accounting، Economics',
+    'الإتاحة': 'عام', 'حالة النشر': 'مسودة', 'يبدأ': new Date(live.started_at).toLocaleString('ar'), 'ينتهي': '—', 'المواد': 'Accounting، Economics',
   });
   assert.deepEqual(liveSessionChangeRows(live, 'en'), [
     { label: 'Access', value: 'from Private to Public' },
@@ -96,6 +96,6 @@ test('a live session entry shows access, publication, times and course changes',
 test('a notification names who it was sent to', () => {
   const sent = { title: 'T', message: 'M', recipients: 5 };
   assert.equal(notificationAudience({ ...sent, audience: 'all', courses: [] }, 'ar'), 'كل الطلاب');
-  assert.equal(notificationAudience({ ...sent, audience: 'courses', courses: [course(1, 'Accounting')] }, 'ar'), 'طلاب الدورة');
+  assert.equal(notificationAudience({ ...sent, audience: 'courses', courses: [course(1, 'Accounting')] }, 'ar'), 'طلاب المادة');
   assert.equal(notificationAudience({ ...sent, audience: 'courses', courses: [course(1, 'Accounting'), course(2, null)] }, 'en'), 'Students of: Accounting, #2');
 });

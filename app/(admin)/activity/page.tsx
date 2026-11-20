@@ -88,7 +88,7 @@ export default function OwnerActivityPage() {
           <option value="">{ar ? 'كل الأنواع' : 'All types'}</option>
           <option value="device-requests">{ar ? 'طلبات نقل الأجهزة' : 'Device transfer requests'}</option>
           <option value="device-decisions">{ar ? 'اعتماد الأجهزة وإلغاء الطلبات والسماح بالتغيير' : 'Device approvals, cancellations and resets'}</option>
-          <option value="courses">{ar ? 'الدورات' : 'Courses'}</option>
+          <option value="courses">{ar ? 'المواد' : 'Courses'}</option>
           <option value="lessons">{ar ? 'المحاضرات والدروس' : 'Lectures and lessons'}</option>
           <option value="accounts">{ar ? 'حسابات المستخدمين' : 'User accounts'}</option>
           <option value="activations">{ar ? 'التفعيلات' : 'Activations'}</option>

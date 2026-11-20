@@ -15,6 +15,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { LatestExamSummary } from "@/src/services/student/exam.service";
 import { buildStudentStartExamHref } from "@/src/lib/student-start-exam-href";
 import { useCountdown } from "@/src/hooks/useCountdown";
+import { CountdownTiles } from "@/components/student/CountdownTiles";
 
 interface NewestExamsProps {
   exams?: LatestExamSummary[];
@@ -69,12 +70,16 @@ function ExamActionButton({
   return (
     <Link
       href={startHref}
-      className="inline-flex h-10 items-center gap-2 rounded-xl bg-orange-50 border border-orange-200 px-4 text-sm font-bold text-orange-700 shadow-sm transition hover:bg-orange-100 hover:border-orange-300"
+      className="inline-flex items-center gap-2 rounded-xl border border-[#E6EAF6] bg-white px-2.5 py-1.5 shadow-sm transition hover:border-[#2D46E8]/30 hover:shadow-md"
     >
-      <Timer size={15} className="shrink-0 animate-pulse text-orange-600" />
-      <span className="font-mono tracking-wider">
-        {countdown.isReady ? countdown.formatted : t("upcomingBadge")}
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#FDEEEB] text-[#E8766A]">
+        <Timer size={16} className="animate-pulse" aria-hidden />
       </span>
+      {countdown.isReady ? (
+        <CountdownTiles countdown={countdown} size="sm" />
+      ) : (
+        <span className="text-sm font-bold text-[#1F33C4]">{t("upcomingBadge")}</span>
+      )}
     </Link>
   );
 }

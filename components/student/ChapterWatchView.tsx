@@ -1264,9 +1264,9 @@ export default function ChapterWatchView({
                   {([
                     { key: 'lectures', icon: Layers },
                     { key: 'exams', icon: ClipboardList },
-                    { key: 'notes', icon: NotebookPen },
-                    { key: 'liveSession', icon: Video },
                     { key: 'community', icon: Users },
+                    { key: 'liveSession', icon: Video },
+                    { key: 'notes', icon: NotebookPen },
                     { key: 'library', icon: Library },
                   ] as const).map(({ key, icon: Icon }) => (
                     <Link
@@ -1488,23 +1488,7 @@ export default function ChapterWatchView({
                         <span>{showPdf ? t('hidePdf') : t('showPdf')}</span>
                       </button>
                     ) : null}
-
-                    <button
-                      type="button"
-                      onClick={() => { setDiscussionsOpen(true); setSideTab('discussions'); }}
-                      className={`inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border px-8 py-3 text-sm font-semibold text-white transition active:bg-slate-800/80 max-md:px-12 md:flex-1 md:min-h-0 md:w-auto md:shrink-0 md:px-5 md:py-2.5 ${discussionsOpen
-                        ? 'border-[#2D43D1]/70 bg-[#2D43D1]/20 hover:bg-[#2D43D1]/30'
-                        : 'border-slate-600/90 bg-slate-800/90 hover:bg-slate-800'
-                        }`}
-                      aria-expanded={discussionsOpen}
-                    >
-                      <MessageCircle className="size-4 shrink-0" aria-hidden />
-                      {t('discussionsCount', { count: discussions.length })}
-                      <ChevronDown
-                        className={`size-4 shrink-0 transition ${discussionsOpen ? 'rotate-180' : ''}`}
-                        aria-hidden
-                      />
-                    </button>
+                    {/* The discussions live in the side card's «النقاشات» tab only (the button that was here is removed). */}
                   </div>
                 </div>
               </div>

@@ -30,7 +30,7 @@ export default function PlatformTimetable({ canUpload = false }: { canUpload?: b
 
   const upload = async (event: FormEvent<HTMLFormElement>, courseIds: string[], attachmentId?: string) => {
     event.preventDefault();
-    if (!courseIds.length) { toast.error(ar ? 'اختر دورة واحدة على الأقل' : 'Select at least one course'); return; }
+    if (!courseIds.length) { toast.error(ar ? 'اختر مادة واحدة على الأقل' : 'Select at least one course'); return; }
     const form = event.currentTarget;
     const files = new FormData(form).getAll('file') as File[];
     setBusy(true);
@@ -49,13 +49,13 @@ export default function PlatformTimetable({ canUpload = false }: { canUpload?: b
   };
 
   return <div className="space-y-6 pb-12">
-    <h1 className="text-2xl font-bold">{ar ? 'جداول الدورات' : 'Course schedules'}</h1>
+    <h1 className="text-2xl font-bold">{ar ? 'جداول المواد' : 'Course schedules'}</h1>
     {canUpload && <form className="space-y-3 rounded-xl border bg-white p-4" onSubmit={event => upload(event, selectedCourses)}>
-      <CourseTreeSelect label={ar ? 'الدورات' : 'Courses'} multiple value={selectedCourses} onMultiChange={setSelectedCourses} coursesData={courses ?? []} required />
+      <CourseTreeSelect label={ar ? 'المواد' : 'Courses'} multiple value={selectedCourses} onMultiChange={setSelectedCourses} coursesData={courses ?? []} required />
       <label className="block text-sm">{ar ? 'ملفات الجدول (PDF أو صور)' : 'Schedule files (PDF or images)'}<input name="file" type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" required className="mt-2 max-w-full" /></label>
       <button disabled={busy} className="rounded-xl bg-primary px-4 py-3 text-white disabled:opacity-50">{ar ? 'إضافة ملفات الجدول' : 'Add schedule files'}</button>
     </form>}
-    <input type="search" aria-label={ar ? 'البحث في الجداول' : 'Search schedules'} placeholder={ar ? 'ابحث باسم الدورة أو الملف' : 'Search by course or file name'} value={search} onChange={event => { setSearch(event.target.value); setPage(1); }} className="w-full rounded-xl border bg-white p-3" />
+    <input type="search" aria-label={ar ? 'البحث في الجداول' : 'Search schedules'} placeholder={ar ? 'ابحث باسم المادة أو الملف' : 'Search by course or file name'} value={search} onChange={event => { setSearch(event.target.value); setPage(1); }} className="w-full rounded-xl border bg-white p-3" />
     {error ? <p role="alert">{ar ? 'تعذر تحميل الجداول' : 'Could not load schedules'}</p> : loading ? <p>{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : <>
       {visible.slice((currentPage - 1) * 10, currentPage * 10).map(entry => <article key={entry.id} className="space-y-3 rounded-xl border bg-white p-4">
         <h2 className="font-bold">{entry.title}</h2>

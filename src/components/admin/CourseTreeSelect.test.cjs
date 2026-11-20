@@ -13,7 +13,7 @@ const courses = [
 ];
 const lectures = [
   { id: '20', attributes: { title: 'فيديوهات انتظام', course_id: 10 } },
-  { id: '21', attributes: { title: 'الجزء الخاص بفيديوهات الشرح', course_id: 11 } },
+  { id: '21', attributes: { title: 'الدرس الخاص بفيديوهات الشرح', course_id: 11 } },
   { id: '22', attributes: { title: 'مراجعة نهائية', course_id: 11 } },
   { id: '23', attributes: { title: 'فيديوهات المحاسبة', course_id: 12 } },
 ];

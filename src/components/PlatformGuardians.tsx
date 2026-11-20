@@ -19,12 +19,12 @@ export default function PlatformGuardians() {
     <h1 className="text-2xl font-bold">{ar ? 'أولياء الأمور والتواصل' : 'Guardians and communication'}</h1>
     {error && <p role="alert">{ar ? 'تعذر تحميل أولياء الأمور' : 'Could not load guardians'}</p>}
     {!students.length && !error && <p>{ar ? 'لا يوجد أولياء أمور مرتبطون بالطلاب بعد' : 'No guardians linked to students yet'}</p>}
-    {students.map(student => <article key={student.id} className="space-y-3 rounded-xl border bg-white p-4"><h2 className="font-bold">{student.first_name} {student.last_name}</h2><details className="rounded-xl bg-gray-50 p-3"><summary className="cursor-pointer font-medium">{ar ? 'بيانات الطالب ودوراته' : 'Student details and courses'}</summary><div className="mt-3 space-y-2 text-sm">
+    {students.map(student => <article key={student.id} className="space-y-3 rounded-xl border bg-white p-4"><h2 className="font-bold">{student.first_name} {student.last_name}</h2><details className="rounded-xl bg-gray-50 p-3"><summary className="cursor-pointer font-medium">{ar ? 'بيانات الطالب ومواده' : 'Student details and courses'}</summary><div className="mt-3 space-y-2 text-sm">
       <p>{ar ? 'رقم الطالب' : 'Student code'}: {student.student_code || '—'}</p>
       <p>{ar ? 'الهاتف' : 'Phone'}: {student.phone ? <a href={`tel:${student.phone}`} className="text-primary underline">{student.phone}</a> : '—'}</p>
       <p>{ar ? 'البريد' : 'Email'}: {student.email || '—'}</p>
       <p>{[student.university?.name, student.faculty?.name, ...(student.centers ?? []).map(center => center.name)].filter(Boolean).join(' / ') || '—'}</p>
-      <p>{ar ? 'الدورات' : 'Courses'}: {(student.activated_courses ?? []).map(course => course.title).join('، ') || '—'}</p>
+      <p>{ar ? 'المواد' : 'Courses'}: {(student.activated_courses ?? []).map(course => course.title).join('، ') || '—'}</p>
     </div></details>{student.parents.map(parent => <div key={parent.id} className="flex flex-wrap justify-between gap-3"><p>{parent.first_name} {parent.last_name} · {parent.email} {parent.phone && <a href={`tel:${parent.phone}`} className="text-primary underline">{parent.phone}</a>}</p><button className="text-primary underline" onClick={() => { setRecipient({ student: student.id, parent: parent.id }); setContent(''); }}>{ar ? 'إرسال رسالة' : 'Send message'}</button></div>)}</article>)}
     {recipient && <form className="space-y-3 rounded-xl border bg-white p-4" onSubmit={async e => {
       e.preventDefault(); setBusy(true);

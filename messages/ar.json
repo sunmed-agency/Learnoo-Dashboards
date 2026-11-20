@@ -189,7 +189,7 @@
   },
   "discussions": {
     "pageTitle": "إدارة النقاشات",
-    "pageDescription": "عرض والرد على وحذف نقاشات الطلاب في جميع الفصول.",
+    "pageDescription": "عرض والرد على وحذف نقاشات الطلاب في جميع الدروس.",
     "reply": "رد",
     "delete": "حذف",
     "cancel": "الغاء",
@@ -197,13 +197,13 @@
     "noDiscussions": "لم يتم العثور على نقاشات.",
     "postedBy": "بواسطة {name}",
     "replies": "ردود",
-    "chapter": "الفصل",
+    "chapter": "الدرس",
     "lecture": "المحاضرة",
-    "course": "الدورة",
+    "course": "المادة",
     "moment": "اللحظة",
     "at": "في",
     "type": "النوع",
-    "allChapters": "جميع الفصول",
+    "allChapters": "جميع الدروس",
     "actions": "إجراءات",
     "badges": {
       "student": "طالب",
@@ -222,7 +222,7 @@
     "recordVoiceFirst": "يرجى تسجيل رسالة صوتية أولًا",
     "showReplies": "عرض الردود",
     "hideReplies": "إخفاء الردود",
-    "watchMoment": "شاهد هذا الجزء من الدرس"
+    "watchMoment": "شاهد هذه اللحظة من الدرس"
   },
   "auth": {
     "login": {
@@ -355,7 +355,7 @@
           },
           "contentUsage": {
             "title": "سادسًا: استخدام المحتوى",
-            "content": "جميع المواد التعليمية مقدمة للاستخدام الشخصي فقط.\n\nويمنع منعًا باتًا:\n\n- تصوير الشاشة أو تسجيل المحاضرات.\n- تحميل الفيديوهات بأي وسيلة.\n- نسخ الملفات أو المذكرات.\n- إعادة نشر المحتوى.\n- مشاركة المحتوى مع الآخرين.\n- بيع أو تأجير المحتوى.\n- نشر روابط الدورات.\n- مشاركة الحساب مع الغير.\n- استخدام برامج أو وسائل لتجاوز وسائل الحماية التقنية."
+            "content": "جميع المواد التعليمية مقدمة للاستخدام الشخصي فقط.\n\nويمنع منعًا باتًا:\n\n- تصوير الشاشة أو تسجيل المحاضرات.\n- تحميل الفيديوهات بأي وسيلة.\n- نسخ الملفات أو المذكرات.\n- إعادة نشر المحتوى.\n- مشاركة المحتوى مع الآخرين.\n- بيع أو تأجير المحتوى.\n- نشر روابط المواد.\n- مشاركة الحساب مع الغير.\n- استخدام برامج أو وسائل لتجاوز وسائل الحماية التقنية."
           },
           "intellectualProperty": {
             "title": "سابعًا: حقوق الملكية الفكرية",
@@ -371,7 +371,7 @@
           },
           "tests": {
             "title": "عاشرًا: الاختبارات والشهادات",
-            "content": "- تمنح الشهادات وفقًا لشروط كل دورة.\n- للإدارة الحق في إلغاء نتائج أي اختبار يثبت فيه الغش.\n- لا يجوز تزوير أو تعديل أي شهادة صادرة عن المنصة."
+            "content": "- تمنح الشهادات وفقًا لشروط كل مادة.\n- للإدارة الحق في إلغاء نتائج أي اختبار يثبت فيه الغش.\n- لا يجوز تزوير أو تعديل أي شهادة صادرة عن المنصة."
           },
           "accountTermination": {
             "title": "الحادي عشر: تعليق أو إنهاء الحساب",
@@ -424,9 +424,9 @@
       "effects": {
         "profile": "يتم حذف ملفك الشخصي (الاسم ورقم الهاتف والبريد الإلكتروني والصورة).",
         "content": "يتم حذف منشوراتك وتعليقاتك وأسئلتك وتقدمك ومحاولات الامتحانات.",
-        "access": "يتم إلغاء تفعيل كورساتك وتسجيل خروجك من جميع الأجهزة.",
-        "financialRecord": "نحتفظ بسجل رقم الحساب وتفعيل الكورسات والأكواد والأسعار لمدة 5 سنوات لأغراض التقارير المالية، دون الاسم أو رقم الهاتف أو البريد الإلكتروني.",
-        "irreversible": "يتم الحذف بعد 7 أيام من طلبك. يمكنك إلغاؤه من هذه الصفحة قبل ذلك. بعدها لا يمكن التراجع؛ الكورسات والمحتوى الذي كنت مشتركًا فيه لا يتأثر."
+        "access": "يتم إلغاء تفعيل موادك وتسجيل خروجك من جميع الأجهزة.",
+        "financialRecord": "نحتفظ بسجل رقم الحساب وتفعيل المواد والأكواد والأسعار لمدة 5 سنوات لأغراض التقارير المالية، دون الاسم أو رقم الهاتف أو البريد الإلكتروني.",
+        "irreversible": "يتم الحذف بعد 7 أيام من طلبك. يمكنك إلغاؤه من هذه الصفحة قبل ذلك. بعدها لا يمكن التراجع؛ المواد والمحتوى الذي كنت مشتركًا فيه لا يتأثر."
       },
       "phone": "رقم هاتف الحساب المراد حذفه",
       "phonePlaceholder": "أدخل رقم هاتفك",
@@ -522,7 +522,7 @@
   },
   "sidebar": {
     "attendance": "الحضور",
-    "courseProgress": "التقدم في الدورات",
+    "courseProgress": "التقدم في المواد",
     "engagement": "المشاركة",
     "teacherFeedback": "ملاحظات المدرسين",
     "mainMenu": "القائمة الرئيسية",
@@ -607,7 +607,7 @@
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
-    "searchPlaceholder": "ابحث عن الدورات، المحاضرات، الاختبارات...",
+    "searchPlaceholder": "ابحث عن المواد، المحاضرات، الاختبارات...",
     "notifications": "الإشعارات",
     "new": "جديد",
     "noNotifications": "لا توجد إشعارات.",
@@ -616,8 +616,8 @@
     "viewAllNotifications": "عرض كل الإشعارات",
     "justNow": "الآن",
     "notificationItems": {
-      "courseTitle": "تم رفع دورة جديدة",
-      "courseMessage": "دورة الرياضيات متاحة الآن.",
+      "courseTitle": "تم رفع مادة جديدة",
+      "courseMessage": "مادة الرياضيات متاحة الآن.",
       "examTitle": "تذكير بالاختبار",
       "examMessage": "اختبار الفيزياء يبدأ غداً.",
       "lectureTitle": "محاضرة جديدة",
@@ -641,7 +641,7 @@
       "universities": "الجامعات",
       "levels": "المستويات",
       "lectures": "المحاضرات",
-      "chapters": "الفصول",
+      "chapters": "الدروس",
       "exams": "الاختبارات والأسئلة",
       "academicStructure": "الهيكل الأكاديمي",
       "contentManager": "مدير المحتوى",
@@ -665,13 +665,13 @@
   },
   "instructors": {
     "publishing": {
-      "title": "نشر الكورسات",
-      "description": "اختر طريقة اعتماد كورسات هذا المدرس.",
+      "title": "نشر المواد",
+      "description": "اختر طريقة اعتماد مواد هذا المدرس.",
       "review": "بعد موافقة الإدارة",
-      "reviewHint": "تظل الكورسات الجديدة مخفية عن الطلاب حتى يعتمدها الأونر.",
+      "reviewHint": "تظل المواد الجديدة مخفية عن الطلاب حتى يعتمدها الأونر.",
       "automatic": "بدون انتظار الموافقة",
-      "automaticHint": "تُعتمد الكورسات الجديدة تلقائيًا، مع إرسال إشعار للإدارة.",
-      "existingCourses": "عند حفظ «بدون انتظار الموافقة»، تُعتمد الكورسات الحالية المعلقة أيضًا. تظل الكورسات المرفوضة وحالة المسودة وتفعيلات الطلاب كما هي."
+      "automaticHint": "تُعتمد المواد الجديدة تلقائيًا، مع إرسال إشعار للإدارة.",
+      "existingCourses": "عند حفظ «بدون انتظار الموافقة»، تُعتمد المواد الحالية المعلقة أيضًا. تظل المواد المرفوضة وحالة المسودة وتفعيلات الطلاب كما هي."
     },
     "pageTitle": "إدارة المدربين",
     "pageDescription": "إدارة حسابات المدربين والتفاصيل.",
@@ -723,7 +723,7 @@
     "home": {
       "welcome": {
         "title": "مرحباً بك",
-        "activeCourses": "الكورسات المفعلة",
+        "activeCourses": "المواد المفعلة",
         "liveToday": "بث مباشر اليوم",
         "upcomingExams": "قيد المشاهدة",
         "notes": "ملاحظات وملخصات",
@@ -739,7 +739,7 @@
       },
       "quickActivation": {
         "title": "تفعيل سريع",
-        "description": "أدخل كود التفعيل لفتح الكورس أو المحاضرة.",
+        "description": "أدخل كود التفعيل لفتح المادة أو المحاضرة.",
         "button": "فعّل الآن",
         "placeholder": "أدخل كود التفعيل"
       },
@@ -759,23 +759,23 @@
         "fallbackTitle": "قسم",
         "chooseLevel": "اختاري المستوى التالي",
         "back": "رجوع",
-        "courses": "كورسات",
+        "courses": "مواد",
         "lectures": "محاضرات",
         "notes": "ملاحظات",
         "exams": "اختبارات",
         "students": "طلاب",
         "empty": "لا يوجد محتوى متاح هنا",
         "activation": {
-          "button": "تفاصيل الدورة",
-          "title": "تفاصيل الدورة",
-          "description": "أدخلي كود التفعيل الخاص بهذا الكورس",
+          "button": "تفاصيل المادة",
+          "title": "تفاصيل المادة",
+          "description": "أدخل كود التفعيل الخاص بهذه المادة",
           "placeholder": "اكتبي كود التفعيل",
           "submit": "تفعيل الآن",
           "loading": "جارٍ التفعيل...",
           "codeRequired": "من فضلك أدخلي كود التفعيل",
-          "failed": "فشل تفعيل الكورس",
-          "success": "تم تفعيل الكورس بنجاح",
-          "error": "حدث خطأ أثناء تفعيل الكورس"
+          "failed": "فشل تفعيل المادة",
+          "success": "تم تفعيل المادة بنجاح",
+          "error": "حدث خطأ أثناء تفعيل المادة"
         }
       },
       "courses": {
@@ -789,7 +789,7 @@
         "emptyDescription": "لا توجد حصص مباشرة قادمة حالياً، تحقق مرة أخرى لاحقاً.",
         "fallbackTitle": "حصة مباشرة",
         "unknownInstructor": "مدرس غير معروف",
-        "unknownCourse": "الكورس غير متاح",
+        "unknownCourse": "المادة غير متاحة",
         "unknownTime": "الوقت غير متاح"
       },
       "notes": {
@@ -811,7 +811,7 @@
         "upcomingBadge": "قريباً",
         "durationMinutes": "{count} دقيقة",
         "questionsLabel": "{count} سؤال",
-        "courseFallback": "الكورس"
+        "courseFallback": "المادة"
       },
       "posts": {
         "title": "أحدث منشورات المجتمع",
@@ -855,13 +855,13 @@
     },
     "form": {
       "addTitle": "إضافة طالب جديد",
-      "addDescription": "إنشاء حساب طالب جديد وتعيين الدورات.",
+      "addDescription": "إنشاء حساب طالب جديد وتعيين المواد.",
       "editTitle": "تعديل الطالب",
-      "editDescription": "تحديث تفاصيل حساب الطالب وتعيينات الدورات.",
+      "editDescription": "تحديث تفاصيل حساب الطالب وتعيينات المواد.",
       "sections": {
         "personal": "المعلومات الشخصية",
         "academic": "المعلومات الأكاديمية",
-        "centers": "المراكز والدورات",
+        "centers": "المراكز والمواد",
         "profileImage": "الصورة الشخصية",
         "accountStatus": "حالة الحساب"
       },
@@ -875,15 +875,15 @@
         "university": "الجامعة",
         "faculty": "الكلية",
         "centers": "المراكز (اختيار متعدد)",
-        "courses": "الدورات المعينة (اختيار متعدد)",
+        "courses": "المواد المعينة (اختيار متعدد)",
         "status": "الحالة",
         "profileImage": "الصورة الشخصية",
         "selectUniversity": "اختر الجامعة",
         "selectFaculty": "اختر الكلية",
         "selectCenter": "اختر المركز",
-        "selectCourse": "اختر الدورة",
+        "selectCourse": "اختر المادة",
         "noCentersSelected": "لم يتم اختيار مراكز",
-        "noCoursesSelected": "لم يتم اختيار دورات",
+        "noCoursesSelected": "لم يتم اختيار مواد",
         "feedback": "ملاحظات وتوجيهات",
         "placeholders": {
           "firstName": "أحمد",
@@ -908,7 +908,7 @@
         "sections": {
           "personal": "المعلومات الشخصية",
           "academic": "المعلومات الأكاديمية",
-          "enrolledCourses": "الدورات المسجلة",
+          "enrolledCourses": "المواد المسجلة",
           "examResults": "نتائج الامتحانات",
           "security": "الأمان والوصول إلى الحساب",
           "centers": "المراكز",
@@ -924,7 +924,7 @@
           "university": "الجامعة",
           "faculty": "الكلية",
           "lectures": "محاضرات",
-          "chapters": "فصول",
+          "chapters": "دروس",
           "exams": "امتحانات",
           "exam": "الامتحان",
           "score": "الدرجة",
@@ -937,7 +937,7 @@
           "lastIp": "آخر عنوان IP",
           "resetPassword": "إعادة تعيين كلمة المرور"
         },
-        "noCourses": "لم يتم العثور على دورات مسجلة",
+        "noCourses": "لم يتم العثور على مواد مسجلة",
         "noExams": "لم يتم العثور على نتائج امتحانات",
         "noCenters": "لم يتم تعيين مراكز",
         "loadError": "فشل تحميل بيانات الطالب",
@@ -955,8 +955,8 @@
   "dashboard": {
     "stats": {
       "totalStudents": "إجمالي الطلاب",
-      "activeCourses": "الدورات النشطة",
-      "draftCourses": "الدورات المسودة",
+      "activeCourses": "المواد النشطة",
+      "draftCourses": "المواد المسودة",
       "liveSessions": "إجمالي الجلسات المباشرة",
       "liveSessionsToday": "الجلسات المباشرة اليوم",
       "notesCreated": "الملاحظات المنشأة",
@@ -966,17 +966,17 @@
     "quickActions": {
       "title": "إجراءات سريعة",
       "addStudent": "إضافة طالب",
-      "addCourse": "إضافة دورة",
+      "addCourse": "إضافة مادة",
       "liveSession": "جلسة مباشرة",
       "notify": "إشعار",
       "addToLibrary": "إضافة إلى المكتبة"
     }
   },
   "courses": {
-    "pageTitle": "إدارة الدورات",
-    "pageDescription": "إنشاء وإدارة الدورات، وتعيين المدرسين والمراكز.",
-    "createCourse": "إنشاء دورة",
-    "searchPlaceholder": "البحث في الدورات...",
+    "pageTitle": "إدارة المواد",
+    "pageDescription": "إنشاء وإدارة المواد، وتعيين المدرسين والمراكز.",
+    "createCourse": "إنشاء مادة",
+    "searchPlaceholder": "البحث في المواد...",
     "allStatuses": "جميع الحالات",
     "allApprovals": "جميع الموافقات",
     "active": "نشط",
@@ -984,10 +984,10 @@
     "approved": "موافق عليه",
     "pending": "قيد الانتظار",
     "declined": "مرفوض",
-    "noCourses": "لم يتم العثور على دورات. أنشئ دورتك الأولى!",
-    "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذه الدورة؟",
-    "deleteSuccess": "تم حذف الدورة بنجاح",
-    "deleteError": "فشل حذف الدورة",
+    "noCourses": "لم يتم العثور على مواد. أنشئ مادتك الأولى!",
+    "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذه المادة؟",
+    "deleteSuccess": "تم حذف المادة بنجاح",
+    "deleteError": "فشل حذف المادة",
     "status": {
       "active": "نشط",
       "draft": "مسودة"
@@ -998,16 +998,16 @@
       "declined": "مرفوض"
     },
     "studentPageTitle": "موادي",
-    "studentPageDescription": "تصفح دوراتك النشطة وافتح تفاصيل الدورة.",
+    "studentPageDescription": "تصفح موادك النشطة وافتح تفاصيل المادة.",
     "studentTabs": {
       "all": "الكل",
-      "courses": "الدورات",
+      "courses": "المواد",
       "finalRevision": "المراجعات النهائية",
       "reviews": "المراجعات",
-      "makeup": "دورات التعويض"
+      "makeup": "مواد التعويض"
     },
     "studentCategoryNames": {
-      "courses": "الدورات",
+      "courses": "المواد",
       "finalRevision": "المراجعات النهائية"
     },
     "studentTitleNames": {
@@ -1015,21 +1015,21 @@
       "financialAccounting": "محاسبة مالية",
       "microeconomics": "الاقتصاد الجزئي"
     },
-    "studentResultsCount": "{count, plural, one {# دورة} other {# دورات}}",
+    "studentResultsCount": "{count, plural, one {# مادة} other {# مواد}}",
     "studentCourseCard": {
       "activateToAccess": "فعّل للوصول",
-      "activateCourse": "تفعيل الدورة",
-      "courseDetails": "تفاصيل الدورة"
+      "activateCourse": "تفعيل المادة",
+      "courseDetails": "تفاصيل المادة"
     },
     "detailPanel": {
       "details": "التفاصيل",
       "name": "الاسم",
       "code": "الكود",
-      "courses": "الدورات",
+      "courses": "المواد",
       "students": "الطلاب",
       "activation": "التفعيل",
       "generateCodes": "إنشاء أكواد",
-      "departmentActivationMessage": "يتم إدارة تفعيل كود القسم من خلال الدورات. قم بالتفعيل المسبق للأرقام تحت تفاصيل الدورة بدلاً من ذلك.",
+      "departmentActivationMessage": "يتم إدارة تفعيل كود القسم من خلال المواد. قم بالتفعيل المسبق للأرقام تحت تفاصيل المادة بدلاً من ذلك.",
       "status": "الحالة",
       "instructor": "المدرس",
       "price": "السعر",
@@ -1038,7 +1038,7 @@
       "description": "الوصف",
       "active": "نشط",
       "draft": "مسودة",
-      "activateCourse": "تفعيل الدورة",
+      "activateCourse": "تفعيل المادة",
       "byCode": "بواسطة الكود",
       "preactivation": "التفعيل المسبق",
       "availableCodes": "الأكواد المتاحة",
@@ -1063,9 +1063,9 @@
         "faculty": "الكلية",
         "center": "المركز",
         "department": "القسم",
-        "course": "الدورة",
+        "course": "المادة",
         "lecture": "المحاضرة",
-        "chapter": "الفصل",
+        "chapter": "الدرس",
         "note": "الملاحظة"
       },
       "videoPreview": "معاينة الفيديو",
@@ -1087,9 +1087,9 @@
       "videoNotSupported": "متصفحك لا يدعم وسم الفيديو."
     },
     "studentActivation": {
-      "description": "أدخل رمز التفعيل أدناه لفتح الوصول الكامل إلى هذه الدورة.",
+      "description": "أدخل رمز التفعيل أدناه لفتح الوصول الكامل إلى هذه المادة.",
       "descriptionLibrary": "أدخل رمز التفعيل أدناه لفتح مادة المكتبة هذه.",
-      "descriptionChapter": "أدخل رمز التفعيل أدناه لفتح فيديو هذا الفصل.",
+      "descriptionChapter": "أدخل رمز التفعيل أدناه لفتح فيديو هذا الدرس.",
       "descriptionQuiz": "أدخل رمز التفعيل أدناه لفتح هذا الامتحان أو الاختبار على حسابك.",
       "descriptionLiveRoom": "أدخل رمز التفعيل أدناه لفتح البث المباشر.",
       "codeLabel": "رمز التفعيل",
@@ -1097,15 +1097,15 @@
       "cancel": "إلغاء",
       "close": "إغلاق",
       "enterCode": "يرجى إدخال رمز التفعيل.",
-      "invalidCourse": "لا يمكن تفعيل هذه الدورة (معرّف غير صالح).",
+      "invalidCourse": "لا يمكن تفعيل هذه المادة (معرّف غير صالح).",
       "invalidLibrary": "لا يمكن تفعيل عنصر المكتبة هذا (معرّف غير صالح).",
-      "invalidChapter": "لا يمكن تفعيل هذا الفصل (معرّف غير صالح).",
+      "invalidChapter": "لا يمكن تفعيل هذا الدرس (معرّف غير صالح).",
       "invalidQuiz": "لا يمكن تفعيل هذا الاختبار (معرّف غير صالح).",
       "invalidLiveRoom": "لا يمكن تفعيل الجلسة المباشرة (معرّف غير صالح).",
       "genericError": "فشل التفعيل. حاول مرة أخرى.",
-      "success": "تم تفعيل الدورة بنجاح!",
+      "success": "تم تفعيل المادة بنجاح!",
       "successLibrary": "تم تفعيل مادة المكتبة بنجاح!",
-      "successChapter": "تم تفعيل الفصل بنجاح!",
+      "successChapter": "تم تفعيل الدرس بنجاح!",
       "successQuiz": "تم تفعيل الامتحان بنجاح!",
       "successLiveRoom": "تم تفعيل الجلسة المباشرة بنجاح!",
       "quizActivationNotEffective": "لم يفتح هذا الرمز الامتحان بعد. تحقق من الرمز أو حاول مرة أخرى."
@@ -1114,12 +1114,12 @@
       "active": "نشط"
     },
     "studentDetails": {
-      "title": "تفاصيل الدورة",
-      "back": "العودة إلى الدورات",
+      "title": "تفاصيل المادة",
+      "back": "العودة إلى المواد",
       "loading": "جارٍ التحميل…",
       "error": "خطأ",
-      "notFound": "الدورة غير موجودة.",
-      "invalidId": "معرّف الدورة غير صالح.",
+      "notFound": "المادة غير موجودة.",
+      "invalidId": "معرّف المادة غير صالح.",
       "attributesHeading": "الخصائص (من واجهة البرمجة)",
       "tabs": {
         "lectures": "المحاضرات والملفات",
@@ -1130,7 +1130,7 @@
         "library": "المكتبة"
       },
       "library": {
-        "empty": "لا توجد مواد في المكتبة لهذا الكورس",
+        "empty": "لا توجد عناصر في المكتبة لهذه المادة",
         "loadError": "تعذّر تحميل مواد المكتبة. حاول مرة أخرى.",
         "retry": "إعادة المحاولة",
         "statusLocked": "مقفل",
@@ -1162,14 +1162,14 @@
       "hasExam": "يحتوي على امتحان",
       "hasPdf": "يحتوي على PDF",
       "viewsExhausted": "انتهت المشاهدات",
-      "partsCount": "{count, plural, one {جزء واحد} two {جزءان} few {# أجزاء} other {# جزء}}",
+      "partsCount": "{count, plural, one {درس واحد} two {درسان} few {# دروس} other {# درس}}",
       "viewsRemaining": "{remaining}/{max} مشاهدات متبقية",
       "viewsUsageBadge": "{current} / {max} مشاهدة",
       "viewsUnlimited": "مشاهدات غير محدودة",
       "openPdf": "PDF",
       "heroLectureCount": "{count, plural, one {محاضرة واحدة} two {محاضرتان} few {# محاضرات} other {# محاضرة}}",
-      "examsEmpty": "لا توجد اختبارات لهذه الدورة.",
-      "notesEmpty": "لا توجد ملاحظات أو ملخصات لهذه الدورة.",
+      "examsEmpty": "لا توجد اختبارات لهذه المادة.",
+      "notesEmpty": "لا توجد ملاحظات أو ملخصات لهذه المادة.",
       "notes": {
         "deleteTitle": "حذف الملاحظة",
         "deleteDescription": "هل أنت متأكد أنك تريد حذف «{title}»؟ لا يمكن التراجع عن هذا الإجراء.",
@@ -1179,10 +1179,10 @@
       },
       "lecturesEmpty": "لا توجد محاضرات متاحة.",
       "lectureHeading": "المحاضرة {number}: {title}",
-      "chapterItemHeading": "الفصل {number}: {title}",
-      "lectureNoParts": "لا توجد أجزاء فيديو في هذه المحاضرة بعد.",
+      "chapterItemHeading": "الدرس {number}: {title}",
+      "lectureNoParts": "لا توجد دروس فيديو في هذه المحاضرة بعد.",
       "statLectures": "محاضرات",
-      "statChapters": "فصول",
+      "statChapters": "دروس",
       "statNotes": "ملاحظات",
       "statExams": "اختبارات",
       "viewPdf": "عرض PDF",
@@ -1195,8 +1195,8 @@
       "examsPassMarks": "درجة النجاح {passing}%",
       "examsAttemptsAllowed": "{count} محاولات",
       "examsDeadline": "ينتهي {date}",
-      "examsChapterCourse": "الدورة",
-      "examsChapterFallback": "الفصل {id}",
+      "examsChapterCourse": "المادة",
+      "examsChapterFallback": "الدرس {id}",
       "examsNoActiveExams": "لا توجد امتحانات متاحة للبدء حالياً.",
       "examsUpcomingTitle": "الامتحانات القادمة",
       "examsCompletedTitle": "الامتحانات المكتملة",
@@ -1211,13 +1211,13 @@
       "examsScheduled": "مجدول",
       "examsViewResults": "عرض النتائج",
       "examsNotAvailable": "غير متاح",
-      "examsActivationRequired": "يجب تفعيل الكورس للوصول لهذا الامتحان",
-      "examsActivationRequiredSub": "تفعيل الكورس مطلوب",
-      "examsPrivateExamHint": "هذا الامتحان غير عام — فعّل الدورة على حسابك للوصول إليه.",
+      "examsActivationRequired": "يجب تفعيل المادة للوصول لهذا الامتحان",
+      "examsActivationRequiredSub": "تفعيل المادة مطلوب",
+      "examsPrivateExamHint": "هذا الامتحان غير عام — فعّل المادة على حسابك للوصول إليه.",
       "examsReactivateAttemptsTitle": "لا توجد محاولات متبقية",
       "examsReactivateAttemptsBody": "استخدمت جميع المحاولات لهذا الامتحان الخاص. أدخل رمز تفعيل جديد لفتح المزيد من المحاولات.",
-      "examsCourseIdLabel": "الدورة رقم {id}",
-      "examsActivateCourseForExam": "تفعيل الكورس",
+      "examsCourseIdLabel": "المادة رقم {id}",
+      "examsActivateCourseForExam": "تفعيل المادة",
       "examsActivateQuizForAccess": "تفعيل بالرمز",
       "examsQuestionsAndDuration": "{questions} سؤال • {minutes} دقيقة",
       "examsTotalMarks": "إجمالي {count} درجة",
@@ -1228,31 +1228,31 @@
       "examsAttemptsRemainingOfMax": "{remaining} محاولة متبقية من {max}",
       "examsAttemptsUsedOfMax": "{current} من {max} محاولات مستخدمة",
       "examsAttemptsOverview": "{remaining} محاولة متبقية من {max} ({current} مستخدمة)",
-      "examsCourseNotEnrolledTitle": "الدورة غير مفعّلة",
-      "examsCourseNotEnrolledBody": "هذا الامتحان ينتمي إلى دورة غير مفعّلة على حسابك. فعّل الدورة أولاً ثم عُد لبدء الامتحان.",
+      "examsCourseNotEnrolledTitle": "المادة غير مفعّلة",
+      "examsCourseNotEnrolledBody": "هذا الامتحان ينتمي إلى مادة غير مفعّلة على حسابك. فعّل المادة أولاً ثم عُد لبدء الامتحان.",
       "examsCourseNotEnlockedHint": "افتح المادة من صفحة موادي وأدخل رمز التفعيل لفتح امتحاناتها.",
       "examsActivateCourseFirstCta": "الانتقال إلى موادي",
-      "examsCourseEnrolledBadge": "الدورة مفعّلة",
+      "examsCourseEnrolledBadge": "المادة مفعّلة",
       "watchPageTitle": "مشاهدة المحاضرة",
-      "watchBack": "العودة إلى الدورة",
-      "watchNotFound": "تعذر العثور على هذا الفصل.",
-      "watchNoVideo": "لا يتوفر فيديو لهذا الفصل.",
+      "watchBack": "العودة إلى المادة",
+      "watchNotFound": "تعذر العثور على هذا الدرس.",
+      "watchNoVideo": "لا يتوفر فيديو لهذا الدرس.",
       "watchMaterials": "المواد والتنزيلات",
       "watchOpenAttachment": "فتح"
     },
     "studentWatch": {
       "viewsLeftBadge": "المشاهدات المتبقية: {remaining}/{max}",
-      "subtitleChapter": "الفصل {number}",
+      "subtitleChapter": "الدرس {number}",
       "showPdf": "PDF",
       "hidePdf": "PDF",
       "lectureMaterial": "مادة المحاضرة",
       "pdfSyncHint": "عارض PDF — افتح الملف بجانب الفيديو.",
       "askMoment": "اسأل عن هذه اللحظة",
       "addDiscussion": "إضافة نقاش",
-      "lectureParts": "أجزاء المحاضرة",
-      "lecturePartsToolbar": "أجزاء المحاضرة:",
-      "partLabel": "الجزء {number}",
-      "partLockedTooltip": "هذا الجزء مقفل — استخدم صفحة الدورة لتفعيل الوصول أو افتح الأجزاء المسموح بها.",
+      "lectureParts": "دروس المحاضرة",
+      "lecturePartsToolbar": "دروس المحاضرة:",
+      "partLabel": "الدرس {number}",
+      "partLockedTooltip": "هذا الدرس مقفل — استخدم صفحة المادة لتفعيل الوصول أو افتح الدروس المسموح بها.",
       "discussionsHeading": "النقاشات",
       "discussionsCount": "النقاشات ({count})",
       "noDiscussions": "لا توجد نقاشات بعد.",
@@ -1290,8 +1290,8 @@
       "replyPlaceholder": "اكتب ردك هنا...",
       "cancel": "إلغاء",
       "postReply": "نشر الرد",
-      "watchAccessDenied": "لا يمكنك مشاهدة هذا الفصل.",
-      "watchAccessDeniedHint": "فعّل الدورة أو الفصل من صفحة الدورة. إذا فتحت الرابط مباشرة، ارجع وافتح الفصل من هناك حتى يُحدَّث وصولك.",
+      "watchAccessDenied": "لا يمكنك مشاهدة هذا الدرس.",
+      "watchAccessDeniedHint": "فعّل المادة أو الدرس من صفحة المادة. إذا فتحت الرابط مباشرة، ارجع وافتح الدرس من هناك حتى يُحدَّث وصولك.",
       "videoProcessing": "يتم تجهيز هذا الفيديو. يرجى العودة بعد قليل.",
       "hlsPlaybackError": "تعذّر تشغيل بث الفيديو. تحقق من الاتصال وحاول مرة أخرى.",
       "switchingPlaybackMethod": "جاري تغيير طريقة التشغيل…",
@@ -1307,9 +1307,9 @@
       "videoControlsFullscreen": "ملء الشاشة",
       "videoControlsExitFullscreen": "الخروج من ملء الشاشة",
       "videoControlsSettings": "الإعدادات",
-      "videoControlsInfo": "حول هذا الفصل",
-      "videoControlsPrevChapter": "الفصل السابق",
-      "videoControlsNextChapter": "الفصل التالي",
+      "videoControlsInfo": "حول هذا الدرس",
+      "videoControlsPrevChapter": "الدرس السابق",
+      "videoControlsNextChapter": "الدرس التالي",
       "videoControlsCaptions": "الترجمة",
       "videoControlsCaptionsTurnOn": "تشغيل الترجمة",
       "videoControlsCaptionsTurnOff": "إيقاف الترجمة",
@@ -1351,14 +1351,14 @@
       "passingInfo": "درجة النجاح {passing}%",
       "cannotStart": "لا يمكن بدء هذا الاختبار من هنا حالياً. راجع المدرّس أو حاول لاحقاً.",
       "examActivationRequiredTitle": "تفعيل الامتحان مطلوب",
-      "examActivationRequiredBody": "هذا الامتحان خاص. افتح الدورة، ثم تبويب الامتحانات، واضغط «تفعيل بالرمز» لهذا الامتحان — استخدم رمز تفعيل الامتحان وليس رمز الدورة.",
+      "examActivationRequiredBody": "هذا الامتحان خاص. افتح المادة، ثم تبويب الامتحانات، واضغط «تفعيل بالرمز» لهذا الامتحان — استخدم رمز تفعيل الامتحان وليس رمز المادة.",
       "examReactivationRequiredTitle": "لا توجد محاولات متبقية",
-      "examReactivationRequiredBody": "استخدمت جميع المحاولات لهذا الامتحان الخاص. افتح تبويب الامتحانات في الدورة واستخدم «تفعيل بالرمز» مرة أخرى برمز امتحان جديد للحصول على محاولات إضافية.",
+      "examReactivationRequiredBody": "استخدمت جميع المحاولات لهذا الامتحان الخاص. افتح تبويب الامتحانات في المادة واستخدم «تفعيل بالرمز» مرة أخرى برمز امتحان جديد للحصول على محاولات إضافية.",
       "examAccessDeniedTitle": "الامتحان غير متاح بعد",
-      "examAccessDeniedBody": "تعذّر فتح هذا الامتحان من هنا. إذا كان الامتحان خاصاً، افتح الدورة ثم تبويب الامتحانات وفعّله بالرمز، ثم حاول البدء مرة أخرى.",
-      "examCourseNotEnrolledTitle": "فعّل الدورة أولاً",
+      "examAccessDeniedBody": "تعذّر فتح هذا الامتحان من هنا. إذا كان الامتحان خاصاً، افتح المادة ثم تبويب الامتحانات وفعّله بالرمز، ثم حاول البدء مرة أخرى.",
+      "examCourseNotEnrolledTitle": "فعّل المادة أولاً",
       "examCourseNotEnrolledBody": "هذا الامتحان ينتمي إلى مادة غير مفعّلة على حسابك. افتح المادة من «موادي» وأدخل رمز التفعيل، ثم عُد لبدء الامتحان.",
-      "goToCourseExams": "فتح الدورة — الامتحانات",
+      "goToCourseExams": "فتح المادة — الامتحانات",
       "goToCourses": "موادي",
       "takePlaceholderTitle": "جلسة الاختبار",
       "takePlaceholderBody": "سيتم ربط الأسئلة والتصحيح في الخطوة التالية. تم حفظ بيانات الاختبار من شاشة المقدمة.",
@@ -1414,14 +1414,14 @@
     },
     "studentExamsPage": {
       "pageTitle": "الامتحانات",
-      "pageSubtitle": "اعرض وادرس امتحانات دوراتك.",
+      "pageSubtitle": "اعرض وادرس امتحانات موادك.",
       "searchLabel": "البحث في الامتحانات",
       "searchPlaceholder": "ابحث في الامتحانات...",
       "loadError": "تعذّر تحميل الامتحانات أو المحاولات. حاول مرة أخرى.",
       "retryLoad": "إعادة المحاولة",
       "loadingQuizzes": "جاري تحميل الامتحانات…",
       "loadingAttempts": "جاري تحميل المحاولات…",
-      "emptyAvailable": "لا توجد امتحانات هنا بعد. افتح دورة لعرض الامتحانات المتاحة للبدء.",
+      "emptyAvailable": "لا توجد امتحانات هنا بعد. افتح مادة لعرض الامتحانات المتاحة للبدء.",
       "emptyUpcoming": "لا توجد امتحانات قادمة مدرجة هنا بعد.",
       "emptyCompleted": "لا توجد محاولات امتحان مكتملة بعد.",
       "emptyLocked": "لا توجد امتحانات مقفلة مدرجة هنا بعد.",
@@ -1491,7 +1491,7 @@
     },
     "studentLibrary": {
       "pageTitle": "المكتبة الإلكترونية",
-      "pageSubtitle": "اطّلع على مواد الدورة والكتب المرجعية.",
+      "pageSubtitle": "اطّلع على ملفات المادة والكتب المرجعية.",
       "unlockBannerTitle": "كيف تفتح المواد",
       "unlockBannerBody": "زر مركزك، ادفع قيمة المادة، احصل على رمز التفعيل، ثم فعّلها من هنا.",
       "activateMaterial": "تفعيل المادة",
@@ -1504,7 +1504,7 @@
       "locked": "مقفول",
       "unlock": "فتح",
       "lockedMaterial": "مادة مقفولة",
-      "activateCourseHint": "يجب تفعيل الكورس للوصول لهذه المادة.",
+      "activateCourseHint": "يجب تفعيل المادة للوصول لهذا العنصر.",
       "openMaterial": "فتح المادة",
       "attachments": "المرفقات",
       "download": "تحميل",
@@ -1513,7 +1513,7 @@
       "attachmentLocked": "مقفول",
       "notDownloadable": "غير قابل للتحميل",
       "priceLabel": "السعر",
-      "courseRef": "الدورة #{id}",
+      "courseRef": "المادة #{id}",
       "fileCount": "{count, plural, one {ملف واحد} other {# ملفات}}",
       "materialType": {
         "booklet": "كتيب",
@@ -1540,21 +1540,21 @@
       "draftedBy": "حوّلها لمسودة: {name}",
       "draftActorUnknown": "حوّلها لمسودة: غير مسجّل",
       "noCenter": "لا يوجد مركز",
-      "untitled": "دورة بدون عنوان"
+      "untitled": "مادة بدون عنوان"
     },
     "form": {
-      "addTitle": "إضافة دورة جديدة",
-      "addDescription": "إنشاء دورة جديدة وتعيين المدرسين والمراكز.",
-      "editTitle": "تعديل الدورة",
-      "editDescription": "تحديث تفاصيل الدورة والإعدادات.",
+      "addTitle": "إضافة مادة جديدة",
+      "addDescription": "إنشاء مادة جديدة وتعيين المدرسين والمراكز.",
+      "editTitle": "تعديل المادة",
+      "editDescription": "تحديث تفاصيل المادة والإعدادات.",
       "sections": {
-        "courseInfo": "معلومات الدورة",
+        "courseInfo": "معلومات المادة",
         "academicInfo": "المعلومات الأكاديمية",
         "pricingSettings": "الأسعار والإعدادات",
-        "thumbnail": "صورة الدورة"
+        "thumbnail": "صورة المادة"
       },
       "fields": {
-        "title": "عنوان الدورة",
+        "title": "عنوان المادة",
         "subtitle": "العنوان الفرعي",
         "description": "الوصف",
         "objectives": "الأهداف",
@@ -1567,8 +1567,8 @@
       "placeholders": {
         "title": "فيزياء 101: الميكانيكا",
         "subtitle": "مقدمة في الميكانيكا الكلاسيكية",
-        "description": "أدخل وصف الدورة...",
-        "objectives": "أدخل أهداف الدورة ونتائج التعلم...",
+        "description": "أدخل وصف المادة...",
+        "objectives": "أدخل أهداف المادة ونتائج التعلم...",
         "price": "0",
         "maxViews": "10"
       },
@@ -1581,22 +1581,22 @@
       "selectedFile": "تم اختيار",
       "buttons": {
         "cancel": "إلغاء",
-        "create": "إنشاء دورة",
-        "update": "تحديث الدورة",
+        "create": "إنشاء مادة",
+        "update": "تحديث المادة",
         "creating": "جارٍ الإنشاء...",
         "updating": "جارٍ التحديث..."
       },
       "uploading": "جارٍ الرفع..."
     },
     "view": {
-      "openCourse": "فتح الدورة",
+      "openCourse": "فتح المادة",
       "locked": "مقفل",
-      "loading": "جارٍ تحميل تفاصيل الدورة...",
-      "error": "خطأ في تحميل الدورة",
-      "notFound": "الدورة غير موجودة",
-      "backToCourses": "العودة إلى الدورات",
+      "loading": "جارٍ تحميل تفاصيل المادة...",
+      "error": "خطأ في تحميل المادة",
+      "notFound": "المادة غير موجودة",
+      "backToCourses": "العودة إلى المواد",
       "manageContent": "إدارة المحتوى",
-      "editCourse": "تعديل الدورة",
+      "editCourse": "تعديل المادة",
       "active": "نشط",
       "inactive": "غير نشط",
       "sections": {
@@ -1604,12 +1604,12 @@
         "objectives": "الأهداف",
         "lecturesContent": "المحاضرات والمحتوى",
         "performance": "الأداء",
-        "courseDetails": "تفاصيل الدورة",
-        "activation": "تفعيل الدورة"
+        "courseDetails": "تفاصيل المادة",
+        "activation": "تفعيل المادة"
       },
       "stats": {
         "lectures": "محاضرات",
-        "chapters": "فصول",
+        "chapters": "دروس",
         "notes": "ملاحظات",
         "exams": "اختبارات",
         "students": "طلاب"
@@ -1646,36 +1646,36 @@
       }
     },
     "messages": {
-      "pleaseUploadThumbnail": "يرجى تحميل صورة الدورة",
+      "pleaseUploadThumbnail": "يرجى تحميل صورة المادة",
       "pleaseSelectDepartment": "يرجى اختيار القسم",
-      "courseCreated": "تم إنشاء الدورة بنجاح!",
-      "courseUpdated": "تم تحديث الدورة بنجاح!",
+      "courseCreated": "تم إنشاء المادة بنجاح!",
+      "courseUpdated": "تم تحديث المادة بنجاح!",
       "pleaseSelectImage": "يرجى اختيار ملف صورة (PNG، JPG، JPEG)",
       "imageSizeError": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت",
       "imageSelected": "تم اختيار الصورة بنجاح",
       "selectCodeAndStudent": "يرجى اختيار الرمز والطالب",
-      "courseActivated": "تم تفعيل الدورة بنجاح!",
+      "courseActivated": "تم تفعيل المادة بنجاح!",
       "codeCopied": "تم نسخ الرمز إلى الحافظة"
     },
     "review": {
-      "automaticDescription": "يمكنك نشر كورساتك الجديدة دون انتظار موافقة الإدارة.",
-      "publish": "إنشاء ونشر الكورس",
-      "title": "مراجعة الكورس",
+      "automaticDescription": "يمكنك نشر موادك الجديدة دون انتظار موافقة الإدارة.",
+      "publish": "إنشاء ونشر المادة",
+      "title": "مراجعة المادة",
       "0": "قيد المراجعة",
       "1": "تمت الموافقة",
       "2": "مرفوض",
-      "hiddenHelp": "الكورس مخفي عن الطلاب حتى يوافق عليه الأونر.",
-      "approvedHelp": "الموافقة تسمح بالوصول عندما يكون الكورس ودروسه منشورين وضمن موعد العرض. يظل التفعيل مطلوبًا للمحتوى غير المجاني.",
-      "thumbnail": "صورة الكورس",
+      "hiddenHelp": "المادة مخفية عن الطلاب حتى يوافق عليها الأونر.",
+      "approvedHelp": "الموافقة تسمح بالوصول عندما تكون المادة ودروسها منشورة وضمن موعد العرض. يظل التفعيل مطلوبًا للمحتوى غير المجاني.",
+      "thumbnail": "صورة المادة",
       "reason": "سبب الرفض (اختياري)",
-      "approve": "الموافقة على الكورس",
-      "reject": "رفض الكورس",
+      "approve": "الموافقة على المادة",
+      "reject": "رفض المادة",
       "pending": "إعادة إلى قيد الانتظار",
       "error": "تعذر حفظ المراجعة. حاول مرة أخرى.",
-      "submitted": "تم إرسال الكورس للمراجعة. سيظل مخفيًا عن الطلاب حتى الموافقة عليه.",
+      "submitted": "تم إرسال المادة للمراجعة. ستظل مخفية عن الطلاب حتى الموافقة عليها.",
       "submit": "إرسال للمراجعة",
-      "noDepartments": "اطلب من الإدارة إسناد كورس لك داخل قسم أكاديمي أولًا.",
-      "description": "أضف كورسًا داخل أحد أقسامك المسموح بها. يراجعه الأونر قبل ظهوره للطلاب."
+      "noDepartments": "اطلب من الإدارة إسناد مادة لك داخل قسم أكاديمي أولًا.",
+      "description": "أضف مادة داخل أحد أقسامك المسموح بها. يراجعها الأونر قبل ظهورها للطلاب."
     }
   },
   "centers": {
@@ -1713,12 +1713,12 @@
   },
   "contentManager": {
     "pageTitle": "مدير المحتوى",
-    "pageDescription": "إدارة هيكل الدورة، رفع الفيديوهات، وإعدادات المحاضرات.",
-    "courseStructure": "هيكل الدورة",
+    "pageDescription": "إدارة هيكل المادة، رفع الفيديوهات، وإعدادات المحاضرات.",
+    "courseStructure": "هيكل المادة",
     "loadingLectures": "جارٍ تحميل المحاضرات...",
-    "loadingChapters": "جارٍ تحميل الفصول...",
+    "loadingChapters": "جارٍ تحميل الدروس...",
     "addLecture": "إضافة محاضرة",
-    "addChapter": "إضافة فصل",
+    "addChapter": "إضافة درس",
     "locked": "مقفل",
     "published": "منشور",
     "lectureId": "معرف المحاضرة",
@@ -1737,24 +1737,24 @@
     "noThumbnail": "لم يتم تعيين صورة مصغرة",
     "removeThumbnail": "إزالة الصورة المصغرة",
     "undoRemove": "تراجع عن الإزالة",
-    "chapterSettings": "إعدادات الفصل",
+    "chapterSettings": "إعدادات الدرس",
     "freePreview": "معاينة مجانية",
-    "freePreviewDescription": "السماح للطلاب بمشاهدة هذا الفصل بدون تسجيل.",
+    "freePreviewDescription": "السماح للطلاب بمشاهدة هذا الدرس بدون تسجيل.",
     "maxViews": "الحد الأقصى للمشاهدات",
-    "maxViewsDescription": "تعيين الحد الأقصى لعدد المشاهدات المسموح بها لهذا الفصل.",
+    "maxViewsDescription": "تعيين الحد الأقصى لعدد المشاهدات المسموح بها لهذا الدرس.",
     "attachments": "المرفقات والموارد",
     "noAttachments": "لا توجد مرفقات متاحة.",
     "openFile": "فتح الملف",
     "new": "جديد",
-    "copyChapter": "نسخ الفصل",
-    "copyChapterConfirm": "هل أنت متأكد من أنك تريد نسخ هذا الفصل؟",
+    "copyChapter": "نسخ الدرس",
+    "copyChapterConfirm": "هل أنت متأكد من أنك تريد نسخ هذا الدرس؟",
     "copying": "جارٍ النسخ...",
-    "chapterActivation": "تفعيل الفصل",
-    "selectChapter": "اختيار فصل",
-    "selectChapterHint": "اختر فصلاً من شجرة الهيكل لعرض وإدارة محتواه وإعداداته.",
+    "chapterActivation": "تفعيل الدرس",
+    "selectChapter": "اختيار درس",
+    "selectChapterHint": "اختر درسًا من شجرة الهيكل لعرض وإدارة محتواه وإعداداته.",
     "modal": {
       "addLecture": "إضافة محاضرة جديدة",
-      "addChapter": "إضافة فصل جديد",
+      "addChapter": "إضافة درس جديد",
       "title": "العنوان",
       "description": "الوصف",
       "duration": "المدة (مثال: 45:00)",
@@ -1767,7 +1767,7 @@
       "filesSelected": "{count} ملفات محددة",
       "cancel": "إلغاء",
       "createLecture": "إنشاء محاضرة",
-      "createChapter": "إنشاء فصل",
+      "createChapter": "إنشاء درس",
       "creating": "جارٍ الإنشاء...",
       "uploading": "جارٍ الرفع..."
     },
@@ -1775,23 +1775,23 @@
       "lectureCreated": "تم إنشاء المحاضرة بنجاح",
       "lectureCreateFailed": "فشل إنشاء المحاضرة",
       "titleRequired": "الرجاء إدخال عنوان للمحاضرة",
-      "chapterCreated": "تم إنشاء الفصل بنجاح",
-      "chapterCreateFailed": "فشل إنشاء الفصل",
-      "chapterUpdated": "تم تحديث الفصل بنجاح",
-      "chapterUpdateFailed": "فشل تحديث الفصل",
-      "chapterDeleted": "تم حذف الفصل بنجاح",
-      "chapterDeleteFailed": "فشل حذف الفصل",
-      "chapterCopied": "تم نسخ الفصل بنجاح",
-      "chapterCopyFailed": "فشل نسخ الفصل",
+      "chapterCreated": "تم إنشاء الدرس بنجاح",
+      "chapterCreateFailed": "فشل إنشاء الدرس",
+      "chapterUpdated": "تم تحديث الدرس بنجاح",
+      "chapterUpdateFailed": "فشل تحديث الدرس",
+      "chapterDeleted": "تم حذف الدرس بنجاح",
+      "chapterDeleteFailed": "فشل حذف الدرس",
+      "chapterCopied": "تم نسخ الدرس بنجاح",
+      "chapterCopyFailed": "فشل نسخ الدرس",
       "lectureDeleted": "تم حذف المحاضرة بنجاح",
       "lectureDeleteFailed": "فشل حذف المحاضرة",
-      "deleteChapterConfirm": "هل أنت متأكد من أنك تريد حذف هذا الفصل؟",
+      "deleteChapterConfirm": "هل أنت متأكد من أنك تريد حذف هذا الدرس؟",
       "deleteLectureConfirm": "هل أنت متأكد من أنك تريد حذف هذه المحاضرة؟"
     }
   },
   "activation": {
     "pageTitle": "إدارة التفعيل",
-    "pageDescription": "إدارة رموز التفعيل للدورات والفصول وعناصر المكتبة والغرف المباشرة والاختبارات",
+    "pageDescription": "إدارة رموز التفعيل للمواد والدروس وعناصر المكتبة والغرف المباشرة والاختبارات",
     "generateCodes": "إنشاء رموز",
     "tabs": {
       "allCodes": "جميع الرموز",
@@ -1813,8 +1813,8 @@
       "allStatus": "جميع الحالات"
     },
     "types": {
-      "course": "دورة",
-      "chapter": "فصل",
+      "course": "مادة",
+      "chapter": "درس",
       "library": "مكتبة",
       "liveRoom": "غرفة مباشرة",
       "quiz": "اختبار",
@@ -1861,7 +1861,7 @@
     },
     "generate": {
       "title": "إنشاء رموز التفعيل",
-      "description": "إنشاء رموز تفعيل جديدة للدورات والفصول وعناصر المكتبة والغرف المباشرة والاختبارات.",
+      "description": "إنشاء رموز تفعيل جديدة للمواد والدروس وعناصر المكتبة والغرف المباشرة والاختبارات.",
       "sectionTitle": "تكوين الرمز",
       "codeType": "نوع الرمز",
       "assignedItem": "العنصر المعين",
@@ -1877,7 +1877,7 @@
     },
     "assign": {
       "title": "تعيين رمز لمستخدم",
-      "description": "تعيين رموز التفعيل للطلاب للوصول إلى الدورات/الفصول/المكتبة."
+      "description": "تعيين رموز التفعيل للطلاب للوصول إلى المواد/الدروس/المكتبة."
     },
     "edit": {
       "title": "تعديل رمز التفعيل",
@@ -2049,7 +2049,7 @@
       "tomorrow": "غداً"
     },
     "card": {
-      "noCourse": "لا يوجد دورة",
+      "noCourse": "لا توجد مادة",
       "unknownInstructor": "مدرب غير معروف",
       "chatOn": "الدردشة مفعلة",
       "chatOff": "الدردشة معطلة",
@@ -2076,7 +2076,7 @@
       "recordingDisabled": "التسجيل معطل",
       "labels": {
         "title": "العنوان",
-        "course": "الدورة",
+        "course": "المادة",
         "instructor": "المدرب",
         "description": "الوصف",
         "startTime": "وقت البدء",
@@ -2089,9 +2089,9 @@
       "sessionDetails": "تفاصيل الجلسة",
       "sessionTitle": "عنوان الجلسة",
       "titlePlaceholder": "مثال: الفيزياء 101: جلسة أسئلة وأجوبة",
-      "course": "الدورة",
-      "loadingCourses": "جارٍ تحميل الدورات...",
-      "selectCourse": "اختر الدورة",
+      "course": "المادة",
+      "loadingCourses": "جارٍ تحميل المواد...",
+      "selectCourse": "اختر المادة",
       "startTime": "وقت البدء",
       "maxStudents": "الحد الأقصى للطلاب (0 غير محدود)",
       "maxJoinTime": "الحد الأقصى للانضمام (دقائق بعد البدء)",
@@ -2109,7 +2109,7 @@
       "scheduling": "جارٍ الجدولة...",
       "cancel": "إلغاء",
       "validation": {
-        "fillRequired": "يرجى ملء الدورة والعنوان ووقت البدء"
+        "fillRequired": "يرجى ملء المادة والعنوان ووقت البدء"
       },
       "success": "تم جدولة الجلسة بنجاح!",
       "error": "فشل جدولة الجلسة"
@@ -2187,7 +2187,7 @@
     "upcomingSession": "جلسة قادمة",
     "students": "طالب",
     "instructor": "المحاضر",
-    "courseNotAvailable": "الكورس غير متاح",
+    "courseNotAvailable": "المادة غير متاحة",
     "liveSession": "محاضرة مباشرة",
     "joinDescription": "انضم إلى المحاضرة المباشرة الآن.",
     "timeNotAvailable": "الوقت غير متاح",
@@ -2195,10 +2195,10 @@
     "locked": {
       "privateTitle": "هذا البث المباشر يحتاج إلى تفعيل",
       "privateBody": "أدخل كود التفعيل الخاص بهذا البث للانضمام إليه.",
-      "courseTitle": "فعّل الكورس أولاً",
-      "courseBody": "هذا البث المباشر تابع لكورس لم تفعّله بعد.",
+      "courseTitle": "فعّل المادة أولاً",
+      "courseBody": "هذا البث المباشر تابع لمادة لم تفعّلها بعد.",
       "activateRoom": "تفعيل البث",
-      "goToCourse": "الذهاب إلى الكورس"
+      "goToCourse": "الذهاب إلى المادة"
     }
   },
   "exams": {
@@ -2233,7 +2233,7 @@
     "columns": {
       "title": "العنوان",
       "type": "النوع",
-      "chapter": "الفصل",
+      "chapter": "الدرس",
       "course": "المادة",
       "duration": "المدة",
       "questions": "الأسئلة",
@@ -2295,12 +2295,12 @@
       "examType": "نوع الاختبار",
       "exam": "اختبار",
       "homework": "واجب منزلي",
-      "course": "الدورة",
+      "course": "المادة",
       "loading": "جارٍ التحميل...",
-      "selectCourse": "اختر الدورة",
-      "selectCourseFirst": "اختر الدورة أولاً",
-      "chapter": "الفصل",
-      "selectChapter": "اختر الفصل",
+      "selectCourse": "اختر المادة",
+      "selectCourseFirst": "اختر المادة أولاً",
+      "chapter": "الدرس",
+      "selectChapter": "اختر الدرس",
       "duration": "المدة (دقيقة)",
       "totalMarks": "الدرجات الكلية",
       "passingMarks": "درجة النجاح (%)",
@@ -2352,7 +2352,7 @@
       "creating": "جارٍ الإنشاء...",
       "validation": {
         "titleRequired": "يرجى إدخال عنوان الاختبار",
-        "courseRequired": "يرجى اختيار الدورة",
+        "courseRequired": "يرجى اختيار المادة",
         "durationRequired": "يرجى إدخال مدة صالحة",
         "marksRequired": "يرجى إدخال الدرجات الكلية",
         "questionsRequired": "يرجى إضافة سؤال واحد على الأقل",
@@ -2449,7 +2449,7 @@
     "summary": "الملخصات",
     "highlights": "النقاط المهمة",
     "notes": "الملاحظات",
-    "course": "الكورس",
+    "course": "المادة",
     "lecture": "المحاضرة",
     "published": "منشور",
     "draft": "مسودة",
@@ -2468,7 +2468,7 @@
       "noNotes": "لا توجد ملاحظات",
       "loadFailed": "تعذّر تحميل الملاحظات. يرجى المحاولة مرة أخرى.",
       "retry": "إعادة المحاولة",
-      "course": "الكورس",
+      "course": "المادة",
       "lecture": "المحاضرة",
       "published": "منشور",
       "draft": "مسودة"
@@ -2476,7 +2476,7 @@
     "table": {
       "title": "العنوان",
       "type": "النوع",
-      "courseId": "معرف الدورة",
+      "courseId": "معرف المادة",
       "status": "الحالة",
       "actions": "الإجراءات"
     },
@@ -2503,9 +2503,9 @@
       "titlePlaceholder": "أدخل عنوان الملاحظة",
       "typeLabel": "النوع",
       "typeRequired": "النوع مطلوب",
-      "courseLabel": "الدورة",
-      "coursePlaceholder": "اختر دورة (اختياري)",
-      "loadingCourses": "جارٍ تحميل الدورات...",
+      "courseLabel": "المادة",
+      "coursePlaceholder": "اختر مادة (اختياري)",
+      "loadingCourses": "جارٍ تحميل المواد...",
       "linkedLectureLabel": "المحاضرة المرتبطة",
       "linkedLecturePlaceholder": "أدخل المحاضرة المرتبطة (اختياري)",
       "contentLabel": "المحتوى",
@@ -2524,9 +2524,9 @@
       "titleLabel": "العنوان",
       "titlePlaceholder": "أدخل عنوان الملاحظة",
       "typeLabel": "النوع",
-      "courseLabel": "الدورة",
-      "coursePlaceholder": "اختر دورة (اختياري)",
-      "loadingCourses": "جارٍ تحميل الدورات...",
+      "courseLabel": "المادة",
+      "coursePlaceholder": "اختر مادة (اختياري)",
+      "loadingCourses": "جارٍ تحميل المواد...",
       "linkedLectureLabel": "المحاضرة المرتبطة",
       "linkedLecturePlaceholder": "أدخل المحاضرة المرتبطة (اختياري)",
       "contentLabel": "المحتوى",
@@ -2546,7 +2546,7 @@
       "content": "المحتوى",
       "details": "التفاصيل",
       "type": "النوع",
-      "courseId": "معرف الدورة",
+      "courseId": "معرف المادة",
       "linkedLecture": "المحاضرة المرتبطة",
       "date": "التاريخ",
       "status": "الحالة"
@@ -2563,7 +2563,7 @@
     "socialLinks": {
       "title": "روابط التواصل الاجتماعي",
       "searchPlaceholder": "البحث في روابط التواصل...",
-      "allCourses": "جميع الدورات",
+      "allCourses": "جميع المواد",
       "addLink": "إضافة رابط",
       "noLinks": "لا توجد روابط اجتماعية بعد. انقر على \"إضافة رابط\" لإنشاء واحدة.",
       "noSearchResults": "لم يتم العثور على روابط مطابقة للبحث.",
@@ -2574,8 +2574,8 @@
       "modal": {
         "edit": "تعديل رابط اجتماعي",
         "add": "إضافة رابط اجتماعي",
-        "course": "الدورة",
-        "selectCourse": "اختر دورة",
+        "course": "المادة",
+        "selectCourse": "اختر مادة",
         "icon": "الأيقونة",
         "linkUrl": "رابط URL",
         "title": "العنوان",
@@ -2770,15 +2770,15 @@
     "pageTitle": "الهيكل الأكاديمي",
     "ContentManager": "إدارة المحتوى",
     "LoadingContent": "جارٍ تحميل المحتوى...",
-    "pageDescription": "إدارة الجامعات والكليات والمراكز والأقسام والدورات والمحتوى",
+    "pageDescription": "إدارة الجامعات والكليات والمراكز والأقسام والمواد والمحتوى",
     "addDepartment": "إضافة قسم",
     "AddUniversity": "اضافة جامعة",
     "addFaculty": "إضافة كلية",
     "addCenter": "إضافة مركز",
     "addSubDepartment": "إضافة قسم فرعي",
-    "addCourse": "إضافة دورة",
+    "addCourse": "إضافة مادة",
     "addContent": "إضافة محتوى",
-    "listViewers": "قائمة الطلاب الذي شاهدوا الدورة",
+    "listViewers": "قائمة الطلاب الذين شاهدوا المادة",
     "LessonViewers": "مشاهدو الدرس",
     "editDepartment": "تعديل القسم",
     "deleteDepartment": "حذف القسم",
@@ -2792,13 +2792,13 @@
       "created": "تاريخ الإنشاء"
     },
     "stats": {
-      "courses": "دورات",
+      "courses": "مواد",
       "students": "طلاب"
     },
     "form": {
       "addTitle": "إضافة قسم جديد",
       "editTitle": "تعديل القسم",
-      "addDescription": "إنشاء قسم أو فئة دورة جديدة",
+      "addDescription": "إنشاء قسم أو فئة مادة جديدة",
       "editDescription": "تحديث تفاصيل القسم ومعلومات الفئة",
       "sectionTitle": "معلومات القسم",
       "imageLabel": "صورة القسم",
@@ -2836,10 +2836,10 @@
     "editNoteTitle": "تعديل الملاحظة/الملخص",
     "addNoteTitle": "إضافة ملاحظة/ملخص",
     "editNoteDesc": "تحديث هذه الملاحظة أو الملخص",
-    "addNoteDesc": "إنشاء ملاحظة أو ملخص جديد لهذا الكورس",
+    "addNoteDesc": "إنشاء ملاحظة أو ملخص جديد لهذه المادة",
     "noteTitleLabel": "العنوان",
     "noteTypeLabel": "النوع",
-    "noteCourseLabel": "الكورس",
+    "noteCourseLabel": "المادة",
     "noteLinkedLectureLabel": "المحاضرة المرتبطة",
     "noteContentLabel": "المحتوى",
     "noteAttachmentLabel": "المرفقات",
@@ -2849,7 +2849,7 @@
     "noteTitlePlaceholder": "أدخل عنوان الملاحظة",
     "noteLinkedLecturePlaceholder": "أدخل المحاضرة المرتبطة",
     "noteContentPlaceholder": "أدخل محتوى الملاحظة",
-    "noteSelectCoursePlaceholder": "اختر الكورس",
+    "noteSelectCoursePlaceholder": "اختر المادة",
     "updating": "جاري التحديث...",
     "creating": "جاري الإنشاء...",
     "noteTitleRequired": "العنوان مطلوب",
@@ -2864,7 +2864,7 @@
       "key_point": "نقطة أساسية",
       "important_notice": "تنبيه مهم"
     },
-    "viewerExplanation": "طلاب شاهدوا الدرس: {count}. لكل طالب عدّاد مشاهدات مستقل، ولا يمثل هذا العدد إجمالي طلاب الدورة.",
+    "viewerExplanation": "طلاب شاهدوا الدرس: {count}. لكل طالب عدّاد مشاهدات مستقل، ولا يمثل هذا العدد إجمالي طلاب المادة.",
     "recordedViews": "المشاهدات المسجلة"
   },
   "language": {
@@ -2893,7 +2893,7 @@
     "rotation": "الدوران",
     "rotationDesc": "زاوية نص العلامة المائية (-45° إلى 45°)",
     "applyTo": "تطبيق العلامة المائية على",
-    "applyToChapters": "الفصول",
+    "applyToChapters": "الدروس",
     "applyToExams": "الاختبارات والاختبارات القصيرة",
     "applyToLibrary": "المكتبة الإلكترونية",
     "applyToVideos": "الفيديوهات المسجلة",
@@ -2987,7 +2987,7 @@
     },
     "watermark": {
       "title": "إعدادات العلامة المائية",
-      "description": "تكوين العلامات المائية للفصول والاختبارات والمكتبة."
+      "description": "تكوين العلامات المائية للدروس والاختبارات والمكتبة."
     },
     "appUpdate": {
       "title": "تحديث التطبيق",
@@ -3006,7 +3006,7 @@
     "searchPlaceholder": "البحث في عناصر المكتبة...",
     "filters": {
       "allTypes": "جميع الأنواع",
-      "allCourses": "جميع الدورات",
+      "allCourses": "جميع المواد",
       "booklet": "كتيب",
       "reference": "مرجع",
       "guide": "دليل"
@@ -3044,10 +3044,10 @@
         "description": "الوصف",
         "descriptionRequired": "الوصف مطلوب",
         "descriptionPlaceholder": "وصف العنصر...",
-        "course": "الدورة",
-        "courseRequired": "الدورة مطلوبة",
-        "selectCourse": "اختر الدورة",
-        "loadingCourses": "جارٍ تحميل الدورات...",
+        "course": "المادة",
+        "courseRequired": "المادة مطلوبة",
+        "selectCourse": "اختر المادة",
+        "loadingCourses": "جارٍ تحميل المواد...",
         "materialType": "نوع المادة",
         "price": "السعر",
         "priceRequired": "السعر الصحيح مطلوب",
@@ -3088,9 +3088,9 @@
       "fields": {
         "title": "العنوان",
         "description": "الوصف",
-        "course": "الدورة",
-        "selectCourse": "اختر الدورة",
-        "loadingCourses": "جارٍ تحميل الدورات...",
+        "course": "المادة",
+        "selectCourse": "اختر المادة",
+        "loadingCourses": "جارٍ تحميل المواد...",
         "materialType": "نوع المادة",
         "price": "السعر",
         "uploadNewCoverImage": "رفع صورة غلاف جديدة",
@@ -3126,7 +3126,7 @@
       },
       "fields": {
         "description": "الوصف",
-        "courseId": "رمز الدورة",
+        "courseId": "رمز المادة",
         "codeActivation": "تفعيل الكود مطلوب",
         "yes": "نعم",
         "no": "لا",
@@ -3174,7 +3174,7 @@
       "categories": {
         "all": "الكل",
         "account": "الحساب",
-        "courses": "الكورسات",
+        "courses": "المواد",
         "exams": "الاختبارات",
         "payments": "المدفوعات",
         "technical": "الدعم الفني"
@@ -3185,16 +3185,16 @@
           "answer": "أدخل رقم هاتفك المسجّل، ثم انتقل إلى صفحة التحقق وأكّد رمز التحقق. حسابات الطلاب لا تستخدم كلمات مرور."
         },
         "accessPurchasedCourses": {
-          "question": "كيف يمكنني الوصول إلى الكورسات التي اشتريتها؟",
-          "answer": "اذهب إلى صفحة كورساتي، وستظهر كل الكورسات التي تم شراؤها أو تفعيلها تلقائيًا."
+          "question": "كيف يمكنني الوصول إلى المواد التي اشتريتها؟",
+          "answer": "اذهب إلى صفحة «موادي»، وستظهر كل المواد التي تم شراؤها أو تفعيلها تلقائيًا."
         },
         "retakeExam": {
           "question": "هل يمكنني إعادة الاختبار إذا لم أنجح؟",
           "answer": "يعتمد ذلك على إعدادات الاختبار. بعض الاختبارات تسمح بالإعادة، والبعض الآخر يحتاج إلى موافقة المدرس."
         },
         "activationCode": {
-          "question": "كيف أفعّل كورس باستخدام كود التفعيل؟",
-          "answer": "اذهب إلى صفحة تفعيل الكورس، أدخل كود التفعيل، ثم اضغط تأكيد لفتح الكورس."
+          "question": "كيف أفعّل مادة باستخدام كود التفعيل؟",
+          "answer": "اذهب إلى صفحة تفعيل المادة، أدخل كود التفعيل، ثم اضغط تأكيد لفتح المادة."
         },
         "videoPlayerIssue": {
           "question": "مشغل الفيديو لا يعمل، ماذا أفعل؟",
@@ -3209,8 +3209,8 @@
           "answer": "يرجى التواصل مع الدعم أو المركز الحالي لطلب تغيير المركز."
         },
         "downloadMaterials": {
-          "question": "كيف يمكنني تحميل ملفات الكورس؟",
-          "answer": "افتح درس الكورس وتحقق من قسم الملفات المرفقة. إذا كان التحميل متاحًا ستجد زر التحميل."
+          "question": "كيف يمكنني تحميل ملفات المادة؟",
+          "answer": "افتح درس المادة وتحقق من قسم الملفات المرفقة. إذا كان التحميل متاحًا ستجد زر التحميل."
         }
       }
     },
@@ -3233,8 +3233,8 @@
           "content": "أنت مسؤول عن الحفاظ على سرية بيانات حسابك وكلمة المرور، وتتحمل مسؤولية جميع الأنشطة التي تتم من خلال حسابك."
         },
         "courseAccess": {
-          "title": "3. الوصول إلى الكورسات والمحتوى",
-          "content": "يتم توفير محتوى الكورسات لأغراض تعليمية فقط. يمنع مشاركة أو نسخ أو توزيع المواد التعليمية بدون إذن."
+          "title": "3. الوصول إلى المواد والمحتوى",
+          "content": "يتم توفير محتوى المواد لأغراض تعليمية فقط. يمنع مشاركة أو نسخ أو توزيع المواد التعليمية بدون إذن."
         },
         "examIntegrity": {
           "title": "4. نزاهة الاختبارات",
@@ -3242,7 +3242,7 @@
         },
         "payments": {
           "title": "5. المدفوعات والاسترداد",
-          "content": "تتم المدفوعات من خلال الطرق المعتمدة. قد تختلف سياسة الاسترداد حسب الكورس أو المركز، ويمكنك التواصل مع الدعم لمعرفة التفاصيل."
+          "content": "تتم المدفوعات من خلال الطرق المعتمدة. قد تختلف سياسة الاسترداد حسب المادة أو المركز، ويمكنك التواصل مع الدعم لمعرفة التفاصيل."
         },
         "termination": {
           "title": "6. إيقاف الخدمة",
@@ -3447,7 +3447,7 @@
     "filters": {
       "all": "الكل",
       "live": "مباشر",
-      "course": "الكورسات",
+      "course": "المواد",
       "exam": "الاختبارات",
       "general": "عام"
     },
@@ -3552,7 +3552,7 @@
     "title": "تقدم المقرر",
     "subtitle": "تابع المحاضرات المكتملة والتقدم عبر المقررات.",
     "overallProgress": "التقدم الكلي",
-    "chapterBreakdown": "تفاصيل الفصول",
+    "chapterBreakdown": "تفاصيل الدروس",
     "lectures": "محاضرات",
     "noData": "بيانات التقدم غير متاحة لهذا الطالب بعد."
   },
@@ -3605,10 +3605,10 @@
     "pageTitle": "لوحة تحكم الدكتور",
     "stats": {
       "totalStudents": "إجمالي الطلاب",
-      "draftCourses": "الدورات المسودة",
+      "draftCourses": "المواد المسودة",
       "unpublished": "لم تُنشر بعد",
-      "activeCourses": "الدورات النشطة",
-      "liveClasses": "الفصول المباشرة",
+      "activeCourses": "المواد النشطة",
+      "liveClasses": "المحاضرات المباشرة",
       "pendingQuestions": "الأسئلة المعلقة",
       "currentlyTeaching": "يتم التدريس حالياً",
       "today": "اليوم",
@@ -3620,15 +3620,15 @@
       "week": "أسبوع",
       "month": "شهر",
       "year": "سنة",
-      "courseActivity": "نشاط الدورة",
+      "courseActivity": "نشاط المادة",
       "lectures": "المحاضرات",
-      "liveClasses": "الفصول المباشرة",
+      "liveClasses": "المحاضرات المباشرة",
       "quizzes": "الاختبارات"
     },
     "activity": {
       "recentActivity": "النشاط الأخير",
       "viewAll": "عرض الكل",
-      "upcomingLiveClasses": "الفصول المباشرة القادمة",
+      "upcomingLiveClasses": "المحاضرات المباشرة القادمة",
       "students": "طلاب",
       "progress": "التقدم",
       "studentsNeedingAttention": "الطلاب الذين يحتاجون إلى انتباه",
@@ -3644,13 +3644,13 @@
   },
   "lectures": {
     "pageTitle": "إدارة المحاضرات",
-    "pageDescription": "إدارة محاضرات الدورة",
+    "pageDescription": "إدارة محاضرات المادة",
     "addLecture": "إضافة محاضرة",
     "searchPlaceholder": "بحث في المحاضرات...",
-    "allCourses": "جميع الدورات",
+    "allCourses": "جميع المواد",
     "columns": {
       "title": "العنوان",
-      "course": "الدورة",
+      "course": "المادة",
       "description": "الوصف",
       "created": "تم الإنشاء"
     },
@@ -3660,10 +3660,10 @@
     "deleteTitle": "حذف المحاضرة"
   },
   "chapters": {
-    "pageTitle": "إدارة الفصول",
-    "pageDescription": "إدارة فصول المحاضرة والفيديوهات",
-    "addChapter": "إضافة فصل",
-    "searchPlaceholder": "بحث في الفصول...",
+    "pageTitle": "إدارة الدروس",
+    "pageDescription": "إدارة دروس المحاضرة والفيديوهات",
+    "addChapter": "إضافة درس",
+    "searchPlaceholder": "بحث في الدروس...",
     "allLectures": "جميع المحاضرات",
     "columns": {
       "title": "العنوان",
@@ -3675,10 +3675,10 @@
     },
     "yes": "نعم",
     "no": "لا",
-    "error": "فشل تحميل الفصول",
+    "error": "فشل تحميل الدروس",
     "retry": "إعادة المحاولة",
-    "emptyMessage": "لم يتم العثور على فصول. أنشئ أول فصل!",
-    "deleteTitle": "حذف الفصل",
+    "emptyMessage": "لم يتم العثور على دروس. أنشئ أول درس!",
+    "deleteTitle": "حذف الدرس",
     "videoStatus": {
       "ready": "جاهز",
       "queued": "في الانتظار",
@@ -3703,17 +3703,17 @@
     "deleteTitle": "حذف المستوى"
   },
   "doctorCourses": {
-    "title": "دوراتي",
-    "subtitle": "إدارة وتتبع جميع دوراتك",
-    "createCourse": "إنشاء دورة",
+    "title": "موادي",
+    "subtitle": "إدارة وتتبع جميع موادك",
+    "createCourse": "إنشاء مادة",
     "editContent": "تعديل المحتوى",
-    "searchPlaceholder": "بحث في الدورات...",
+    "searchPlaceholder": "بحث في المواد...",
     "allCenters": "جميع المراكز",
     "allStatus": "جميع الحالات",
     "active": "نشط",
     "draft": "مسودة",
     "columns": {
-      "course": "الدورة",
+      "course": "المادة",
       "subject": "الموضوع",
       "students": "الطلاب",
       "progress": "التقدم",
@@ -3726,13 +3726,13 @@
       "students": "طلاب",
       "exams": "امتحانات",
       "lectures": "محاضرات",
-      "chapters": "فصول",
+      "chapters": "دروس",
       "notes": "ملاحظات"
     },
     "contentProgress": "تقدم المحتوى",
-    "viewCourse": "عرض الدورة",
-    "deleteConfirm": "هل أنت متأكد من حذف هذه الدورة؟",
-    "noCoursesFound": "لم يتم العثور على دورات.",
+    "viewCourse": "عرض المادة",
+    "deleteConfirm": "هل أنت متأكد من حذف هذه المادة؟",
+    "noCoursesFound": "لم يتم العثور على مواد.",
     "approved": "موافق عليه",
     "pending": "قيد الانتظار",
     "declined": "مرفوض"

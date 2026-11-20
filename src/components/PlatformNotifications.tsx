@@ -86,7 +86,7 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
         }
         toast.success(ar ? `تم إرسال ${result.sent} إشعار` : `Sent ${result.sent} notifications`);
         setTitle(''); setMessage(''); setRefresh(n => n + 1);
-      } catch { toast.error(ar ? 'تعذر الإرسال. تحقق من اختيار الدورة.' : 'Could not send. Check the selected course.'); }
+      } catch { toast.error(ar ? 'تعذر الإرسال. تحقق من اختيار المادة.' : 'Could not send. Check the selected course.'); }
       finally { setSending(false); }
     }}>
       <fieldset disabled={sending} className="space-y-4">

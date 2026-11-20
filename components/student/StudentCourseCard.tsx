@@ -8,7 +8,8 @@ function categoryBadgeClass(categoryName: string): string {
   const n = categoryName.trim();
   if (!n) return 'bg-slate-700 text-white';
   if (n.includes('مراجعات') || n.includes('مراجعة')) return 'bg-emerald-500 text-white';
-  if (n.includes('كورسات')) return 'bg-amber-500 text-white';
+  // Category names come from the data (e.g. «كورسات»), so both the old and the new word keep their colour.
+  if (n.includes('كورسات') || n.includes('مواد')) return 'bg-amber-500 text-white';
   return 'bg-slate-700 text-white';
 }
 

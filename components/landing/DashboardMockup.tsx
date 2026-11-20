@@ -5,7 +5,7 @@ import { ArrowDownRight, ArrowUpRight, ClipboardCheck, Globe, LayoutDashboard, L
 import type { LandingLocale } from './content';
 
 const TEXT = {
-  ar: { students: 'الطلاب', completion: 'نسبة الإنجاز', live: 'مباشر الآن', week: 'المشاهدات هذا الأسبوع', lessons: ['محاضرة 4 · التشريح', 'مراجعة الفصل الثالث'] },
+  ar: { students: 'الطلاب', completion: 'نسبة الإنجاز', live: 'مباشر الآن', week: 'المشاهدات هذا الأسبوع', lessons: ['محاضرة 4 · التشريح', 'مراجعة الدرس الثالث'] },
   en: { students: 'Students', completion: 'Completion', live: 'Live now', week: 'Views this week', lessons: ['Lecture 4 · Anatomy', 'Chapter 3 review'] },
 } as const;
 

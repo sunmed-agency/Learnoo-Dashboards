@@ -43,6 +43,10 @@ type ProfileAttributes = {
       };
     };
   };
+  /** The student's center(s), as chosen in the dashboard (`/auth/me` loads `centers`). */
+  centers?:
+    | { data?: { attributes?: { name?: string | null } }[] }
+    | { attributes?: { name?: string | null }; data?: { attributes?: { name?: string | null } } }[];
   activity_stats?: {
     notes_created?: number;
     downloads?: number;
@@ -85,7 +89,16 @@ export default async function StudentProfilePage() {
 
   const university =
     student?.university?.data?.attributes?.name || "Not available";
+  // The center chosen for the student in the dashboard is in `centers` (it was read only from the
+  // faculty's parent, which is empty for most students, so the profile said "Not available").
+  const centerRows = Array.isArray(student?.centers)
+    ? student.centers
+    : (student?.centers as { data?: unknown[] } | undefined)?.data ?? [];
+  const centerNames = (centerRows as { attributes?: { name?: string | null }; data?: { attributes?: { name?: string | null } } }[])
+    .map((row) => (row?.attributes?.name ?? row?.data?.attributes?.name ?? "").trim())
+    .filter(Boolean);
   const center =
+    centerNames.join("، ") ||
     student?.faculty?.data?.attributes?.parent?.data?.attributes?.name ||
     "Not available";
   const faculty = student?.faculty?.data?.attributes?.name || "Not available";

@@ -2995,7 +2995,7 @@ export default function DepartmentsPage() {
                   <Loader2 className="w-5 h-5 animate-spin text-gray-500" />
                 </div>
               ) : !viewersList || viewersList.length === 0 ? (
-                <p className="text-sm text-gray-400">{ar ? "لا يوجد طلاب مشتركون في هذه الدورة." : "No subscribers in this course."}</p>
+                <p className="text-sm text-gray-400">{ar ? "لا يوجد طلاب مشتركون في هذه المادة." : "No subscribers in this course."}</p>
               ) : (
                 <div className="divide-y divide-gray-100">
                   {viewersList.map((uv: any) => (

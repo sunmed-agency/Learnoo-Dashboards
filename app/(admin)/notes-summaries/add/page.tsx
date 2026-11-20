@@ -43,7 +43,7 @@ export default function AddNotePage() {
       newErrors.title = t('create.titleRequired');
     }
 
-    if (!courseId) newErrors.courseId = ar ? 'اختر الدورة' : 'Select a course';
+    if (!courseId) newErrors.courseId = ar ? 'اختر المادة' : 'Select a course';
 
     if (!type.trim()) {
       newErrors.type = t('create.typeRequired');

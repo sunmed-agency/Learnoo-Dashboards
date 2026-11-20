@@ -22,19 +22,19 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
   const locale = ar ? 'ar' : 'en';
   const changesLabel = ar ? 'ما تغيّر في هذا التعديل' : 'Changed in this edit';
   const itemLabels = ar
-    ? { course: 'دورة', chapter: 'درس', library: 'مكتبة', category: 'تصنيف', quiz: 'اختبار' }
+    ? { course: 'مادة', chapter: 'درس', library: 'مكتبة', category: 'تصنيف', quiz: 'اختبار' }
     : { course: 'Course', chapter: 'Lesson', library: 'Library', category: 'Category', quiz: 'Quiz' };
   const fields: [keyof ContentAuditSnapshot, string][] = [
     ['title', ar ? 'العنوان' : 'Title'], ['video', ar ? 'ملف الفيديو' : 'Video file'],
-    ['lecture_id', ar ? 'رقم المحاضرة' : 'Lecture ID'], ['course_id', ar ? 'رقم الدورة' : 'Course ID'],
+    ['lecture_id', ar ? 'رقم المحاضرة' : 'Lecture ID'], ['course_id', ar ? 'رقم المادة' : 'Course ID'],
     ['status', ar ? 'حالة النشر' : 'Publish status'],
     ['max_views', ar ? 'حد المشاهدات' : 'View limit'], ['view_by_minute', ar ? 'ثانية احتساب المشاهدة' : 'View threshold (seconds)'],
   ];
   return <>
     {(course || lecture || chapter || activationImport || pendingDeleted) && <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
-      {course && <p className="font-semibold">{ar ? 'الدورة' : 'Course'}: {course.title || (ar ? 'تفاصيل الدورة غير متاحة' : 'Course details unavailable')} <bdi>#{course.id}</bdi></p>}
+      {course && <p className="font-semibold">{ar ? 'المادة' : 'Course'}: {course.title || (ar ? 'تفاصيل المادة غير متاحة' : 'Course details unavailable')} <bdi>#{course.id}</bdi></p>}
       {!!course?.category_path.length && <p className="mt-1 text-gray-600">{ar ? 'المسار الدراسي' : 'Academic path'}: {course.category_path.join(' / ')}</p>}
-      {details.course_context_current && course?.title && <p className="mt-1 text-xs text-gray-500">{ar ? 'بيانات الدورة الحالية؛ لم تُحفظ تفاصيلها وقت العملية القديمة.' : 'Current course details; no snapshot was saved for this older activity.'}</p>}
+      {details.course_context_current && course?.title && <p className="mt-1 text-xs text-gray-500">{ar ? 'بيانات المادة الحالية؛ لم تُحفظ تفاصيلها وقت العملية القديمة.' : 'Current course details; no snapshot was saved for this older activity.'}</p>}
       {lecture && <p>{ar ? 'المحاضرة' : 'Lecture'}: {lecture.title} <bdi>#{lecture.id}</bdi></p>}
       {chapter && <p>{chapter.type === 'note' ? (ar ? 'الملاحظة' : 'Note') : (ar ? 'الدرس' : 'Lesson')}: {chapter.title} <bdi>#{chapter.id}</bdi></p>}
       {activationImport && <>

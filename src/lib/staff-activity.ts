@@ -20,7 +20,7 @@ const actions: Record<string, readonly [string, string]> = {
   'POST quiz-attempt': ['بدء محاولة امتحان', 'Started an exam attempt'],
   'POST owner/device-transfers/:id/approve': ['اعتماد الجهاز الجديد', 'Approved a new device'],
   'POST owner/device-transfers/:id/cancel': ['إلغاء طلب نقل الجهاز', 'Cancelled a device transfer request'],
-  'POST course/:id/subscribers/remove': ['إلغاء تفعيل طلاب من دورة', 'Removed course subscriptions'],
+  'POST course/:id/subscribers/remove': ['إلغاء تفعيل طلاب من مادة', 'Removed course subscriptions'],
   'POST owner/device-transfers/:id/reset': ['السماح للطالب بتغيير الجهاز وإلغاء الجلسات السابقة', 'Allowed a student device change and revoked previous sessions'],
   'POST timetable/:id/documents': ['رفع ملف إلى الجداول والمستندات', 'Uploaded a schedule document'],
   'POST ai-exam': ['طلب إنشاء امتحان بالذكاء الاصطناعي', 'Requested AI exam generation'],
@@ -42,14 +42,14 @@ const actions: Record<string, readonly [string, string]> = {
   'POST notifications/send': ['إرسال إشعار للطلاب', 'Sent a student notification'],
   'POST test-notification': ['اختبار إرسال إشعار', 'Tested a notification'],
   'POST test-quiz-notification': ['اختبار إشعار امتحان', 'Tested an exam notification'],
-  'POST test-course-notification': ['اختبار إشعار دورة', 'Tested a course notification'],
+  'POST test-course-notification': ['اختبار إشعار مادة', 'Tested a course notification'],
   'POST test-login-notification': ['اختبار إشعار تسجيل الدخول', 'Tested a sign-in notification'],
   'POST test-registration-notification': ['اختبار إشعار إنشاء حساب', 'Tested an account notification'],
 };
 
 const resources: Record<string, readonly [string, string]> = {
   university: ['جامعة', 'university'], faculty: ['كلية', 'faculty'], center: ['سنتر', 'center'],
-  department: ['قسم أو ترم', 'department or term'], course: ['دورة', 'course'], lecture: ['محاضرة', 'lecture'],
+  department: ['قسم أو ترم', 'department or term'], course: ['مادة', 'course'], lecture: ['محاضرة', 'lecture'],
   chapter: ['درس', 'lesson'], note: ['ملاحظة أو ملخص', 'note or summary'], attachment: ['مرفق', 'attachment'],
   discussion: ['نقاش', 'discussion'], library: ['عنصر في المكتبة الإلكترونية', 'library item'],
   quiz: ['امتحان', 'exam'], 'quiz-attempt': ['محاولة امتحان', 'exam attempt'],
@@ -91,18 +91,18 @@ export interface ActivityRow { label: string; value: string }
 
 type Pair = readonly [string, string];
 const none: Pair = ['—', '—'];
-const access: Record<string, Pair> = { true: ['عام', 'Public'], false: ['خاص', 'Private'], included: ['مشمول مع الدورة', 'Included with the course'] };
+const access: Record<string, Pair> = { true: ['عام', 'Public'], false: ['خاص', 'Private'], included: ['مشمول مع المادة', 'Included with the course'] };
 const published: Record<string, Pair> = { active: ['منشور', 'Published'], draft: ['مسودة', 'Draft'] };
 const examTypes: Record<string, Pair> = { exam: ['امتحان', 'Exam'], homework: ['واجب منزلي', 'Homework'] };
 const examLabels: Record<Exclude<keyof ExamActivitySnapshot, 'id'>, Pair> = {
   title: ['العنوان', 'Title'], type: ['النوع', 'Type'], status: ['حالة النشر', 'Publish status'], is_public: ['الإتاحة', 'Access'],
   question_count: ['عدد الأسئلة', 'Questions'], total_marks: ['الدرجة الكلية', 'Total marks'], passing_marks: ['درجة النجاح', 'Pass mark'],
   duration: ['المدة', 'Duration'], max_attempts: ['عدد المحاولات', 'Attempts'], start_time: ['يفتح', 'Opens'], end_time: ['يغلق', 'Closes'],
-  courses: ['الدورات', 'Courses'],
+  courses: ['المواد', 'Courses'],
 };
 const liveLabels: Record<Exclude<keyof LiveSessionActivitySnapshot, 'id'>, Pair> = {
   title: ['العنوان', 'Title'], is_public: ['الإتاحة', 'Access'], publication_status: ['حالة النشر', 'Publish status'],
-  started_at: ['يبدأ', 'Starts'], ended_at: ['ينتهي', 'Ends'], courses: ['الدورات', 'Courses'],
+  started_at: ['يبدأ', 'Starts'], ended_at: ['ينتهي', 'Ends'], courses: ['المواد', 'Courses'],
 };
 
 function activityValue(key: string, value: unknown, language: 0 | 1, locale: string): string {
@@ -111,7 +111,7 @@ function activityValue(key: string, value: unknown, language: 0 | 1, locale: str
     if (key === 'end_time') return ['بدون موعد إغلاق', 'No closing time'][language];
     return none[language];
   }
-  if (key === 'courses') return (value as ActivityCourse[]).map(course => course.title || `#${course.id}`).join(['، ', ', '][language]) || ['غير مرتبط بدورة', 'Not linked to a course'][language];
+  if (key === 'courses') return (value as ActivityCourse[]).map(course => course.title || `#${course.id}`).join(['، ', ', '][language]) || ['غير مرتبط بمادة', 'Not linked to a course'][language];
   if (key === 'is_public') return (access[String(value)] ?? none)[language];
   if (key === 'status' || key === 'publication_status') return (published[String(value)] ?? none)[language];
   if (key === 'type') return (examTypes[String(value)] ?? none)[language];
@@ -147,6 +147,6 @@ export const liveSessionChangeRows = (live: EditedSnapshot<LiveSessionActivitySn
 export function notificationAudience(notification: NotificationActivity, locale: string): string {
   const ar = locale === 'ar';
   if (notification.audience === 'all') return ar ? 'كل الطلاب' : 'All students';
-  if (notification.courses.length === 1) return ar ? 'طلاب الدورة' : 'Students of the course';
-  return (ar ? 'طلاب الدورات: ' : 'Students of: ') + notification.courses.map(course => course.title || `#${course.id}`).join(ar ? '، ' : ', ');
+  if (notification.courses.length === 1) return ar ? 'طلاب المادة' : 'Students of the course';
+  return (ar ? 'طلاب المواد: ' : 'Students of: ') + notification.courses.map(course => course.title || `#${course.id}`).join(ar ? '، ' : ', ');
 }

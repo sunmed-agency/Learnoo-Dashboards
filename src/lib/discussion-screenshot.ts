@@ -643,7 +643,7 @@ async function createSyntheticSnapshot(opts: {
     if (opts.chapterTitle?.trim()) {
       ctx.fillStyle = '#e2e8f0';
       ctx.font = '600 40px system-ui, -apple-system, "Segoe UI", sans-serif';
-      const chapterLabel = isAr ? 'الفصل: ' : 'Chapter: ';
+      const chapterLabel = isAr ? 'الدرس: ' : 'Chapter: ';
       ctx.fillText(
         truncateToWidth(ctx, `${chapterLabel}${opts.chapterTitle.trim()}`, maxTextWidth),
         W / 2,

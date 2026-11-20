@@ -58,9 +58,9 @@ export default function OwnerActivityPage() {
   }
   if (role !== 'Super Admin' && role !== 'Admin') return <p>{ar ? 'هذه الصفحة متاحة للمالك والأدمن فقط' : 'This page is available to the Owner and Admin only'}</p>;
   return <div className="space-y-6 pb-12">
-    <h1 className="text-2xl font-bold">{role === 'Admin' ? (ar ? 'اعتماد الأجهزة' : 'Device approvals') : (ar ? 'سجل النشاط واعتماد الأجهزة' : 'Activity history and device approvals')}</h1>
+    <h1 className="text-2xl font-bold">{role === 'Admin' ? (ar ? 'طلبات الأجهزة' : 'Device requests') : (ar ? 'النشاط على المنصة' : 'Platform activity')}</h1>
     {error && <p role="alert">{ar ? 'تعذر تحميل البيانات' : 'Could not load data'}</p>}
-    <h2 className="text-lg font-bold">{ar ? 'طلبات نقل الجهاز' : 'Device transfer requests'}</h2>
+    <h2 id="devices" className="scroll-mt-24 text-lg font-bold">{ar ? 'طلبات الأجهزة' : 'Device requests'}</h2>
     {!devices.length && <p>{ar ? 'لا توجد طلبات معلقة' : 'No pending requests'}</p>}
     {devices.map(device => <article key={device.id} id={`device-${device.id}`} className="flex scroll-mt-24 flex-wrap items-center justify-between gap-3 rounded-xl border bg-white p-4"><div className="space-y-2"><p className="font-bold">{device.first_name} {device.last_name} · {device.phone}</p>
       {typeof device.remaining_device_transfers === 'number' && <p className="text-sm text-gray-600">{ar ? `مرات تغيير الجهاز المتبقية: ${device.remaining_device_transfers} من 2` : `Device changes remaining: ${device.remaining_device_transfers} of 2`}</p>}

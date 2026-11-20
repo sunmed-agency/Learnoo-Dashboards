@@ -188,7 +188,7 @@
     "renderError": "تعذر عرض ملف PDF."
   },
   "discussions": {
-    "pageTitle": "إدارة النقاشات",
+    "pageTitle": "النقاشات",
     "pageDescription": "عرض والرد على وحذف نقاشات الطلاب في جميع الدروس.",
     "reply": "رد",
     "delete": "حذف",
@@ -527,34 +527,34 @@
     "teacherFeedback": "ملاحظات المدرسين",
     "mainMenu": "القائمة الرئيسية",
     "dashboard": "لوحة التحكم",
-    "instructors": "المدربون",
+    "instructors": "المدرّسين",
     "home": "الرئيسية",
     "profile": "الملف الشخصي",
     "helpFaq": "المساعدة والأسئلة الشائعة",
     "students": "الطلاب",
-    "examsAndQA": "الاختبارات والأسئلة",
+    "examsAndQA": "مركز الاختبارات",
     "notifications": "الإشعارات",
     "downloads": "التحميلات",
     "downloadableContent": "المحتوى القابل للتحميل",
-    "profileSettings": "الملف الشخصي والإعدادات",
+    "profileSettings": "الإعدادات",
     "featureControl": "التحكم في الميزات",
     "otaUpload": "رفع تحديثات الابلكيشن",
     "myCourses": "موادي",
-    "academicStructure": "الهيكل الأكاديمي",
-    "liveSessions": "الجلسات المباشرة",
+    "academicStructure": "المخطط الأكاديمي",
+    "liveSessions": "البث المباشر",
     "exams": "الامتحانات",
     "discussions": "النقاشات",
-    "community": "المجتمع",
+    "community": "المنشورات",
     "notesSummaries": "الملاحظات والملخصات",
     "electronicLibrary": "المكتبة الإلكترونية",
-    "support": "الدعم",
-    "activation": "التفعيل",
+    "support": "الشكاوى والدعم",
+    "activation": "أكواد التفعيل",
     "adminDashboard": "لوحة تحكم الإدارة",
     "doctorDashboard": "لوحة تحكم الطبيب",
     "parentDashboard": "لوحة تحكم ولي الأمر",
-    "schedules": "الجداول والمستندات",
-    "activity": "نشاط الفريق والأجهزة",
-    "pendingActivations": "أرقام التفعيل المسبق",
+    "schedules": "الجداول",
+    "activity": "النشاط على المنصة",
+    "pendingActivations": "التفعيل المسبق",
     "subscriptionRequests": "طلبات الاشتراك الجديدة",
     "supervisors": "المشرفين",
     "supervisorRole": "مشرف",
@@ -566,7 +566,7 @@
       "support": "الدعم",
       "system": "النظام"
     },
-    "deviceApprovals": "اعتماد الأجهزة",
+    "deviceApprovals": "طلبات الأجهزة",
     "guardians": "أولياء الأمور"
   },
   "issues": {
@@ -642,26 +642,26 @@
   },
   "header": {
     "titles": {
-      "dashboard": "نظرة عامة على لوحة التحكم",
-      "students": "إدارة الطلاب",
+      "dashboard": "لوحة التحكم",
+      "students": "الطلاب",
       "courses": "موادي",
       "centers": "المراكز",
-      "departments": "الهيكل الأكاديمي",
+      "departments": "المخطط الأكاديمي",
       "faculties": "الكليات",
       "universities": "الجامعات",
       "levels": "المستويات",
       "lectures": "المحاضرات",
       "chapters": "الدروس",
-      "exams": "الاختبارات والأسئلة",
-      "academicStructure": "الهيكل الأكاديمي",
+      "exams": "مركز الاختبارات",
+      "academicStructure": "المخطط الأكاديمي",
       "contentManager": "مدير المحتوى",
-      "community": "المجتمع",
+      "community": "المنشورات",
       "discussions": "النقاشات",
       "electronicLibrary": "المكتبة الإلكترونية",
       "notesSummaries": "الملاحظات والملخصات",
-      "liveSessions": "الجلسات المباشرة",
+      "liveSessions": "البث المباشر",
       "notifications": "الإشعارات",
-      "downloads": "التنزيلات",
+      "downloads": "التحميلات",
       "settings": "الإعدادات",
       "platformSettings": "إعدادات المنصة",
       "featureControl": "التحكم في الميزات",
@@ -670,7 +670,7 @@
       "edit": "تعديل",
       "details": "التفاصيل",
       "liveRoom": "غرفة البث المباشر",
-      "activation": "التفعيل"
+      "activation": "أكواد التفعيل"
     }
   },
   "instructors": {
@@ -683,9 +683,9 @@
       "automaticHint": "تُعتمد المواد الجديدة تلقائيًا، مع إرسال إشعار للإدارة.",
       "existingCourses": "عند حفظ «بدون انتظار الموافقة»، تُعتمد المواد الحالية المعلقة أيضًا. تظل المواد المرفوضة وحالة المسودة وتفعيلات الطلاب كما هي."
     },
-    "pageTitle": "إدارة المدربين",
-    "pageDescription": "إدارة حسابات المدربين والتفاصيل.",
-    "addInstructor": "إضافة مدرب",
+    "pageTitle": "المدرّسين",
+    "pageDescription": "إدارة حسابات المدرّسين وبياناتهم.",
+    "addInstructor": "مدرّس جديد",
     "name": "الاسم",
     "email": "البريد الإلكتروني",
     "phone": "الهاتف",
@@ -693,13 +693,13 @@
     "status": "الحالة",
     "actions": "إجراءات",
     "searchPlaceholder": "البحث بالاسم أو البريد الإلكتروني...",
-    "noInstructors": "لم يتم العثور على مدربين. أضف أول مدرب!",
-    "deleteConfirm": "هل أنت متأكد من حذف هذا المدرب؟",
+    "noInstructors": "مفيش مدرّسين لسه. ضيف أول مدرّس!",
+    "deleteConfirm": "متأكد إنك عايز تحذف المدرّس ده؟",
     "form": {
-      "addTitle": "إضافة مدرب جديد",
-      "addDescription": "إنشاء حساب مدرب جديد وتعيينه للمراكز.",
-      "editTitle": "تعديل المدرب",
-      "editDescription": "تحديث تفاصيل المدرب والتعيينات.",
+      "addTitle": "مدرّس جديد",
+      "addDescription": "إنشاء حساب مدرّس جديد وتعيينه للمراكز.",
+      "editTitle": "تعديل المدرّس",
+      "editDescription": "تحديث بيانات المدرّس والتعيينات.",
       "sections": {
         "personal": "المعلومات الشخصية",
         "academic": "المعلومات الأكاديمية",
@@ -832,7 +832,7 @@
         "empty": "لا توجد منشورات في المجتمع حالياً."
       }
     },
-    "pageTitle": "إدارة الطلاب",
+    "pageTitle": "الطلاب",
     "pageDescription": "إدارة حسابات الطلاب والوصول والتفاصيل.",
     "addStudent": "إضافة طالب",
     "studentCode": "رمز الطالب",
@@ -943,7 +943,7 @@
           "score": "الدرجة",
           "date": "التاريخ",
           "notesCreated": "الملاحظات المنشأة",
-          "downloads": "التنزيلات",
+          "downloads": "التحميلات",
           "liveAttendance": "حضور البث المباشر",
           "communityPosts": "منشورات المجتمع",
           "device": "الجهاز",
@@ -970,8 +970,8 @@
       "totalStudents": "إجمالي الطلاب",
       "activeCourses": "المواد النشطة",
       "draftCourses": "المواد المسودة",
-      "liveSessions": "إجمالي الجلسات المباشرة",
-      "liveSessionsToday": "الجلسات المباشرة اليوم",
+      "liveSessions": "إجمالي جلسات البث المباشر",
+      "liveSessionsToday": "جلسات البث المباشر اليوم",
       "notesCreated": "الملاحظات المنشأة",
       "monthlyRevenue": "الإيرادات الشهرية",
       "communityPosts": "منشورات المجتمع"
@@ -1138,7 +1138,7 @@
         "lectures": "المحاضرات والملفات",
         "exams": "الامتحانات",
         "notes": "الملاحظات والملخصات",
-        "liveSession": "الجلسات المباشرة",
+        "liveSession": "البث المباشر",
         "community": "المجتمع",
         "library": "المكتبة"
       },
@@ -1674,12 +1674,12 @@
       "codeCopied": "تم نسخ الرمز إلى الحافظة"
     },
     "review": {
-      "automaticDescription": "يمكنك نشر موادك الجديدة دون انتظار موافقة الإدارة.",
-      "publish": "إنشاء ونشر المادة",
-      "title": "مراجعة المادة",
       "0": "قيد المراجعة",
       "1": "تمت الموافقة",
       "2": "مرفوض",
+      "automaticDescription": "يمكنك نشر موادك الجديدة دون انتظار موافقة الإدارة.",
+      "publish": "إنشاء ونشر المادة",
+      "title": "مراجعة المادة",
       "hiddenHelp": "المادة مخفية عن الطلاب حتى يوافق عليها الأونر.",
       "approvedHelp": "الموافقة تسمح بالوصول عندما تكون المادة ودروسها منشورة وضمن موعد العرض. يظل التفعيل مطلوبًا للمحتوى غير المجاني.",
       "thumbnail": "صورة المادة",
@@ -1806,7 +1806,7 @@
     }
   },
   "activation": {
-    "pageTitle": "إدارة التفعيل",
+    "pageTitle": "أكواد التفعيل",
     "pageDescription": "إدارة رموز التفعيل للمواد والدروس وعناصر المكتبة والغرف المباشرة والاختبارات",
     "generateCodes": "إنشاء رموز",
     "tabs": {
@@ -1985,7 +1985,7 @@
     }
   },
   "otaUpload": {
-    "pageTitle": "رفع تحديثات الهواء",
+    "pageTitle": "رفع تحديثات الابلكيشن",
     "pageDescription": "رفع إصدارات جديدة من التطبيق للتحديثات اللاسلكية",
     "versionInfo": "معلومات الإصدار",
     "versionName": "اسم الإصدار",
@@ -2039,13 +2039,13 @@
     }
   },
   "liveSessions": {
-    "pageTitle": "الجلسات المباشرة",
-    "pageDescription": "جدولة وإدارة الجلسات المباشرة والتفاعلات.",
+    "pageTitle": "البث المباشر",
+    "pageDescription": "جدولة وإدارة جلسات البث المباشر.",
     "scheduleSession": "جدولة جلسة",
-    "searchPlaceholder": "البحث في الجلسات المباشرة...",
+    "searchPlaceholder": "ابحث في جلسات البث المباشر...",
     "noSessions": "لم يتم العثور على جلسات مباشرة. جدول جلستك الأولى!",
-    "loading": "جارٍ تحميل الجلسات المباشرة...",
-    "error": "فشل تحميل الجلسات المباشرة",
+    "loading": "جارٍ تحميل جلسات البث المباشر...",
+    "error": "تعذّر تحميل جلسات البث المباشر",
     "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذه الجلسة؟",
     "deleteSuccess": "تم حذف الجلسة بنجاح",
     "deleteError": "فشل حذف الجلسة",
@@ -2066,7 +2066,7 @@
     },
     "card": {
       "noCourse": "لا توجد مادة",
-      "unknownInstructor": "مدرب غير معروف",
+      "unknownInstructor": "مدرّس غير معروف",
       "chatOn": "الدردشة مفعلة",
       "chatOff": "الدردشة معطلة",
       "recordingOn": "التسجيل مفعل",
@@ -2093,7 +2093,7 @@
       "labels": {
         "title": "العنوان",
         "course": "المادة",
-        "instructor": "المدرب",
+        "instructor": "المدرّس",
         "description": "الوصف",
         "startTime": "وقت البدء",
         "endTime": "وقت الانتهاء"
@@ -2135,7 +2135,7 @@
     "private": "خاص",
     "included": "مضمن",
     "edit": {
-      "pageTitle": "تعديل الجلسة المباشرة",
+      "pageTitle": "تعديل جلسة البث المباشر",
       "pageDescription": "تحديث وإعداد جلسة البث المباشر الخاصة بك.",
       "sessionDetails": "تفاصيل الجلسة",
       "sessionTitle": "عنوان الجلسة",
@@ -2144,7 +2144,7 @@
       "success": "تم تحديث الجلسة بنجاح!",
       "error": "فشل تحديث الجلسة"
     },
-    "editPageTitle": "تعديل الجلسة المباشرة",
+    "editPageTitle": "تعديل جلسة البث المباشر",
     "editPageDescription": "تحديث وإعداد جلسة البث المباشر الخاصة بك.",
     "editButton": "تحديث الجلسة",
     "updating": "جارٍ التحديث...",
@@ -2218,7 +2218,7 @@
     }
   },
   "exams": {
-    "pageTitle": "الاختبارات والأسئلة",
+    "pageTitle": "مركز الاختبارات",
     "pageDescription": "إدارة التقييمات والاختبارات",
     "createExam": "إنشاء اختبار",
     "copyExam": "نسخ الاختبار {title}",
@@ -2569,7 +2569,7 @@
     }
   },
   "community": {
-    "pageTitle": "إدارة المجتمع",
+    "pageTitle": "المنشورات",
     "pageDescription": "مراجعة وإدارة منشورات الطلاب والتعليقات.",
     "filters": {
       "all": "جميع المنشورات",
@@ -2783,7 +2783,7 @@
     "back": "العودة إلى الكليات"
   },
   "departments": {
-    "pageTitle": "الهيكل الأكاديمي",
+    "pageTitle": "المخطط الأكاديمي",
     "ContentManager": "إدارة المحتوى",
     "LoadingContent": "جارٍ تحميل المحتوى...",
     "pageDescription": "إدارة الجامعات والكليات والمراكز والأقسام والمواد والمحتوى",
@@ -3653,7 +3653,7 @@
     },
     "welcome": {
       "goodMorning": "صباح الخير",
-      "startLiveSessions": "بدء الجلسات المباشرة",
+      "startLiveSessions": "ابدأ البث المباشر",
       "quickCreate": "إنشاء سريع",
       "satisfaction": "الرضا"
     }

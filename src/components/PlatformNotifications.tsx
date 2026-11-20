@@ -85,7 +85,7 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
     {sendForm && <form className="space-y-4 rounded-2xl border bg-white p-6" onSubmit={async e => {
       e.preventDefault();
       if ((instructor || audience === 'course') && !selectedCourses.length) {
-        toast.error(ar ? 'اختر مادة واحدة أو أكثر من الشجرة الأكاديمية.' : 'Choose one or more courses from the academic tree.');
+        toast.error(ar ? 'اختر مادة واحدة أو أكثر من المخطط الأكاديمي.' : 'Choose one or more courses from the academic tree.');
         return;
       }
       if (!instructor && audience === 'students' && !pickedStudents.length) {

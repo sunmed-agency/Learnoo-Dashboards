@@ -45,7 +45,7 @@ export default function PendingActivationsPage() {
   if (role !== 'Super Admin') return <p>{ar ? 'هذه الصفحة متاحة للأونر فقط.' : 'This page is available to the Owner only.'}</p>;
 
   return <main className="space-y-6 p-6">
-    <div><h1 className="text-2xl font-bold">{ar ? 'أرقام التفعيل المسبق المعلقة' : 'Pending pre-activation numbers'}</h1>
+    <div><h1 className="text-2xl font-bold">{ar ? 'التفعيل المسبق' : 'Pre-activation'}</h1>
       <p className="mt-2 text-sm text-gray-600">{ar ? 'هذه الأرقام تنتظر تفعيلها عند تسجيل الطالب أو دخوله. ليست عدد الطلاب المسجلين.' : 'These numbers await activation when the student registers or signs in. They are separate from registered student totals.'}</p></div>
     <form className="space-y-4 rounded-2xl border bg-white p-5" onSubmit={event => {
       event.preventDefault(); setPage(1);

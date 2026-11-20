@@ -22,7 +22,7 @@ const SECTIONS: [RegExp, readonly [string, string]][] = [
   [/^post(\/|$)/, ['المجتمع', 'community']],
   [/^timetable(\/|$)/, ['الجداول', 'schedules']],
   [/^student(\/|$)/, ['الطلاب', 'students']],
-  [/^(chapter|lecture|course)(\/|$)/, ['الشجرة', 'subjects tree']],
+  [/^(chapter|lecture|course)(\/|$)/, ['المخطط الأكاديمي', 'academic plan']],
   [/^notifications(\/|$)/, ['الإشعارات', 'notifications']],
   [/^(owner\/)?device-transfers(\/|$)/, ['الأجهزة', 'devices']],
 ];

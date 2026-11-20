@@ -510,34 +510,34 @@
     "teacherFeedback": "Teacher feedback",
     "mainMenu": "MAIN MENU",
     "dashboard": "Dashboard",
-    "instructors": "Instructors",
+    "instructors": "Teachers",
     "students": "Students",
     "notifications": "Notifications",
     "downloads": "Downloads",
     "downloadableContent": "Downloadable Content",
-    "profileSettings": "Profile & Settings",
+    "profileSettings": "Settings",
     "otaUpload": "OTA Upload",
     "featureControl": "Feature Control",
-    "examsAndQA": "Exams & Q&A",
+    "examsAndQA": "Exam center",
     "home": "Home",
     "profile": "Profile",
     "helpFaq": "Help & FAQ",
     "myCourses": "My Subjects",
-    "academicStructure": "Academic Structure",
-    "liveSessions": "Live Sessions",
+    "academicStructure": "Academic plan",
+    "liveSessions": "Live streaming",
     "exams": "Exams",
     "discussions": "Discussions",
-    "community": "Community",
+    "community": "Posts",
     "notesSummaries": "Notes & Summaries",
     "electronicLibrary": "Electronic Library",
-    "support": "Support",
-    "activation": "Activation",
+    "support": "Complaints & support",
+    "activation": "Activation codes",
     "adminDashboard": "Admin Dashboard",
     "doctorDashboard": "Instructor Dashboard",
     "parentDashboard": "Parent Dashboard",
-    "schedules": "Schedules and documents",
-    "activity": "Staff activity and devices",
-    "pendingActivations": "Pending activations",
+    "schedules": "Schedules",
+    "activity": "Platform activity",
+    "pendingActivations": "Pre-activation",
     "subscriptionRequests": "New subscription requests",
     "supervisors": "Supervisors",
     "supervisorRole": "Supervisor",
@@ -549,7 +549,7 @@
       "support": "Support",
       "system": "System"
     },
-    "deviceApprovals": "Device approvals",
+    "deviceApprovals": "Device requests",
     "guardians": "Guardians"
   },
   "issues": {
@@ -598,24 +598,24 @@
   },
   "header": {
     "titles": {
-      "dashboard": "Dashboard Overview",
-      "students": "Students Management",
+      "dashboard": "Dashboard",
+      "students": "Students",
       "courses": "My Subjects",
       "centers": "Centers",
-      "departments": "Academic Structure",
+      "departments": "Academic plan",
       "faculties": "Faculties",
       "universities": "Universities",
       "levels": "Levels",
       "lectures": "Lectures",
       "chapters": "Chapters",
-      "exams": "Exams & Q&A",
-      "academicStructure": "Academic Structure",
+      "exams": "Exam center",
+      "academicStructure": "Academic plan",
       "contentManager": "Content Manager",
-      "community": "Community",
+      "community": "Posts",
       "discussions": "Discussions",
       "electronicLibrary": "Electronic Library",
       "notesSummaries": "Notes & Summaries",
-      "liveSessions": "Live Sessions",
+      "liveSessions": "Live streaming",
       "notifications": "Notifications",
       "downloads": "Downloads",
       "settings": "Settings",
@@ -626,7 +626,7 @@
       "edit": "Edit",
       "details": "Details",
       "liveRoom": "Live Room",
-      "activation": "Activation"
+      "activation": "Activation codes"
     }
   },
   "instructors": {
@@ -788,7 +788,7 @@
         "empty": "No community posts available now."
       }
     },
-    "pageTitle": "Students Management",
+    "pageTitle": "Students",
     "pageDescription": "Manage student accounts, access, and details.",
     "addStudent": "Add Student",
     "studentCode": "Student Code",
@@ -1630,12 +1630,12 @@
       "codeCopied": "Code copied to clipboard"
     },
     "review": {
-      "automaticDescription": "You can publish new courses without waiting for administrative approval.",
-      "publish": "Create and publish",
-      "title": "Review course",
       "0": "Pending review",
       "1": "Approved",
       "2": "Declined",
+      "automaticDescription": "You can publish new courses without waiting for administrative approval.",
+      "publish": "Create and publish",
+      "title": "Review course",
       "hiddenHelp": "Hidden from students until the Owner approves this course.",
       "approvedHelp": "Approval allows student access only while the course and its lessons are published and available. Student activation is still required for paid content.",
       "thumbnail": "Course thumbnail",
@@ -1762,7 +1762,7 @@
     }
   },
   "activation": {
-    "pageTitle": "Activation Management",
+    "pageTitle": "Activation codes",
     "pageDescription": "Manage activation codes for courses, chapters, library items, live rooms, and quizzes",
     "generateCodes": "Generate Codes",
     "tabs": {
@@ -2525,7 +2525,7 @@
     }
   },
   "community": {
-    "pageTitle": "Community Moderation",
+    "pageTitle": "Posts",
     "pageDescription": "Review and moderate student posts and comments.",
     "filters": {
       "all": "All Posts",
@@ -2679,7 +2679,7 @@
     "renderError": "This PDF could not be displayed."
   },
   "discussions": {
-    "pageTitle": "Discussions Management",
+    "pageTitle": "Discussions",
     "pageDescription": "View, reply to, and delete student discussions across all chapters.",
     "reply": "Reply",
     "cancel": "Cancel",

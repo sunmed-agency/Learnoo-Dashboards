@@ -148,18 +148,18 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
 
   if (owner) {
     items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard' });
-    items.push({ name: t('sidebar.activity'), icon: Activity, path: '/activity' });
   } else {
     items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard', permission: 'dashboard.view', supervisorsOnly: true });
   }
 
+  // Same order and names as the EduMedix dashboard.
   section('academic');
   items.push({ name: t('sidebar.academicStructure'), icon: School, path: '/departments', permission: 'structure.view' });
+  items.push({ name: t('sidebar.schedules'), icon: CalendarDays, path: '/schedules', permission: 'schedules.manage' });
   items.push({ name: t('sidebar.liveSessions'), icon: Video, path: '/live-sessions', permission: 'live.manage' });
   items.push({ name: t('sidebar.examsAndQA'), icon: ClipboardList, path: '/exams', permission: 'exams.manage' });
   items.push({ name: t('sidebar.notesSummaries'), icon: StickyNote, path: '/notes-summaries', permission: 'notes.manage' });
   items.push({ name: t('sidebar.electronicLibrary'), icon: BookOpen, path: '/electronic-library', permission: 'library.manage' });
-  items.push({ name: t('sidebar.schedules'), icon: CalendarDays, path: '/schedules', permission: 'schedules.manage' });
 
   section('users');
   items.push({ name: t('sidebar.instructors'), icon: GraduationCap, path: '/instructors', permission: '-' });
@@ -168,20 +168,22 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
   section('students');
   items.push({ name: t('sidebar.students'), icon: Users2, path: '/students', permission: 'students.view' });
   items.push({ name: t('sidebar.guardians'), icon: Users2, path: '/guardians', permission: 'students.view' });
-  if (!owner) items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: '/activity', permission: 'devices.manage' });
+  // The owner's device requests sit at the top of the platform activity page.
+  items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: owner ? '/activity#devices' : '/activity', permission: 'devices.manage' });
   items.push({ name: t('sidebar.activation'), icon: Power, path: '/activation', permission: 'activation.codes|activation.sheet' });
   if (owner) items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations' });
   if (owner) items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests' });
 
   section('community');
-  items.push({ name: t('sidebar.community'), icon: MessageSquare, path: '/community', permission: 'community.manage' });
   items.push({ name: t('sidebar.discussions'), icon: MessageCircle, path: '/discussions', permission: 'discussions.manage' });
+  items.push({ name: t('sidebar.community'), icon: MessageSquare, path: '/community', permission: 'community.manage' });
 
   section('support');
   items.push({ name: t('sidebar.support'), icon: LifeBuoy, path: owner ? '/issues/inbox' : '/issues', permission: 'support.manage' });
 
   section('system');
   items.push({ name: t('sidebar.notifications'), icon: Bell, path: '/notifications', permission: 'notifications.send' });
+  if (owner) items.push({ name: t('sidebar.activity'), icon: Activity, path: '/activity' });
   items.push({ name: t('sidebar.downloads'), icon: Download, path: '/downloads', permission: 'downloads.view' });
   items.push({ name: t('sidebar.profileSettings'), icon: Settings, path: '/settings', permission: '-' });
   items.push({ name: t('sidebar.featureControl'), icon: ShieldCheck, path: '/feature-control', permission: '-' });

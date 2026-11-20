@@ -22,7 +22,7 @@ const actions: Record<string, readonly [string, string]> = {
   'POST owner/device-transfers/:id/cancel': ['إلغاء طلب نقل الجهاز', 'Cancelled a device transfer request'],
   'POST course/:id/subscribers/remove': ['إلغاء تفعيل طلاب من مادة', 'Removed course subscriptions'],
   'POST owner/device-transfers/:id/reset': ['السماح للطالب بتغيير الجهاز وإلغاء الجلسات السابقة', 'Allowed a student device change and revoked previous sessions'],
-  'POST timetable/:id/documents': ['رفع ملف إلى الجداول والمستندات', 'Uploaded a schedule document'],
+  'POST timetable/:id/documents': ['رفع ملف إلى الجداول', 'Uploaded a schedule document'],
   'POST ai-exam': ['طلب إنشاء امتحان بالذكاء الاصطناعي', 'Requested AI exam generation'],
   'POST code/activate': ['تفعيل محتوى باستخدام كود', 'Activated content using a code'],
   'POST code/refresh': ['تحديث أكواد التفعيل', 'Refreshed activation codes'],

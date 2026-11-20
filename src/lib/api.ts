@@ -1595,6 +1595,8 @@ export const notificationsApi = {
   options: () => get<NotificationOptions>('/v1/notifications/options'),
   /** `user_ids` sends to chosen students only (cannot be combined with courses). */
   send: (data: { title: string; message: string; course_id?: number; course_ids?: number[]; user_ids?: string[] }) => post<{ sent: number }>('/v1/notifications/send', data),
+  /** Phone numbers (e.g. from an Excel sheet) to students: matching active students, inactive ones, and numbers with no student. */
+  matchPhones: (phones: string[]) => post<{ students: { id: string; name: string; phone: string | null; code: string | null }[]; inactive: { id: string; name: string; phone: string | null; code: string | null }[]; not_found: string[]; checked: number }>('/v1/notifications/match-phones', { phones }),
   read: (id: string) => patch(`/v1/notifications/${id}/read`),
   readAll: () => patch('/v1/notifications/read-all'),
 };

@@ -5,6 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 import api from '@/src/lib/api';
+import PhoneSheetImport from '@/components/notifications/PhoneSheetImport';
+
+/** Chips shown at once; a whole Excel sheet can choose hundreds of students. */
+const VISIBLE_CHIPS = 40;
 
 export interface PickedStudent {
   id: string;
@@ -61,13 +65,24 @@ export default function StudentPicker({ value, onChange, disabled = false }: { v
   return <div className="min-w-0 space-y-3">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <span className="font-medium">{ar ? 'الطلاب المختارين' : 'Chosen students'}</span>
-      <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-primary" aria-live="polite">{ar ? `${value.length} طالب` : `${value.length} student${value.length === 1 ? '' : 's'}`}</span>
+      <span className="flex items-center gap-2">
+        {value.length > 1 ? <button type="button" disabled={disabled} onClick={() => onChange([])} className="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50">{ar ? 'إلغاء اختيار الكل' : 'Clear all'}</button> : null}
+        <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-primary" aria-live="polite">{ar ? `${value.length} طالب` : `${value.length} student${value.length === 1 ? '' : 's'}`}</span>
+      </span>
     </div>
+    <PhoneSheetImport
+      disabled={disabled}
+      onAdd={(list) => onChange((prev) => {
+        const ids = new Set(prev.map((s) => s.id));
+        return [...prev, ...list.filter((s) => !ids.has(s.id))];
+      })}
+    />
     {value.length > 0 ? <ul className="flex flex-wrap gap-2">
-      {value.map(s => <li key={s.id} className="flex max-w-full items-center gap-1 rounded-full border bg-gray-50 py-1 pe-1 ps-3 text-sm">
+      {value.slice(0, VISIBLE_CHIPS).map(s => <li key={s.id} className="flex max-w-full items-center gap-1 rounded-full border bg-gray-50 py-1 pe-1 ps-3 text-sm">
         <span className="truncate">{s.name || (ar ? 'جارٍ التحميل…' : 'Loading…')}</span>
         <button type="button" disabled={disabled} onClick={() => onChange(value.filter(x => x.id !== s.id))} aria-label={ar ? `شيل ${s.name || s.id}` : `Remove ${s.name || s.id}`} className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800">×</button>
       </li>)}
+      {value.length > VISIBLE_CHIPS ? <li className="self-center text-sm text-gray-600">{ar ? `و ${value.length - VISIBLE_CHIPS} كمان` : `and ${value.length - VISIBLE_CHIPS} more`}</li> : null}
     </ul> : <p className="text-sm text-gray-600">{ar ? 'لسه مفيش طلاب مختارين. ابحث واختار من القائمة.' : 'No students chosen yet. Search and pick from the list.'}</p>}
     <input type="search" value={search} disabled={disabled} onChange={e => setSearch(e.target.value)} placeholder={label} aria-label={label} className="w-full rounded-xl border p-3" />
     {debounced && <div className="max-h-72 overflow-y-auto rounded-xl border">

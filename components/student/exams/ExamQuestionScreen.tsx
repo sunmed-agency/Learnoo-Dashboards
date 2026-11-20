@@ -12,6 +12,8 @@ import {
 } from '@/src/lib/watermark-from-features';
 import { examCopyGuardContentProps } from '@/src/hooks/useExamCopyGuard';
 import ExamWatermark from './WaterMarkDyna';
+import { ExamImageViewer } from './ExamImageViewer';
+import { ZoomIn } from 'lucide-react';
 import { ExamBanner } from './ExamBanner';
 export type ExamQuestionScreenMode = 'take' | 'review';
 
@@ -129,6 +131,20 @@ export function ExamQuestionScreen({
   const questionImageSrc = resolveStudentExamMediaUrl(question.attributes.image);
   const sectionImageSrc = resolveStudentExamMediaUrl(question.attributes.section?.image);
   const sectionTitle = question.attributes.section?.title?.trim() ?? '';
+  /** The image open in the full-screen viewer (question, section, option or feedback image). */
+  const [viewerImage, setViewerImage] = useState<{ src: string; alt: string } | null>(null);
+  const openImage = (src: string, alt = '') => (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+    // Inside an option label a click would also pick the option; opening the image must not.
+    event.preventDefault();
+    event.stopPropagation();
+    setViewerImage({ src, alt });
+  };
+  const zoomBadge = (
+    <span className="pointer-events-none absolute bottom-1.5 end-1.5 grid size-7 place-items-center rounded-full bg-[#0A1033]/70 text-white opacity-90 shadow-sm transition group-hover:opacity-100" aria-hidden>
+      <ZoomIn className="size-3.5" />
+    </span>
+  );
+  const zoomLabel = dir === 'rtl' ? 'افتح الصورة بالحجم الكامل' : 'Open the image full screen';
   const { user } = useCurrentUser();
 
   const [watermarkConfig, setWatermarkConfig] =
@@ -253,15 +269,18 @@ export function ExamQuestionScreen({
                       </p>
                     ) : null}
                     {sectionImageSrc ? (
-                      <Image
-                        src={sectionImageSrc}
-                        alt={sectionTitle}
-                        width={900}
-                        height={400}
-                        className="mx-auto max-h-[min(30vh,240px)] w-full object-contain"
-                        sizes="(max-width: 768px) 100vw, 800px"
-                        unoptimized
-                      />
+                      <button type="button" onClick={openImage(sectionImageSrc, sectionTitle)} className="group relative block w-full cursor-zoom-in" aria-label={zoomLabel}>
+                        <Image
+                          src={sectionImageSrc}
+                          alt={sectionTitle}
+                          width={900}
+                          height={400}
+                          className="mx-auto max-h-[min(30vh,240px)] w-full object-contain"
+                          sizes="(max-width: 768px) 100vw, 800px"
+                          unoptimized
+                        />
+                        {zoomBadge}
+                      </button>
                     ) : null}
                   </div>
                 ) : null}
@@ -271,7 +290,7 @@ export function ExamQuestionScreen({
                 </h2>
 
                 {questionImageSrc ? (
-                  <div className="relative w-full max-w-2xl overflow-hidden rounded-lg border border-[#E2E8F0] bg-slate-50">
+                  <button type="button" onClick={openImage(questionImageSrc)} className="group relative block w-full max-w-2xl cursor-zoom-in overflow-hidden rounded-lg border border-[#E2E8F0] bg-slate-50" aria-label={zoomLabel}>
                     <Image
                       src={questionImageSrc}
                       alt=""
@@ -281,7 +300,8 @@ export function ExamQuestionScreen({
                       sizes="(max-width: 768px) 100vw, 800px"
                       unoptimized
                     />
-                  </div>
+                    {zoomBadge}
+                  </button>
                 ) : null}
 
                 {question.attributes.type === 'short_answer' ? (
@@ -340,7 +360,7 @@ export function ExamQuestionScreen({
                             <span dir="auto" className="min-w-0 flex-1 whitespace-pre-wrap break-words text-start text-[13px] font-medium leading-relaxed text-[#0F172A] sm:text-sm">{label}</span>
                           </div>
                           {imgSrc ? (
-                            <div className="relative ms-6 w-full max-w-xl overflow-hidden rounded-md border border-[#E2E8F0] bg-slate-50 sm:ms-7">
+                            <button type="button" onClick={openImage(imgSrc, label)} className="group relative ms-6 block w-full max-w-xl cursor-zoom-in overflow-hidden rounded-md border border-[#E2E8F0] bg-slate-50 sm:ms-7" aria-label={zoomLabel}>
                               <Image
                                 src={imgSrc}
                                 alt=""
@@ -350,7 +370,8 @@ export function ExamQuestionScreen({
                                 sizes="(max-width: 768px) 100vw, 640px"
                                 unoptimized
                               />
-                            </div>
+                              {zoomBadge}
+                            </button>
                           ) : null}
                         </label>
                       );
@@ -409,7 +430,7 @@ export function ExamQuestionScreen({
                                       </p>
                                     ) : null}
                                     {reasonImageSrc ? (
-                                      <div className="relative mt-2 w-full max-w-xl overflow-hidden rounded-md border border-[#E2E8F0] bg-slate-50">
+                                      <button type="button" onClick={openImage(reasonImageSrc, reason ?? '')} className="group relative mt-2 block w-full max-w-xl cursor-zoom-in overflow-hidden rounded-md border border-[#E2E8F0] bg-slate-50" aria-label={zoomLabel}>
                                         <Image
                                           src={reasonImageSrc}
                                           alt=""
@@ -419,14 +440,15 @@ export function ExamQuestionScreen({
                                           sizes="(max-width: 768px) 100vw, 640px"
                                           unoptimized
                                         />
-                                      </div>
+                                        {zoomBadge}
+                                      </button>
                                     ) : null}
                                   </div>
                                 ) : null}
                               </div>
                             </div>
                             {imgSrc ? (
-                              <div className="relative ms-7 w-full max-w-xl overflow-hidden rounded-md border border-[#E2E8F0] bg-slate-50 sm:ms-8">
+                              <button type="button" onClick={openImage(imgSrc, label)} className="group relative ms-7 block w-full max-w-xl cursor-zoom-in overflow-hidden rounded-md border border-[#E2E8F0] bg-slate-50 sm:ms-8" aria-label={zoomLabel}>
                                 <Image
                                   src={imgSrc}
                                   alt=""
@@ -436,7 +458,8 @@ export function ExamQuestionScreen({
                                   sizes="(max-width: 768px) 100vw, 640px"
                                   unoptimized
                                 />
-                              </div>
+                                {zoomBadge}
+                              </button>
                             ) : null}
                           </div>
                         );
@@ -450,6 +473,15 @@ export function ExamQuestionScreen({
 
               {watermarkConfig?.config.enabled && watermarkText ? (
                 <ExamWatermark text={watermarkText} watermarkConfig={watermarkConfig} />
+              ) : null}
+              {viewerImage ? (
+                <ExamImageViewer
+                  src={viewerImage.src}
+                  alt={viewerImage.alt}
+                  onClose={() => setViewerImage(null)}
+                  watermarkText={watermarkText}
+                  watermarkConfig={watermarkConfig}
+                />
               ) : null}
             </div>
 

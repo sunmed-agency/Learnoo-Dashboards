@@ -291,7 +291,7 @@ export function buildExamFormData(
 
 export function focusExamField(id: string) {
   const target = document.getElementById(id);
-  const card = target?.closest('[data-question-card]');
+  const card = typeof target?.closest === 'function' ? target.closest('[data-question-card]') : null;
   if (card?.getAttribute('data-collapsed') === 'true') {
     card.querySelector<HTMLElement>('[data-toggle-question]')?.click();
   }

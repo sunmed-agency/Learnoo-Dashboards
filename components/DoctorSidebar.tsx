@@ -22,7 +22,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  LifeBuoy
+  LifeBuoy,
+  CalendarDays
 } from 'lucide-react';
 
 import Image from 'next/image';
@@ -36,40 +37,54 @@ interface DoctorSidebarProps {
   onToggle: () => void;
 }
 
+/** A link, or a group heading (section) like the owner's sidebar. */
+type DoctorMenuItem = { name: string; icon: React.ElementType; path: string; section?: boolean };
+
 export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarProps) {
   const t = useTranslations('sidebar');
   const pathname = usePathname();
   const { user, fullName, role, canUseActivations } = useCurrentUser();
   const { data: features } = usePlatformFeature();
 
-  const allMenuItems = [
-    { name: t('dashboard'), icon: LayoutDashboard, path: '/doctor/dashboard' },
-    { name: t('myCourses'), icon: BookOpen, path: '/doctor/courses' },
-    { name: t('academicStructure'), icon: School, path: '/doctor/departments' },
-    { name: t('liveSessions'), icon: Video, path: '/doctor/live-sessions' },
-    { name: t('exams'), icon: ClipboardList, path: '/doctor/exams' },
-    { name: t('discussions'), icon: MessageCircle, path: '/doctor/discussions' },
-    { name: t('community'), icon: Users, path: '/doctor/community' },
-    { name: t('notesSummaries'), icon: StickyNote, path: '/doctor/notes-summaries' },
-    { name: t('electronicLibrary'), icon: Library, path: '/doctor/electronic-library' },
-    { name: t('support'), icon: LifeBuoy, path: '/doctor/issues' },
-    { name: t('schedules'), icon: ClipboardList, path: '/doctor/schedules' },
-    { name: t('downloads'), icon: Download, path: '/doctor/downloads' },
-    { name: t('guardians'), icon: Users, path: '/doctor/guardians' },
-    { name: t('notifications'), icon: Bell, path: '/doctor/notifications' },
-    // { name: 'Profile & Settings', icon: Settings, path: '/doctor/settings' },
-  ];
-
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Same groups and order as the owner's sidebar (EduMedix style), with the instructor's own pages.
   const menuItems = React.useMemo(() => {
-    const items = [...allMenuItems];
+    const items: DoctorMenuItem[] = [];
+    const section = (key: string) =>
+      items.push({ name: t(`sections.${key}`), icon: LayoutDashboard, path: `#section-${key}`, section: true });
+
+    items.push({ name: t('dashboard'), icon: LayoutDashboard, path: '/doctor/dashboard' });
+
+    section('academic');
+    items.push({ name: t('myCourses'), icon: BookOpen, path: '/doctor/courses' });
+    items.push({ name: t('academicStructure'), icon: School, path: '/doctor/departments' });
+    items.push({ name: t('schedules'), icon: CalendarDays, path: '/doctor/schedules' });
+    items.push({ name: t('liveSessions'), icon: Video, path: '/doctor/live-sessions' });
+    items.push({ name: t('examsAndQA'), icon: ClipboardList, path: '/doctor/exams' });
+    items.push({ name: t('notesSummaries'), icon: StickyNote, path: '/doctor/notes-summaries' });
+    items.push({ name: t('electronicLibrary'), icon: Library, path: '/doctor/electronic-library' });
+
+    section('students');
+    items.push({ name: t('guardians'), icon: Users, path: '/doctor/guardians' });
     if (isMounted && canUseActivations) {
       items.push({ name: t('activation'), icon: Power, path: '/doctor/activation' });
     }
+
+    section('community');
+    items.push({ name: t('discussions'), icon: MessageCircle, path: '/doctor/discussions' });
+    items.push({ name: t('community'), icon: MessageSquare, path: '/doctor/community' });
+
+    section('support');
+    items.push({ name: t('support'), icon: LifeBuoy, path: '/doctor/issues' });
+
+    section('system');
+    items.push({ name: t('notifications'), icon: Bell, path: '/doctor/notifications' });
+    items.push({ name: t('downloads'), icon: Download, path: '/doctor/downloads' });
+
     return items;
   }, [isMounted, canUseActivations, t]);
 
@@ -126,11 +141,14 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
 
       {/* Navigation Menu */}
       <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide flex flex-col gap-1">
-        {!isCollapsed && (
-          <p className="flex items-center gap-2 text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4"><span className="size-1.5 rounded-full bg-[#E8766A]" aria-hidden />MAIN MENU</p>
-        )}
         <nav className="flex flex-col gap-1.5">
           {menuItems.map((item) => {
+            // Group headings, like the owner's sidebar (a thin line when the sidebar is collapsed).
+            if (item.section) {
+              return isCollapsed
+                ? <div key={item.path} className="mx-4 my-2 h-px bg-[#E2E8F0]" aria-hidden />
+                : <p key={item.path} className="px-3 pb-1 pt-4 text-[11px] font-bold tracking-wide text-[#94A3B8]">{item.name}</p>;
+            }
             const isActive = pathname === item.path || pathname.startsWith(item.path);
             const Icon = item.icon;
 

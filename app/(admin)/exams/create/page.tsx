@@ -26,6 +26,7 @@ import { useChapters } from '@/src/hooks/useChapters';
 import { quizKeys, useCreateQuiz } from '@/src/hooks/useQuizzes';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 import { ExamFileImport } from '@/components/exams/ExamFileImport';
+import { GoogleFormsImport } from '@/components/exams/GoogleFormsImport';
 import { ShareLinkDialog } from '@/src/components/share/ShareLink';
 import { examShareUrl } from '@/src/lib/share-links';
 import { AiExamUsageNotice } from '@/src/components/ai-exam/AiExamUsageNotice';
@@ -530,6 +531,15 @@ export default function CreateExamPage() {
             revokeQuestionsObjectUrls(questionsRef.current);
             setQuestions(imported);
             setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(imported.reduce((sum, question) => sum + question.score, 0)) }));
+          }} />
+          <GoogleFormsImport onApply={(imported, title, importedSections) => {
+            // Added to the exam (empty placeholder questions are dropped); saving the exam stores them.
+            const kept = questionsRef.current.filter(question => question.text.trim() !== '');
+            revokeQuestionsObjectUrls(questionsRef.current.filter(question => !kept.includes(question)));
+            const next = [...kept, ...imported];
+            setQuestions(next);
+            setSections(current => [...current, ...importedSections]);
+            setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(next.reduce((sum, question) => sum + question.score, 0)) }));
           }} />
           <button
             type="button"

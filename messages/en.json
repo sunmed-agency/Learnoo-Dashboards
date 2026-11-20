@@ -3005,6 +3005,10 @@
       "title": "Watermark Settings",
       "description": "Configure watermarks for chapters, exams, and library content."
     },
+    "backups": {
+      "title": "Google Drive backups",
+      "description": "A daily database backup on the platform’s Google Drive."
+    },
     "appUpdate": {
       "title": "App Update",
       "description": "Minimum app version per store and the store links."

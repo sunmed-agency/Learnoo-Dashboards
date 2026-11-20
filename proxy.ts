@@ -55,6 +55,10 @@ function clearSessionAndRedirectToLogin(request: NextRequest) {
 
 export function proxy(request: NextRequest) {
   const pathname = normalizePathname(request.nextUrl.pathname);
+  // Public legal pages: open to everyone, signed in or not (Google's OAuth review reads them).
+  if (pathname === '/privacy' || pathname === '/terms') {
+    return nextForRequest(request);
+  }
   const zone = getRouteZone(pathname);
   const auth = resolveProxyAuth(request);
 

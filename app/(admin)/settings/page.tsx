@@ -10,6 +10,7 @@ export default function PlatformSettingsPage() {
   const tSettings = useTranslations('platformSettings');
   const { role } = useCurrentUser();
   const isInstructor = role === 'Instructor';
+  const isOwner = role === 'Super Admin';
 
   const allSettingsCategories = [
     {
@@ -71,12 +72,19 @@ export default function PlatformSettingsPage() {
       titleKey: 'landingPlans',
       href: '/settings/landing-plans',
       adminOnly: true
+    },
+    {
+      icon: 'HardDrive' as const,
+      titleKey: 'backups',
+      href: '/settings/backups',
+      adminOnly: true,
+      ownerOnly: true
     }
   ];
 
-  const settingsCategories = isInstructor
+  const settingsCategories = (isInstructor
     ? allSettingsCategories.filter(c => !c.adminOnly)
-    : allSettingsCategories;
+    : allSettingsCategories).filter(c => !('ownerOnly' in c && c.ownerOnly) || isOwner);
 
   return (
     <div className="flex flex-col h-full">

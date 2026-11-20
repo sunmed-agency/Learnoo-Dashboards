@@ -31,6 +31,8 @@ export interface ExamFormQuestion {
   imagePreview?: string;
   /** Key of the section ("قسم") this question belongs to, or '' for none. */
   sectionKey?: string;
+  /** Where an imported question came from (JSON, e.g. Google Forms ids); saved once with a new question. */
+  source?: string;
 }
 
 /** An exam section ("قسم"): questions that share one image shown above each of them. */
@@ -257,6 +259,7 @@ export function buildExamFormData(
     formData.append(`${questionKey}[score]`, String(question.score));
     formData.append(`${questionKey}[auto_correct]`, question.autoCorrect ? '1' : '0');
     formData.append(`${questionKey}[order]`, String(questionIndex + 1));
+    if (question.source && isNewQuestionId(question.id)) formData.append(`${questionKey}[source]`, question.source);
     if (question.sectionKey && sectionKeys.has(question.sectionKey)) {
       formData.append(`${questionKey}[section_key]`, question.sectionKey);
     }

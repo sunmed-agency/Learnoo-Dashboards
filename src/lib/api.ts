@@ -1601,6 +1601,25 @@ export const notificationsApi = {
   readAll: () => patch('/v1/notifications/read-all'),
 };
 
+/** Google account linking ("forms" = import Google Forms quizzes, "backup" = owner's Drive backups). */
+export type GooglePurpose = 'forms' | 'backup';
+export interface GoogleStatus {
+  configured: boolean;
+  connected: boolean;
+  needs_reconnect: boolean;
+  email: string | null;
+  connected_at: string | null;
+  picker: { api_key: string | null; app_id: string | null } | null;
+  last_backup: { ok: boolean; at: string; detail: string } | null;
+}
+export const googleApi = {
+  status: (purpose: GooglePurpose) => get<GoogleStatus>(`/v1/google/status?purpose=${purpose}`),
+  connect: (purpose: GooglePurpose) => post<{ url: string }>('/v1/google/connect', { purpose }),
+  disconnect: (purpose: GooglePurpose) => del<{ connected: false }>(`/v1/google/connection?purpose=${purpose}`),
+  pickerToken: () => post<{ access_token: string; expires_in: number }>('/v1/google/picker-token', {}),
+  previewForm: (formId: string) => post<import('@/src/lib/google-forms-import').GoogleFormPreview>('/v1/google-forms/import/preview', { form_id: formId }),
+};
+
 export interface TimetableEntry { kind: 'course' | 'lecture' | 'exam' | 'live'; id: number; title: string; start: string | null; end: string | null; documents?: import('@/src/types').Attachment[] }
 export interface DownloadRecord { id: number; file_name: string; first_name: string; last_name: string; created_at: string }
 export const downloadsApi = {

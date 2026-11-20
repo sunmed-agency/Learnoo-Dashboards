@@ -90,6 +90,19 @@ export function useCreateQuiz() {
   };
 }
 
+/** Copies an exam on the server (with all its images) and refreshes the exam lists. */
+export function useCopyQuiz() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (id: number) => api.quizzes.copy(id).then((response) => response.data),
+    onSuccess: async (quiz) => {
+      if (quiz?.id != null) queryClient.setQueryData(quizKeys.detail(Number(quiz.id)), quiz);
+      await queryClient.invalidateQueries({ queryKey: quizKeys.lists() });
+    },
+  });
+  return { ...mutation, mutateAsync: mutation.mutateAsync, isLoading: mutation.isPending };
+}
+
 export function useUpdateQuiz() {
   const queryClient = useQueryClient();
   const mutation = useMutation({

@@ -1059,6 +1059,9 @@ export const quizzesApi = {
   },
 
   delete: (id: number) => del<void>(`v1/quiz/${id}`),
+
+  /** A full server-side copy (questions, options, feedback and every image). */
+  copy: (id: number) => post<ApiResponse<Quiz>>(`/v1/quiz/${id}/copy`, {}),
 };
 
 // ============================================

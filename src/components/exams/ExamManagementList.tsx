@@ -22,7 +22,7 @@ import { DeleteModal } from '@/src/components/ui/DeleteModal';
 import { useChapters } from '@/src/hooks/useChapters';
 import { useCourses } from '@/src/hooks/useCourses';
 import {
-  useCreateQuiz,
+  useCopyQuiz,
   useDeleteQuiz,
   useQuizList,
   useUpdateQuiz,
@@ -76,7 +76,7 @@ export function ExamManagementList({ basePath }: ExamManagementListProps) {
   const { data: courses } = useCourses();
   const deleteMutation = useDeleteQuiz();
   const updateMutation = useUpdateQuiz();
-  const createMutation = useCreateQuiz();
+  const copyMutation = useCopyQuiz();
 
   const quizzes = quizzesQuery.data?.data ?? [];
   const meta = quizzesQuery.data?.meta;
@@ -127,50 +127,10 @@ export function ExamManagementList({ basePath }: ExamManagementListProps) {
   const handleCopyQuiz = async (quiz: Quiz) => {
     setCopyingQuizId(quiz.id);
     try {
-      const fullQuizRes = await api.quizzes.get(Number(quiz.id));
-      const fullQuiz = fullQuizRes.data;
-
-      const examDetails = {
-        title: fullQuiz.attributes.title,
-        courses: getQuizCourseIds(
-          fullQuiz.attributes.courses,
-          fullQuiz.attributes.course_id,
-          fullQuiz.attributes.course_ids
-        ),
-        chapter: fullQuiz.attributes.chapter_id ? String(fullQuiz.attributes.chapter_id) : '',
-        type: (fullQuiz.attributes.type === 'exam' ? 'exam' : 'homework') as 'exam' | 'homework',
-        duration: String(fullQuiz.attributes.duration || 60),
-        totalMarks: String(fullQuiz.attributes.total_marks || 100),
-        passingMarks: String(fullQuiz.attributes.passing_marks || 60),
-        maxAttempts: String(fullQuiz.attributes.max_attempts || 1),
-        startTime: formatDateTimeForInput(fullQuiz.attributes.start_time),
-        endTime: formatDateTimeForInput(fullQuiz.attributes.end_time),
-        is_public: (fullQuiz.attributes.is_public === true || fullQuiz.attributes.is_public === 'true') ? 'true' : (fullQuiz.attributes.is_public === 'included' ? 'included' : 'false') as 'true' | 'false' | 'included',
-        status: fullQuiz.attributes.status === 'active' ? 'Active' : 'Draft' as 'Draft' | 'Active',
-      };
-
-      const questions = (fullQuiz.attributes.questions || []).map((q) => ({
-        id: `copy-${Date.now()}-${Math.random()}`,
-        text: q.attributes.text,
-        type: q.attributes.type,
-        score: q.attributes.score,
-        autoCorrect: q.attributes.auto_correct ?? true,
-        image: null,
-        imagePreview: q.attributes.image || '',
-        answers: q.attributes.answers?.map((ans) => ({
-          id: `copy-ans-${Date.now()}-${Math.random()}`,
-          text: ans.attributes.text,
-          isCorrect: ans.attributes.is_correct,
-          reason: ans.attributes.reason || '',
-          image: null,
-          imagePreview: ans.attributes.image || '',
-          reason_image: null,
-          reasonImagePreview: ans.attributes.reason_image || '',
-        })) || [],
-      }));
-
-      const formData = buildExamFormData(examDetails, questions, 'create');
-      await createMutation.mutateAsync(formData);
+      // The server makes the copy: settings, banner, courses, every question and option with their
+      // images and feedback images (each as a new file). The old browser-side copy re-sent only new
+      // files, so every existing image was dropped.
+      await copyMutation.mutateAsync(Number(quiz.id));
       toast.success(t('createSuccess', { fallback: 'Exam copied successfully' }));
     } catch (error) {
       console.error(error);

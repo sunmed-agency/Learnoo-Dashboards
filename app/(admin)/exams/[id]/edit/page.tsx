@@ -49,6 +49,8 @@ import {
   type ExamBannerState,
 } from '@/src/lib/exam-form';
 import { ExamBannerField } from '@/src/components/exams/ExamBannerField';
+import { ExamSectionsField, QuestionSectionSelect } from '@/components/exams/ExamSectionsField';
+import type { ExamFormSection } from '@/src/lib/exam-form';
 import {
   readExamField,
   type ExamDateField,
@@ -76,6 +78,8 @@ export default function EditExamPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [banner, setBanner] = useState<ExamBannerState>(EMPTY_EXAM_BANNER);
+  /** Exam sections ("أقسام"): questions sharing one image. */
+  const [sections, setSections] = useState<ExamFormSection[]>([]);
   const [validationErrors, setValidationErrors] = useState<{
     questionIds: Set<string>;
     answerIds: Set<string>;
@@ -138,6 +142,13 @@ export default function EditExamPage() {
     if (!quiz) return;
 
     setBanner({ file: null, preview: quiz.attributes.banner || '' });
+    setSections((quiz.attributes.sections ?? []).map((section) => ({
+      key: `sec-${section.id}`,
+      id: String(section.id),
+      title: section.title ?? '',
+      image: null,
+      imagePreview: section.image ?? '',
+    })));
 
     setExamDetails({
       title: quiz.attributes.title || '',
@@ -171,6 +182,7 @@ export default function EditExamPage() {
           autoCorrect: q.attributes.auto_correct ?? true,
           image: null,
           imagePreview: q.attributes.image || '',          // ✅ existing image URL
+          sectionKey: q.attributes.section_id ? `sec-${q.attributes.section_id}` : '',
           answers: q.attributes.answers?.map((ans) => ({
             id: String(ans.attributes.id),        // ✅ real API id
             text: ans.attributes.text,
@@ -385,7 +397,7 @@ export default function EditExamPage() {
         return;
       }
 
-      const formData = buildExamFormData(examDetails, questions, 'edit', banner);
+      const formData = buildExamFormData(examDetails, questions, 'edit', banner, sections);
 
       // Submit directly using the helper.
       const responsePayload = await updateQuiz(parseInt(examId), formData);
@@ -578,6 +590,14 @@ export default function EditExamPage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <ExamBannerField value={banner} onChange={setBanner} />
+        <ExamSectionsField
+          value={sections}
+          onChange={setSections}
+          questionCounts={questions.reduce<Record<string, number>>((counts, question) => {
+            if (question.sectionKey) counts[question.sectionKey] = (counts[question.sectionKey] ?? 0) + 1;
+            return counts;
+          }, {})}
+        />
 
         {/* ── Exam Details ── */}
         <section className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
@@ -887,6 +907,13 @@ export default function EditExamPage() {
                       <p className="text-xs text-[#EF4444] mt-1">{locale === 'ar' ? 'نص السؤال مطلوب' : 'Question text is required'}</p>
                     )}
                   </div>
+
+                  {/* Section ("قسم"): its shared image shows above this question for students */}
+                  <QuestionSectionSelect
+                    sections={sections}
+                    value={q.sectionKey}
+                    onChange={(sectionKey) => updateQuestion(q.id, { sectionKey })}
+                  />
 
                   {/* Question Image */}
                   <div className="flex flex-col gap-2">

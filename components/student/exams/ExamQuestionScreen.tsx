@@ -127,6 +127,8 @@ export function ExamQuestionScreen({
   const copyGuardActive = mode === 'take' || mode === 'review';
   const copyGuardProps = examCopyGuardContentProps(copyGuardActive);
   const questionImageSrc = resolveStudentExamMediaUrl(question.attributes.image);
+  const sectionImageSrc = resolveStudentExamMediaUrl(question.attributes.section?.image);
+  const sectionTitle = question.attributes.section?.title?.trim() ?? '';
   const { user } = useCurrentUser();
 
   const [watermarkConfig, setWatermarkConfig] =
@@ -241,6 +243,28 @@ export function ExamQuestionScreen({
                     {qNum} / {totalQuestions}
                   </span>
                 </div>
+
+                {/* Section ("قسم"): the image (and title) shared by this question and the others of its section */}
+                {sectionImageSrc || sectionTitle ? (
+                  <div className="overflow-hidden rounded-xl border border-[#E0E7FF] bg-[#F5F7FF]">
+                    {sectionTitle ? (
+                      <p dir="auto" className="border-b border-[#E0E7FF] px-3 py-2 text-[13px] font-bold text-[#1F33C4] sm:text-sm">
+                        {sectionTitle}
+                      </p>
+                    ) : null}
+                    {sectionImageSrc ? (
+                      <Image
+                        src={sectionImageSrc}
+                        alt={sectionTitle}
+                        width={900}
+                        height={400}
+                        className="mx-auto max-h-[min(30vh,240px)] w-full object-contain"
+                        sizes="(max-width: 768px) 100vw, 800px"
+                        unoptimized
+                      />
+                    ) : null}
+                  </div>
+                ) : null}
 
                 <h2 dir="auto" className="whitespace-pre-wrap break-words text-start text-base font-bold leading-relaxed text-[#0F172A] sm:text-lg">
                   {question.attributes.text}

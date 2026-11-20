@@ -49,6 +49,8 @@ import {
   type ExamBannerState,
 } from '@/src/lib/exam-form';
 import { ExamBannerField } from '@/src/components/exams/ExamBannerField';
+import { ExamSectionsField, QuestionSectionSelect } from '@/components/exams/ExamSectionsField';
+import type { ExamFormSection } from '@/src/lib/exam-form';
 
 
 export default function CreateExamPage() {
@@ -66,6 +68,8 @@ export default function CreateExamPage() {
   const [createdExamId, setCreatedExamId] = useState<string | null>(null);
   const tShare = useTranslations('shareLink');
   const [banner, setBanner] = useState<ExamBannerState>(EMPTY_EXAM_BANNER);
+  /** Exam sections ("أقسام"): questions sharing one image. */
+  const [sections, setSections] = useState<ExamFormSection[]>([]);
   const [validationErrors, setValidationErrors] = useState<{
     questionIds: Set<string>;
     answerIds: Set<string>;
@@ -392,7 +396,7 @@ export default function CreateExamPage() {
         return;
       }
 
-      const formData = buildExamFormData(examDetails, questions, 'create', banner);
+      const formData = buildExamFormData(examDetails, questions, 'create', banner, sections);
 
       // Get token not needed anymore since api.ts handles it automatically.
       const responsePayload = await createQuiz(formData);
@@ -538,6 +542,14 @@ export default function CreateExamPage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <ExamBannerField value={banner} onChange={setBanner} />
+        <ExamSectionsField
+          value={sections}
+          onChange={setSections}
+          questionCounts={questions.reduce<Record<string, number>>((counts, question) => {
+            if (question.sectionKey) counts[question.sectionKey] = (counts[question.sectionKey] ?? 0) + 1;
+            return counts;
+          }, {})}
+        />
         {/* Exam Details Section */}
         <section className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]/50 flex items-center gap-2">
@@ -902,6 +914,13 @@ export default function CreateExamPage() {
                       <p className="text-xs text-[#EF4444] mt-1">{locale === 'ar' ? 'نص السؤال مطلوب' : 'Question text is required'}</p>
                     )}
                   </div>
+
+                  {/* Section ("قسم"): its shared image shows above this question for students */}
+                  <QuestionSectionSelect
+                    sections={sections}
+                    value={q.sectionKey}
+                    onChange={(sectionKey) => updateQuestion(q.id, { sectionKey })}
+                  />
 
                   {/* Question Image */}
                   <div className="flex flex-col gap-2">

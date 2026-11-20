@@ -3740,6 +3740,8 @@ export interface QuizAttributes {
 
   /** Exam banner image URL (shown at the top of the exam), or null. */
   banner?: string | null;
+  /** Exam sections ("أقسام"): groups of questions sharing one image. */
+  sections?: QuizSectionSummary[];
   /** The exam's course name (its own course, else the first shared one). */
   course_title?: string | null;
   /** The instructor of that course, for the student exam banner. */
@@ -3920,11 +3922,23 @@ export type QuestionType = 'single_choice' | 'multiple_choice' | 'true_false' | 
 
 
 
+/** An exam section ("قسم") as the API returns it. */
+export interface QuizSectionSummary {
+  id: number;
+  title: string | null;
+  image: string | null;
+  order: number;
+}
+
 export interface QuizQuestionAttributes {
 
 
 
   quiz_id: number;
+
+  /** The section ("قسم") whose shared image shows above this question, if any. */
+  section_id?: number | null;
+  section?: QuizSectionSummary | null;
 
 
 

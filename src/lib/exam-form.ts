@@ -29,6 +29,24 @@ export interface ExamFormQuestion {
   answers: ExamFormAnswer[];
   image?: File | null;
   imagePreview?: string;
+  /** Key of the section ("قسم") this question belongs to, or '' for none. */
+  sectionKey?: string;
+}
+
+/** An exam section ("قسم"): questions that share one image shown above each of them. */
+export interface ExamFormSection {
+  /** Client key the questions point to (existing sections use "sec-<id>"). */
+  key: string;
+  /** Saved section id (edit mode). */
+  id?: string;
+  title: string;
+  image: File | null;
+  /** Saved image URL, a blob: preview of `image`, or ''. */
+  imagePreview: string;
+}
+
+export function newExamSection(): ExamFormSection {
+  return { key: `new-sec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, title: '', image: null, imagePreview: '' };
 }
 
 export interface ExamFormDetails {
@@ -191,12 +209,25 @@ export function buildExamFormData(
   details: ExamFormDetails,
   questions: ExamFormQuestion[],
   mode: 'create' | 'edit',
-  banner: ExamBannerState = EMPTY_EXAM_BANNER
+  banner: ExamBannerState = EMPTY_EXAM_BANNER,
+  sections: ExamFormSection[] = []
 ): FormData {
   const formData = new FormData();
   appendExamFields(formData, details);
   if (banner.file instanceof File) formData.append('banner', banner.file);
   else if (mode === 'edit' && !banner.preview) formData.append('remove_banner', '1');
+
+  // Sections: always say they are part of this save, so removing the last one works too.
+  formData.append('sections_sync', '1');
+  const sectionKeys = new Set(sections.map((section) => section.key));
+  sections.forEach((section, index) => {
+    const key = `sections[${index}]`;
+    formData.append(`${key}[key]`, section.key);
+    if (mode === 'edit' && section.id) formData.append(`${key}[id]`, section.id);
+    formData.append(`${key}[title]`, section.title);
+    if (section.image instanceof File) formData.append(`${key}[image]`, section.image);
+    else if (mode === 'edit' && section.id && !section.imagePreview) formData.append(`${key}[remove_image]`, '1');
+  });
 
   questions.forEach((question, questionIndex) => {
     const questionKey = `questions[${questionIndex}]`;
@@ -206,6 +237,9 @@ export function buildExamFormData(
     formData.append(`${questionKey}[score]`, String(question.score));
     formData.append(`${questionKey}[auto_correct]`, question.autoCorrect ? '1' : '0');
     formData.append(`${questionKey}[order]`, String(questionIndex + 1));
+    if (question.sectionKey && sectionKeys.has(question.sectionKey)) {
+      formData.append(`${questionKey}[section_key]`, question.sectionKey);
+    }
     if (question.image instanceof File) formData.append(`${questionKey}[image]`, question.image);
     if (mode === 'edit' && question.image === null && !question.imagePreview) {
       formData.append(`${questionKey}[remove_image]`, '1');

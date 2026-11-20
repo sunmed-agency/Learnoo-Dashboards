@@ -76,6 +76,7 @@ export const ADMIN_ROUTE_PREFIXES = [
   '/ota-upload',
   '/settings',
   '/students',
+  '/supervisors',
   '/subscription-requests',
   '/universities',
 ] as const;

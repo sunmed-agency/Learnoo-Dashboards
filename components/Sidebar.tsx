@@ -58,7 +58,15 @@ import {
 
   TrendingUp,
 
-  Inbox
+  Inbox,
+
+  Activity,
+
+  CalendarDays,
+
+  UserCog,
+
+  KeyRound
 
 } from 'lucide-react';
 
@@ -73,6 +81,8 @@ import { useCurrentUser } from '@/src/hooks/useAuth';
 import { usePlatformFeature } from '@/src/hooks';
 
 import { initializeAuthStore } from '@/src/stores/authStore';
+
+import { can, isSupervisor } from '@/src/lib/permissions';
 
 
 
@@ -100,6 +110,17 @@ interface MenuItem {
 
   roles?: string[];
 
+  /** A group heading (الأكاديمي، الطلاب...), not a link. */
+  section?: boolean;
+
+  /** Supervisor permission that shows this page (`a|b` = either, `-` = never for supervisors). */
+  permission?: string;
+
+  /** Shown to supervisors only. */
+  supervisorsOnly?: boolean;
+
+  hidden?: boolean;
+
 }
 
 
@@ -120,51 +141,71 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
     return items;
   }
 
-  if (role === 'Super Admin') {
+  // Grouped like the EduMedix dashboard: a heading, then its pages. `permission`
+  // hides the page from supervisors who were not given it.
+  const owner = role === 'Super Admin';
+  const section = (key: string) => items.push({ name: t(`sidebar.sections.${key}`), icon: LayoutDashboard, section: true });
+
+  if (owner) {
     items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard' });
-    items.push({ name: t('sidebar.activity'), icon: ClipboardList, path: '/activity' });
-    items.push({ name: t('sidebar.pendingActivations'), icon: ClipboardList, path: '/pre-activations' });
-    items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests' });
-  }
-  if (role === 'Admin') {
-    items.push({ name: t('sidebar.deviceApprovals'), icon: ClipboardList, path: '/activity' });
+    items.push({ name: t('sidebar.activity'), icon: Activity, path: '/activity' });
+  } else {
+    items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard', permission: 'dashboard.view', supervisorsOnly: true });
   }
 
-  items.push({ name: t('sidebar.academicStructure'), icon: School, path: '/departments' });
+  section('academic');
+  items.push({ name: t('sidebar.academicStructure'), icon: School, path: '/departments', permission: 'structure.view' });
+  items.push({ name: t('sidebar.liveSessions'), icon: Video, path: '/live-sessions', permission: 'live.manage' });
+  items.push({ name: t('sidebar.examsAndQA'), icon: ClipboardList, path: '/exams', permission: 'exams.manage' });
+  items.push({ name: t('sidebar.notesSummaries'), icon: StickyNote, path: '/notes-summaries', permission: 'notes.manage' });
+  items.push({ name: t('sidebar.electronicLibrary'), icon: BookOpen, path: '/electronic-library', permission: 'library.manage' });
+  items.push({ name: t('sidebar.schedules'), icon: CalendarDays, path: '/schedules', permission: 'schedules.manage' });
 
-  items.push({ name: t('sidebar.instructors'), icon: GraduationCap, path: '/instructors' });
+  section('users');
+  items.push({ name: t('sidebar.instructors'), icon: GraduationCap, path: '/instructors', permission: '-' });
+  if (owner) items.push({ name: t('sidebar.supervisors'), icon: UserCog, path: '/supervisors' });
 
-  items.push({ name: t('sidebar.students'), icon: Users2, path: '/students' });
-  items.push({ name: t('sidebar.guardians'), icon: Users2, path: '/guardians' });
+  section('students');
+  items.push({ name: t('sidebar.students'), icon: Users2, path: '/students', permission: 'students.view' });
+  items.push({ name: t('sidebar.guardians'), icon: Users2, path: '/guardians', permission: 'students.view' });
+  if (!owner) items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: '/activity', permission: 'devices.manage' });
+  items.push({ name: t('sidebar.activation'), icon: Power, path: '/activation', permission: 'activation.codes|activation.sheet' });
+  if (owner) items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations' });
+  if (owner) items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests' });
 
-  items.push({ name: t('sidebar.activation'), icon: Power, path: '/activation' });
+  section('community');
+  items.push({ name: t('sidebar.community'), icon: MessageSquare, path: '/community', permission: 'community.manage' });
+  items.push({ name: t('sidebar.discussions'), icon: MessageCircle, path: '/discussions', permission: 'discussions.manage' });
 
-  items.push({ name: t('sidebar.liveSessions'), icon: Video, path: '/live-sessions' });
+  section('support');
+  items.push({ name: t('sidebar.support'), icon: LifeBuoy, path: owner ? '/issues/inbox' : '/issues', permission: 'support.manage' });
 
-  items.push({ name: t('sidebar.examsAndQA'), icon: ClipboardList, path: '/exams' });
-
-  items.push({ name: t('sidebar.community'), icon: MessageSquare, path: '/community' });
-
-  items.push({ name: t('sidebar.discussions'), icon: MessageCircle, path: '/discussions' });
-  items.push({ name: t('sidebar.notesSummaries'), icon: StickyNote, path: '/notes-summaries' });
-
-  items.push({ name: t('sidebar.electronicLibrary'), icon: BookOpen, path: '/electronic-library' });
-
-  items.push({ name: t('sidebar.notifications'), icon: Bell, path: '/notifications' });
-
-  items.push({ name: t('sidebar.schedules'), icon: ClipboardList, path: '/schedules' });
-  items.push({ name: t('sidebar.downloads'), icon: Download, path: '/downloads' });
-
-  items.push({ name: t('sidebar.profileSettings'), icon: Settings, path: '/settings' });
-
-  items.push({ name: t('sidebar.featureControl'), icon: ShieldCheck, path: '/feature-control' });
-
-  items.push({ name: t('sidebar.otaUpload'), icon: Smartphone, path: '/ota-upload' });
-
-  items.push({ name: t('sidebar.support'), icon: LifeBuoy, path: role === 'Super Admin' ? '/issues/inbox' : '/issues' });
+  section('system');
+  items.push({ name: t('sidebar.notifications'), icon: Bell, path: '/notifications', permission: 'notifications.send' });
+  items.push({ name: t('sidebar.downloads'), icon: Download, path: '/downloads', permission: 'downloads.view' });
+  items.push({ name: t('sidebar.profileSettings'), icon: Settings, path: '/settings', permission: '-' });
+  items.push({ name: t('sidebar.featureControl'), icon: ShieldCheck, path: '/feature-control', permission: '-' });
+  items.push({ name: t('sidebar.otaUpload'), icon: Smartphone, path: '/ota-upload', permission: '-' });
 
   return items;
 
+};
+
+/**
+ * Supervisors see only pages they were given ('-' = never for supervisors);
+ * full admins and the owner see everything except supervisor-only entries.
+ * Headings with nothing under them are dropped.
+ */
+const filterForUser = (items: MenuItem[], user: Parameters<typeof can>[0]): MenuItem[] => {
+  const supervisor = isSupervisor(user);
+  const visible = items.filter((item) => {
+    if (item.section) return true;
+    if (item.supervisorsOnly && !supervisor) return false;
+    if (!supervisor || !item.permission) return !item.supervisorsOnly || supervisor;
+    return item.permission !== '-' && can(user, item.permission);
+  });
+  if (supervisor) visible.push({ name: '', icon: Settings, path: '/settings/profile', hidden: true });
+  return visible.filter((item, i) => !item.section || (visible[i + 1] && !visible[i + 1].section));
 };
 
 
@@ -201,8 +242,9 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       return [];
     }
 
-    return getMenuItems(t, role, activeStudentId);
-  }, [t, role, activeStudentId, isLoading]);
+    const items = getMenuItems(t, role, activeStudentId);
+    return role === 'Parent' ? items : filterForUser(items, user).filter((item) => !item.hidden);
+  }, [t, role, activeStudentId, isLoading, user]);
 
 
 
@@ -273,6 +315,8 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
   const getRoleDisplay = () => {
 
+    if (isSupervisor(user)) return t('sidebar.supervisorRole');
+
     if (role === 'Admin') return t('sidebar.adminDashboard');
 
     if (role === 'Doctor') return t('sidebar.doctorDashboard');
@@ -304,6 +348,12 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
 
   const renderMenuItem = (item: MenuItem, isChild = false) => {
+
+    if (item.section) {
+      return isCollapsed
+        ? <div key={`section-${item.name}`} className="mx-4 my-2 h-px bg-[#E2E8F0]" aria-hidden />
+        : <p key={`section-${item.name}`} className="px-3 pb-1 pt-4 text-[11px] font-bold tracking-wide text-[#94A3B8]">{item.name}</p>;
+    }
 
     const Icon = item.icon;
 

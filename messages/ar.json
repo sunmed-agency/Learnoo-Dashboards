@@ -556,6 +556,16 @@
     "activity": "نشاط الفريق والأجهزة",
     "pendingActivations": "أرقام التفعيل المسبق",
     "subscriptionRequests": "طلبات الاشتراك الجديدة",
+    "supervisors": "المشرفين",
+    "supervisorRole": "مشرف",
+    "sections": {
+      "academic": "الأكاديمي",
+      "users": "المستخدمين",
+      "students": "الطلاب وأولياء الأمور",
+      "community": "المجتمع",
+      "support": "الدعم",
+      "system": "النظام"
+    },
     "deviceApprovals": "اعتماد الأجهزة",
     "guardians": "أولياء الأمور"
   },

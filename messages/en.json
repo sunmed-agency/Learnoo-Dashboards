@@ -539,6 +539,16 @@
     "activity": "Staff activity and devices",
     "pendingActivations": "Pending activations",
     "subscriptionRequests": "New subscription requests",
+    "supervisors": "Supervisors",
+    "supervisorRole": "Supervisor",
+    "sections": {
+      "academic": "Academic",
+      "users": "Users",
+      "students": "Students & guardians",
+      "community": "Community",
+      "support": "Support",
+      "system": "System"
+    },
     "deviceApprovals": "Device approvals",
     "guardians": "Guardians"
   },

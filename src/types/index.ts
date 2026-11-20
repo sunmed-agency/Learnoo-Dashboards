@@ -537,6 +537,11 @@ export interface UserAttributes {
 
   can_publish_without_approval?: boolean;
 
+  /** Supervisors (admin accounts limited by the owner): their permission keys; null for everyone else. */
+  permissions?: string[] | null;
+
+  is_supervisor?: boolean;
+
   //added by mohamed ahmed
   student_code: string;
 

@@ -586,14 +586,33 @@ export const centersApi = {
 // Chapters API
 // ============================================
 
+export interface LessonViewerRow {
+  /** null when the student was found by search but never watched. */
+  id: number | null;
+  user: { id: string; first_name: string; last_name: string; email: string | null; phone?: string | null; student_code: string | null };
+  created_at: string | null;
+  updated_at?: string | null;
+  count: number;
+  /** Views staff added (or removed when negative) for this student. */
+  extra_views?: number;
+  /** This student's limit (chapter limit + extra_views); 0 = unlimited. */
+  max_views?: number;
+  remaining_views: number | null;
+}
 export interface LessonViewersResponse {
-  data: { id: number; user: { id: string; first_name: string; last_name: string; email: string | null; student_code: string | null }; created_at: string | null; count: number; remaining_views: number | null }[];
+  data: LessonViewerRow[];
+  /** The chapter limit before per-student extras; 0 = unlimited. */
   max_views: number;
   last_page: number;
 }
+export interface ViewAdjustResult { count: number; extra_views: number; max_views: number; remaining_views: number }
 
 export const chaptersApi = {
-  viewers: (id: number, page = 1) => get<LessonViewersResponse>(`/v1/chapter/${id}/viewers`, { page }),
+  /** `search` matches any student's phone, name or code, watched or not. */
+  viewers: (id: number, page = 1, search?: string) => get<LessonViewersResponse>(`/v1/chapter/${id}/viewers`, { page, search: search || undefined }),
+  /** delta > 0 adds views for this student, < 0 removes; the limit never drops below 1. */
+  adjustViews: (chapterId: number, studentId: string, delta: number, note?: string) =>
+    post<{ data: ViewAdjustResult }>(`/v1/chapter/${chapterId}/viewers/${studentId}/adjust`, { delta, note: note || null }),
   list: (params?: { lecture_id?: number | string }) => get<ApiListResponse<Chapter>>('/v1/chapter', params),
 
   get: (id: number, options?: { skipAuthRedirect?: boolean }) =>
@@ -1574,7 +1593,8 @@ export interface NotificationOptions {
 export const notificationsApi = {
   list: (page = 1, filters: NotificationFilters = {}) => get<{ data: PlatformNotification[]; meta: { last_page: number; total: number; unread_count: number } }>('/v1/notifications', { page, ...filters }),
   options: () => get<NotificationOptions>('/v1/notifications/options'),
-  send: (data: { title: string; message: string; course_id?: number; course_ids?: number[] }) => post<{ sent: number }>('/v1/notifications/send', data),
+  /** `user_ids` sends to chosen students only (cannot be combined with courses). */
+  send: (data: { title: string; message: string; course_id?: number; course_ids?: number[]; user_ids?: string[] }) => post<{ sent: number }>('/v1/notifications/send', data),
   read: (id: string) => patch(`/v1/notifications/${id}/read`),
   readAll: () => patch('/v1/notifications/read-all'),
 };
@@ -1627,12 +1647,60 @@ export const archivedStudentsApi = {
   recover: (id: string, mode: 'restore' | 'new') => post(`/v1/student-archives/${id}`, { mode }),
 };
 export interface DeviceDetails { device: string; browser: string; identifier: string; ip: string; at: string }
-export interface DeviceTransfer { id: string; first_name: string; last_name: string; phone: string; current_device: DeviceDetails | null; requested_device: DeviceDetails | null; device_transfer_count?: number; remaining_device_transfers?: number }
+export interface DeviceTransfer { id: string; first_name: string; last_name: string; phone: string; current_device: DeviceDetails | null; requested_device: DeviceDetails | null; device_transfer_count?: number; remaining_device_transfers?: number; device_request_count?: number }
+
+// ---- Student profile tabs ----
+export type DeviceRequestStatus = 'pending' | 'approved' | 'cancelled' | 'reset';
+export interface StudentDevices {
+  bound_device: DeviceDetails | null;
+  pending_device: DeviceDetails | null;
+  last_session: { device?: string | null; last_ip?: string | null; [key: string]: unknown } | null;
+  /** How many device-change requests the student sent, ever. */
+  requests_sent: number;
+  changes_used: number;
+  changes_limit: number;
+  changes_remaining: number;
+  requests: { id: number; status: DeviceRequestStatus; device: DeviceDetails | null; previous_device: DeviceDetails | null; decided_by: string | null; decided_at: string | null; created_at: string | null }[];
+}
+export interface StudentChapterViews {
+  chapter_id: number; chapter: string; lecture: string | null; course_id: number | null; course: string | null;
+  count: number; extra_views: number; base_limit: number; max_views: number; remaining_views: number | null; last_viewed_at: string | null;
+}
+export interface StudentViews {
+  total_views: number;
+  chapters: StudentChapterViews[];
+  adjustments: { id: number; chapter_id: number; chapter: string | null; delta: number; note: string | null; actor: string; created_at: string }[];
+}
+export const studentInsightsApi = {
+  devices: (studentId: string) => get<{ data: StudentDevices }>(`/v1/student/${studentId}/devices`),
+  views: (studentId: string) => get<{ data: StudentViews }>(`/v1/student/${studentId}/views`),
+};
+
+// ---- Supervisors (owner only) ----
+export type LocalizedLabel = { ar: string; en: string };
+export interface PermissionCatalog {
+  groups: { key: string; label: LocalizedLabel }[];
+  permissions: { key: string; group: string; label: LocalizedLabel; requires: string[] }[];
+  presets: { key: string; label: LocalizedLabel; permissions: string[] }[];
+}
+export interface Supervisor {
+  id: string; first_name: string; last_name: string; email: string; phone: string | null; active: boolean; permissions: string[]; created_at: string | null;
+  actions_30_days?: number; last_action_at?: string | null; last_seen_at?: string | null;
+}
+export interface SupervisorInput { first_name?: string; last_name?: string; email?: string; phone?: string | null; password?: string; active?: boolean; permissions?: string[] }
+export const supervisorsApi = {
+  catalog: () => get<{ data: PermissionCatalog }>('/v1/owner/supervisor-permissions'),
+  list: (search?: string) => get<{ data: Supervisor[] }>('/v1/owner/supervisors', { search: search || undefined }),
+  create: (data: SupervisorInput) => post<{ data: Supervisor }>('/v1/owner/supervisors', data),
+  update: (id: string, data: SupervisorInput) => put<{ data: Supervisor }>(`/v1/owner/supervisors/${id}`, data),
+  remove: (id: string) => del<unknown>(`/v1/owner/supervisors/${id}`),
+  activity: (id: string, page = 1) => get<{ data: StaffActivity[]; last_page: number }>(`/v1/owner/supervisors/${id}/activity`, { page }),
+};
 export interface PendingActivationFilters { phone?: string; item_type?: string; course_id?: number }
 export interface PendingActivationPage { data: { id: number; phone: string; item_type: string; title: string | null; category_path: string[]; created_at: string | null }[]; total: number; last_page: number }
 export const ownerOperationsApi = {
   pendingActivations: (page = 1, filters: PendingActivationFilters = {}) => get<PendingActivationPage>('/v1/owner/pre-activations', { page, ...filters }),
-  activity: (page = 1, filters?: { from?: string; to?: string; role?: 'Instructor' | 'Admin'; type?: 'device-requests' | 'device-decisions' | 'courses' | 'lessons' | 'accounts' | 'activations' }) => get<{ data: StaffActivity[]; last_page: number }>('/v1/owner/activity', { page, ...filters }),
+  activity: (page = 1, filters?: { from?: string; to?: string; role?: 'Instructor' | 'Admin' | 'Supervisor'; user_id?: string; type?: 'device-requests' | 'device-decisions' | 'courses' | 'lessons' | 'accounts' | 'activations' }) => get<{ data: StaffActivity[]; last_page: number }>('/v1/owner/activity', { page, ...filters }),
   devices: () => get<{ data: DeviceTransfer[] }>('/v1/owner/device-transfers'),
   approve: (id: string) => post(`/v1/owner/device-transfers/${id}/approve`),
   cancel: (id: string) => post(`/v1/owner/device-transfers/${id}/cancel`),
@@ -1648,6 +1716,8 @@ export const guardiansApi = {
 export const api = {
   guardians: guardiansApi,
   ownerOperations: ownerOperationsApi,
+  studentInsights: studentInsightsApi,
+  supervisors: supervisorsApi,
   downloads: downloadsApi,
   timetable: timetableApi,
   notifications: notificationsApi,

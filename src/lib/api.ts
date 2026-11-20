@@ -1618,6 +1618,8 @@ export const downloadsApi = {
 export const timetableApi = {
   list: () => get<{ entries: TimetableEntry[]; documents: import('@/src/types').Attachment[] }>('/v1/timetable'),
   upload: (id: string, form: FormData) => postMultipart(`/v1/timetable/${id}/documents`, form),
+  /** Removes one schedule (image or file) from a subject. */
+  remove: (courseId: string | number, attachmentId: string | number) => del<void>(`/v1/timetable/${courseId}/documents/${attachmentId}`),
 };
 
 export interface ContentAuditSnapshot { id: number; title: string; video: string | null; lecture_id: number | null; course_id: number | null; status: number; max_views: number | null; view_by_minute: number | null }

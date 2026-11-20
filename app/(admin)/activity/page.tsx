@@ -19,7 +19,7 @@ export default function OwnerActivityPage() {
   const [lastPage, setLastPage] = useState(1);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
-  const [activityRole, setActivityRole] = useState<'' | 'Instructor' | 'Admin'>('');
+  const [activityRole, setActivityRole] = useState<'' | 'Instructor' | 'Admin' | 'Supervisor'>('');
   const [activityLoading, setActivityLoading] = useState(false);
   const [activityType, setActivityType] = useState<NonNullable<Parameters<typeof api.ownerOperations.activity>[1]>['type'] | ''>('');
   useEffect(() => {
@@ -81,6 +81,7 @@ export default function OwnerActivityPage() {
           <option value="">{ar ? 'كل العمليات' : 'All activity'}</option>
           <option value="Instructor">{ar ? 'المدرسون' : 'Instructors'}</option>
           <option value="Admin">{ar ? 'الأدمن' : 'Admins'}</option>
+          <option value="Supervisor">{ar ? 'مشرف' : 'Supervisors'}</option>
         </select>
       </label>
       <label className="max-w-full text-sm">{ar ? 'نوع العملية' : 'Activity type'}
@@ -102,7 +103,7 @@ export default function OwnerActivityPage() {
     </div>
     {activityLoading && <p role="status">{ar ? 'جارٍ تحميل النشاط…' : 'Loading activity…'}</p>}
     {!activityLoading && !error && !activity.length && <p>{ar ? 'لا توجد أنشطة تطابق عوامل التصفية' : 'No activity matches these filters'}</p>}
-    {activity.map(item => <article key={item.id} className="rounded-xl border bg-white p-4"><p>{item.first_name} {item.last_name}</p><p className="text-sm">{formatStaffActivity(item.action, ar ? 'ar' : 'en')}</p><StaffActivityDetails details={item.details} /><time className="text-xs text-gray-500">{new Date(item.created_at).toLocaleString(ar ? 'ar' : 'en')}</time></article>)}
+    {activity.map(item => <article key={item.id} className="rounded-xl border bg-white p-4"><p className="flex flex-wrap items-center gap-2">{item.first_name} {item.last_name}{Boolean((item as StaffActivity & { is_supervisor?: unknown }).is_supervisor) &&<span className="rounded-full bg-[#F4F5FD] px-2 py-0.5 text-xs font-semibold text-[#2137D6]">{ar ? 'مشرف' : 'Supervisor'}</span>}</p><p className="text-sm">{formatStaffActivity(item.action, ar ? 'ar' : 'en')}</p><StaffActivityDetails details={item.details} /><time className="text-xs text-gray-500">{new Date(item.created_at).toLocaleString(ar ? 'ar' : 'en')}</time></article>)}
     <div className="flex gap-4"><button disabled={activityLoading || page <= 1} onClick={() => setPage(page - 1)}>{ar ? 'السابق' : 'Previous'}</button><span>{page} / {lastPage}</span><button disabled={activityLoading || page >= lastPage} onClick={() => setPage(page + 1)}>{ar ? 'التالي' : 'Next'}</button></div>
     </>}
   </div>;

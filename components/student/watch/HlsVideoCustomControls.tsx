@@ -15,6 +15,8 @@ import {
   Moon,
   Pause,
   Play,
+  RotateCcw,
+  RotateCw,
   Settings as SettingsIcon,
   SkipBack,
   SkipForward,
@@ -49,6 +51,11 @@ const SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
 type SpeedValue = (typeof SPEED_OPTIONS)[number];
 
 const SLEEP_TIMER_OPTIONS = [0, 5, 10, 15, 30, 45, 60] as const;
+
+/** Seconds a skip button or a double tap moves (YouTube style). */
+const SEEK_STEP_SECONDS = 10;
+/** Two taps closer than this count as a double tap. */
+const DOUBLE_TAP_MS = 280;
 
 type SettingsSubMenu = null | 'sleep' | 'speed' | 'quality';
 
@@ -131,6 +138,10 @@ export function HlsVideoCustomControls({
   const canSelectQuality = qualityOptions.length > 1;
   const [infoOpen, setInfoOpen] = useState(false);
   const [desktopPanelPos, setDesktopPanelPos] = useState<{ bottom: number; right: number } | null>(null);
+  /** The "10 seconds" bubble shown on the side that was double tapped (amount adds up on repeated taps). */
+  const [seekFlash, setSeekFlash] = useState<{ side: 'back' | 'forward'; seconds: number; key: number } | null>(null);
+  const seekFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tapRef = useRef<{ time: number; zone: 'back' | 'center' | 'forward' | null; timer: ReturnType<typeof setTimeout> | null }>({ time: 0, zone: null, timer: null });
 
   const sleepCountdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const settingsWrapRef = useRef<HTMLDivElement | null>(null);
@@ -253,6 +264,35 @@ export function HlsVideoCustomControls({
     if (v.paused) void v.play().catch(() => {});
     else v.pause();
   }, [videoRef]);
+
+  /** Moves the video by `delta` seconds (kept inside the video) and shows the side bubble. */
+  const seekBy = useCallback(
+    (delta: number) => {
+      const v = videoRef.current;
+      if (!v) return;
+      const d = Number.isFinite(v.duration) ? v.duration : Infinity;
+      const next = Math.min(Math.max(0, v.currentTime + delta), d);
+      v.currentTime = next;
+      setCurrent(next);
+      const side = delta < 0 ? 'back' : 'forward';
+      setSeekFlash((prev) => ({
+        side,
+        seconds: prev && prev.side === side ? prev.seconds + Math.abs(delta) : Math.abs(delta),
+        key: Date.now(),
+      }));
+      if (seekFlashTimerRef.current) clearTimeout(seekFlashTimerRef.current);
+      seekFlashTimerRef.current = setTimeout(() => setSeekFlash(null), 700);
+    },
+    [videoRef]
+  );
+
+  useEffect(
+    () => () => {
+      if (seekFlashTimerRef.current) clearTimeout(seekFlashTimerRef.current);
+      if (tapRef.current.timer) clearTimeout(tapRef.current.timer);
+    },
+    []
+  );
 
   const toggleMute = useCallback(() => {
     const v = videoRef.current;
@@ -508,6 +548,57 @@ const speedMenuLabel =
       {/* Bottom gradient for controls visibility */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/85 via-black/55 to-transparent" />
 
+      {/* Tap layer (YouTube style): one tap plays / pauses; two quick taps on the left or right
+          third go back / forward 10 s, in the middle toggle fullscreen. Always clickable, even while
+          the bar is hidden, and sits under the bar's buttons. */}
+      <div
+        className="pointer-events-auto absolute inset-x-0 top-0 bottom-16 z-0 sm:bottom-20"
+        onClick={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / Math.max(1, rect.width);
+          const zone = x < 0.38 ? 'back' : x > 0.62 ? 'forward' : 'center';
+          const now = Date.now();
+          const tap = tapRef.current;
+          const isDouble = now - tap.time < DOUBLE_TAP_MS && tap.zone === zone;
+          if (tap.timer) {
+            clearTimeout(tap.timer);
+            tap.timer = null;
+          }
+          if (isDouble || (seekFlash && zone !== 'center' && now - tap.time < 700)) {
+            // A double tap (or more taps while the bubble is up) skips instead of pausing.
+            tap.time = now;
+            tap.zone = zone;
+            if (zone === 'back') seekBy(-SEEK_STEP_SECONDS);
+            else if (zone === 'forward') seekBy(SEEK_STEP_SECONDS);
+            else toggleShellFullscreen();
+            return;
+          }
+          tap.time = now;
+          tap.zone = zone;
+          tap.timer = setTimeout(() => {
+            tap.timer = null;
+            togglePlay();
+          }, DOUBLE_TAP_MS);
+        }}
+        aria-hidden
+      />
+      {seekFlash ? (
+        <div
+          key={seekFlash.key}
+          className={`pointer-events-none absolute inset-y-0 z-[5] flex w-[38%] items-center justify-center ${
+            seekFlash.side === 'back' ? 'left-0 rounded-r-[50%]' : 'right-0 rounded-l-[50%]'
+          } bg-white/10`}
+        >
+          <div className="flex flex-col items-center gap-1 text-white drop-shadow">
+            {seekFlash.side === 'back' ? <RotateCcw className="size-7" /> : <RotateCw className="size-7" />}
+            <span className="text-xs font-bold">
+              {seekFlash.side === 'back' ? '−' : '+'}
+              {seekFlash.seconds} {t('videoControlsSeconds')}
+            </span>
+          </div>
+        </div>
+      ) : null}
+
       {/* Info icon top-right */}
       <div className="absolute right-3 top-3 z-10 flex items-center gap-2 sm:right-4 sm:top-4">
         {infoOpen && chapterInfoTitle ? (
@@ -719,7 +810,13 @@ const speedMenuLabel =
             </div>
           </div>
         </>,
-        document.body
+        // In element fullscreen only the fullscreen subtree is painted, so the menu must live inside
+        // it (it was always portaled to <body>, which is why the gear menu never showed in fullscreen).
+        (isElementFullscreen
+          ? ((document.fullscreenElement as HTMLElement | null) ??
+            ((document as unknown as { webkitFullscreenElement?: HTMLElement | null }).webkitFullscreenElement ?? null) ??
+            shellRef.current)
+          : null) ?? document.body
       ) : null}
 
       {/* Bottom controls */}
@@ -773,6 +870,26 @@ const speedMenuLabel =
               ) : (
                 <Pause className="size-5 sm:size-6" />
               )}
+            </button>
+            <button
+              type="button"
+              onClick={() => seekBy(-SEEK_STEP_SECONDS)}
+              className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-full text-white transition hover:bg-white/15 active:bg-white/20"
+              aria-label={t('videoControlsBack10')}
+              title={t('videoControlsBack10')}
+            >
+              <RotateCcw className="size-5 sm:size-6" />
+              <span className="absolute text-[8px] font-black leading-none sm:text-[9px]" aria-hidden>10</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => seekBy(SEEK_STEP_SECONDS)}
+              className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-full text-white transition hover:bg-white/15 active:bg-white/20"
+              aria-label={t('videoControlsForward10')}
+              title={t('videoControlsForward10')}
+            >
+              <RotateCw className="size-5 sm:size-6" />
+              <span className="absolute text-[8px] font-black leading-none sm:text-[9px]" aria-hidden>10</span>
             </button>
             <button
               type="button"

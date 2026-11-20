@@ -1411,7 +1411,7 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
     const videoColumn = (
       <div
         className={[
-          'relative flex min-w-0 flex-col',
+          'relative flex min-w-0 flex-col [:fullscreen_&]:h-full [:fullscreen_&]:min-h-0',
           hasWatchPanel
             ? 'w-full md:w-1/2 min-w-0 md:flex-[1_1_50%] md:basis-1/2'
             : 'w-full min-h-0 flex-1',
@@ -1426,7 +1426,7 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
           className={
             inPageFullscreen
               ? 'group relative w-full min-h-0 flex-1 overflow-visible bg-black'
-              : `group relative w-full shrink-0 overflow-visible bg-black ${viewportClass}`
+              : `group relative w-full shrink-0 overflow-visible bg-black ${viewportClass} [:fullscreen_&]:aspect-auto [:fullscreen_&]:h-full [:fullscreen_&]:min-h-0 [:fullscreen_&]:flex-1 [@media(orientation:landscape)_and_(max-height:540px)]:max-h-[calc(100svh-3.5rem)]`
           }
           onMouseMove={revealControls}
           onMouseEnter={revealControls}

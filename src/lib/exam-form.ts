@@ -43,10 +43,28 @@ export interface ExamFormSection {
   image: File | null;
   /** Saved image URL, a blob: preview of `image`, or ''. */
   imagePreview: string;
+  /** How many questions the section may hold ('' = no limit). */
+  maxQuestions?: string;
+  /** UI only: the section card is folded into its summary row (after «حفظ القسم»). */
+  saved?: boolean;
 }
 
 export function newExamSection(): ExamFormSection {
-  return { key: `new-sec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, title: '', image: null, imagePreview: '' };
+  return { key: `new-sec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, title: '', image: null, imagePreview: '', maxQuestions: '', saved: false };
+}
+
+/** section key -> how many questions point to it. */
+export function countQuestionsBySection(questions: { sectionKey?: string }[]): Record<string, number> {
+  return questions.reduce<Record<string, number>>((counts, question) => {
+    if (question.sectionKey) counts[question.sectionKey] = (counts[question.sectionKey] ?? 0) + 1;
+    return counts;
+  }, {});
+}
+
+/** The section's question limit as a number, or null for no limit. */
+export function sectionLimit(section: Pick<ExamFormSection, 'maxQuestions'>): number | null {
+  const n = Number.parseInt(String(section.maxQuestions ?? '').trim(), 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 export interface ExamFormDetails {
@@ -225,6 +243,8 @@ export function buildExamFormData(
     formData.append(`${key}[key]`, section.key);
     if (mode === 'edit' && section.id) formData.append(`${key}[id]`, section.id);
     formData.append(`${key}[title]`, section.title);
+    const limit = sectionLimit(section);
+    if (limit != null) formData.append(`${key}[max_questions]`, String(limit));
     if (section.image instanceof File) formData.append(`${key}[image]`, section.image);
     else if (mode === 'edit' && section.id && !section.imagePreview) formData.append(`${key}[remove_image]`, '1');
   });
@@ -270,6 +290,11 @@ export function buildExamFormData(
 }
 
 export function focusExamField(id: string) {
+  const target = document.getElementById(id);
+  const card = target?.closest('[data-question-card]');
+  if (card?.getAttribute('data-collapsed') === 'true') {
+    card.querySelector<HTMLElement>('[data-toggle-question]')?.click();
+  }
   requestAnimationFrame(() => {
     const element = document.getElementById(id);
     const input = element?.matches('input,textarea,select,button') ? element : element?.querySelector<HTMLElement>('input,textarea,select,button');

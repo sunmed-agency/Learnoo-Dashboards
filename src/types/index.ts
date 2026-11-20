@@ -3927,6 +3927,8 @@ export interface QuizSectionSummary {
   id: number;
   title: string | null;
   image: string | null;
+  /** How many questions the section may hold; null = no limit. */
+  max_questions?: number | null;
   order: number;
 }
 

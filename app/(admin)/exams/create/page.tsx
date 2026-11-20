@@ -50,7 +50,7 @@ import {
 } from '@/src/lib/exam-form';
 import { ExamBannerField } from '@/src/components/exams/ExamBannerField';
 import { ExamSectionsField, QuestionSectionSelect } from '@/components/exams/ExamSectionsField';
-import type { ExamFormSection } from '@/src/lib/exam-form';
+import { countQuestionsBySection, type ExamFormSection } from '@/src/lib/exam-form';
 
 export default function CreateExamPage() {
   const t = useTranslations('exams');
@@ -67,6 +67,15 @@ export default function CreateExamPage() {
   const [banner, setBanner] = useState<ExamBannerState>(EMPTY_EXAM_BANNER);
   /** Exam sections ("أقسام"): questions sharing one image. */
   const [sections, setSections] = useState<ExamFormSection[]>([]);
+  /** Question cards folded to their header (to keep long exams short to scroll). */
+  const [collapsedQuestions, setCollapsedQuestions] = useState<Set<string>>(new Set());
+  const toggleQuestionCollapsed = (id: string) =>
+    setCollapsedQuestions((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const [validationErrors, setValidationErrors] = useState<{
     questionIds: Set<string>;
     answerIds: Set<string>;
@@ -542,10 +551,7 @@ export default function CreateExamPage() {
         <ExamSectionsField
           value={sections}
           onChange={setSections}
-          questionCounts={questions.reduce<Record<string, number>>((counts, question) => {
-            if (question.sectionKey) counts[question.sectionKey] = (counts[question.sectionKey] ?? 0) + 1;
-            return counts;
-          }, {})}
+          questionCounts={countQuestionsBySection(questions)}
         />
         {/* Exam Details Section */}
         <section className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
@@ -804,9 +810,25 @@ export default function CreateExamPage() {
             </button>
           </div>
 
+          {questions.length > 1 ? (
+            <div className="flex flex-wrap justify-end gap-2">
+              <button type="button" onClick={() => setCollapsedQuestions(new Set(questions.map((question) => question.id)))}
+                className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-[#475569] ring-1 ring-[#E2E8F0] hover:bg-[#F8FAFC]">
+                {locale === 'ar' ? 'قفل كل الأسئلة' : 'Collapse all'}
+              </button>
+              <button type="button" onClick={() => setCollapsedQuestions(new Set())}
+                className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-[#475569] ring-1 ring-[#E2E8F0] hover:bg-[#F8FAFC]">
+                {locale === 'ar' ? 'فتح كل الأسئلة' : 'Expand all'}
+              </button>
+            </div>
+          ) : null}
           {questions.map((q, index) => (
             <React.Fragment key={q.id}>
-              <section className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
+              <section
+                className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden"
+                data-question-card
+                data-collapsed={collapsedQuestions.has(q.id) ? 'true' : 'false'}
+              >
                 <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]/50 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-[#1E293B]">{t('create.question')} {index + 1}</h3>
@@ -817,6 +839,19 @@ export default function CreateExamPage() {
                             t('create.shortAnswer')}
                     </span>
                   </div>
+                  {collapsedQuestions.has(q.id) && q.text.trim() ? (
+                    <span dir="auto" className="mx-3 hidden min-w-0 flex-1 truncate text-start text-xs text-[#64748B] sm:block">{q.text}</span>
+                  ) : null}
+                  <button
+                    type="button"
+                    data-toggle-question
+                    onClick={() => toggleQuestionCollapsed(q.id)}
+                    aria-expanded={!collapsedQuestions.has(q.id)}
+                    className="ms-auto me-1 inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-bold text-[#2137D6] transition hover:bg-[#EEF2FF]"
+                  >
+                    {collapsedQuestions.has(q.id) ? (locale === 'ar' ? 'فتح' : 'Open') : (locale === 'ar' ? 'قفل' : 'Close')}
+                    <ChevronDown className={`h-4 w-4 transition ${collapsedQuestions.has(q.id) ? '' : 'rotate-180'}`} />
+                  </button>
                   {questions.length > 1 && (
                     <button
                       type="button"
@@ -827,7 +862,7 @@ export default function CreateExamPage() {
                     </button>
                   )}
                 </div>
-                <div className="p-6 flex flex-col gap-6">
+                <div className={`p-6 flex flex-col gap-6 ${collapsedQuestions.has(q.id) ? 'hidden' : ''}`}>
                   {/* Question Type & Score & Auto-correct */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex flex-col gap-2 relative">
@@ -915,6 +950,7 @@ export default function CreateExamPage() {
                   {/* Section ("قسم"): its shared image shows above this question for students */}
                   <QuestionSectionSelect
                     sections={sections}
+                    counts={countQuestionsBySection(questions)}
                     value={q.sectionKey}
                     onChange={(sectionKey) => updateQuestion(q.id, { sectionKey })}
                   />

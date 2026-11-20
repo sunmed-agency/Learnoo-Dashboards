@@ -18,6 +18,8 @@ import {
   ArrowRightLeft,
 } from "lucide-react";
 import type { TreeNode } from "./useMillerState";
+import { useCurrentUser } from "@/src/hooks/useAuth";
+import { can } from "@/src/lib/permissions";
 
 interface ColumnItemProps {
   item: TreeNode;
@@ -112,6 +114,9 @@ export function ColumnItem({
   isInstructor,
 }: ColumnItemProps) {
   const locale = useLocale();
+  const { user } = useCurrentUser();
+  // Supervisors without "structure.manage" see the tree read-only.
+  const canManageTree = can(user, "structure.manage");
   const hasChildren = item.children && item.children.length > 0;
   const [addDropdownOpen, setAddDropdownOpen] = useState(false);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -308,8 +313,8 @@ export function ColumnItem({
         {hasChildren && <ChevronRight className="w-3 h-3 text-slate-400 flex-shrink-0" />}
       </div>
 
-      {/* Row 2: action buttons — always visible */}
-      <div className="flex items-center gap-0.5">
+      {/* Row 2: action buttons — hidden for supervisors who may only view the tree */}
+      {canManageTree && <div className="flex items-center gap-0.5">
         {renderAddButtons()}
         {renderCopyMove()}
 
@@ -326,7 +331,7 @@ export function ColumnItem({
             <Trash2 className="w-3 h-3" />
           </ActionBtn>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

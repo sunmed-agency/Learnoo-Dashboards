@@ -24,6 +24,8 @@ import type { TreeNode } from "./useMillerState";
 import type { Course, Lecture, Chapter, Note } from "@/src/types";
 import { ChapterPreview } from "./ChapterPreview";
 import { StudentSelector } from "./StudentSelector";
+import { useCurrentUser } from "@/src/hooks/useAuth";
+import { can } from "@/src/lib/permissions";
 
 interface DetailPanelProps {
   node: TreeNode;
@@ -98,6 +100,13 @@ export function DetailPanel({
 }: DetailPanelProps) {
   const t = useTranslations("courses.detailPanel");
   const locale = useLocale();
+  // Supervisors: tree read-only unless "structure.manage"; activation boxes per permission.
+  const { user } = useCurrentUser();
+  const canManageTree = can(user, "structure.manage");
+  const canCodes = can(user, "activation.codes");
+  const canSheet = can(user, "activation.sheet");
+  const canViewers = can(user, "views.manage");
+  const effectiveTab = !canCodes ? "preactivation" : !canSheet ? "code" : activationTab;
 
   const handlePreactivationFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -241,14 +250,14 @@ export function DetailPanel({
             )}
 
             {/* Course activation section */}
-            {(isOwner || isAdmin) && canUseActivations && (
+            {(isOwner || isAdmin) && canUseActivations && (canCodes || canSheet) && (
               <div className="pt-3 border-t border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1">
                     <Power className="w-3.5 h-3.5 text-blue-600" />
                     <span className="text-xs font-bold text-gray-800">{t("activateCourse")}</span>
                   </div>
-                  {!isInstructor && (
+                  {!isInstructor && canCodes && (
                     <button
                       onClick={() => onGenerateCodes("course", node.data.id)}
                       className="p-1 hover:text-blue-600 transition-colors border rounded bg-gray-50"
@@ -263,21 +272,21 @@ export function DetailPanel({
                 <div className="flex items-center gap-1 mb-3 bg-gray-100 rounded-lg p-0.5">
                   <button
                     onClick={() => setActivationTab("code")}
-                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${activationTab === "code" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
+                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${effectiveTab === "code" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
                       }`}
                   >
                     {t("byCode")}
                   </button>
                   <button
                     onClick={() => setActivationTab("preactivation")}
-                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${activationTab === "preactivation" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
+                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${effectiveTab === "preactivation" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
                       }`}
                   >
                     {t("preactivation")}
                   </button>
                 </div>
 
-                {activationTab === "code" ? (
+                {effectiveTab === "code" ? (
                   <div className="space-y-3">
                     <div>
                       <label className="text-[10px] text-gray-500 block mb-1">
@@ -461,14 +470,14 @@ export function DetailPanel({
             )}
 
             {/* Chapter Activation codes */}
-            {(isOwner || isAdmin) && canUseActivations && (
+            {(isOwner || isAdmin) && canUseActivations && (canCodes || canSheet) && (
               <div className="pt-3 border-t border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1">
                     <Power className="w-3.5 h-3.5 text-blue-600" />
                     <span className="text-xs font-bold text-gray-800">{t("activateLesson")}</span>
                   </div>
-                  {!isInstructor && (
+                  {!isInstructor && canCodes && (
                     <button
                       onClick={() => onGenerateCodes("chapter", node.data.id)}
                       className="p-1 hover:text-blue-600 transition-colors border rounded bg-gray-50"
@@ -483,21 +492,21 @@ export function DetailPanel({
                 <div className="flex items-center gap-1 mb-3 bg-gray-100 rounded-lg p-0.5">
                   <button
                     onClick={() => setActivationTab("code")}
-                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${activationTab === "code" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
+                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${effectiveTab === "code" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
                       }`}
                   >
                     {t("byCode")}
                   </button>
                   <button
                     onClick={() => setActivationTab("preactivation")}
-                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${activationTab === "preactivation" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
+                    className={`flex-1 py-1 text-[10px] font-semibold rounded-md transition-all ${effectiveTab === "preactivation" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500"
                       }`}
                   >
                     {t("preactivation")}
                   </button>
                 </div>
 
-                {activationTab === "code" ? (
+                {effectiveTab === "code" ? (
                   <div className="space-y-3">
                     <div>
                       <label className="text-[10px] text-gray-500 block mb-1">
@@ -707,6 +716,7 @@ export function DetailPanel({
       <div className="p-3 border-t border-gray-200 bg-gray-50 flex-shrink-0 flex gap-2 flex-wrap">
         {node.type === "chapter" && (
           <>
+            {canManageTree && <>
             <button
               onClick={() => onCopyMove(node, "copy")}
               className="px-2.5 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1"
@@ -719,7 +729,8 @@ export function DetailPanel({
             >
               <ArrowRightLeft className="w-3.5 h-3.5" /> {t("move")}
             </button>
-            {(isOwner || (isAdmin && node.type === "chapter")) && <button
+            </>}
+            {(isOwner || (isAdmin && node.type === "chapter")) && canViewers && <button
               onClick={() => openViewers(node)}
               className="px-2.5 py-1.5 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-1"
             >
@@ -728,7 +739,7 @@ export function DetailPanel({
           </>
         )}
 
-        {(!isInstructor || ["course", "lecture", "chapter", "note"].includes(node.type)) && (
+        {canManageTree && (!isInstructor || ["course", "lecture", "chapter", "note"].includes(node.type)) && (
         <button
           onClick={() => onEdit(node)}
           className="flex-grow px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors text-center"
@@ -737,7 +748,7 @@ export function DetailPanel({
         </button>
         )}
 
-        {(!isInstructor || ["lecture", "chapter", "note"].includes(node.type)) && (
+        {canManageTree && (!isInstructor || ["lecture", "chapter", "note"].includes(node.type)) && (
           <button
             onClick={() => onDelete(node)}
             className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold rounded-lg transition-colors"

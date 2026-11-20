@@ -25,7 +25,8 @@ function setup() {
   const mocks = {
     react: { ...React, useState: initial => { const i = cursor++; if (!(i in state)) state[i] = initial; return [state[i], value => { state[i] = value; }]; } },
     'next-intl': { useLocale: () => 'en' },
-    '@tanstack/react-query': { useQuery: query => { queries.push(query); return { data: viewers, isLoading: false, error: null }; } },
+    '@/src/hooks/useAuth': { useCurrentUser: () => ({ user: null, role: 'Super Admin' }) }, '@/src/lib/permissions': { can: () => true }, 'use-debounce': { useDebounce: value => [value] }, sonner: { toast: { success() {}, error() {} } },
+    '@tanstack/react-query': { useQuery: query => { queries.push(query); return { data: viewers, isLoading: false, error: null, refetch: async () => {} }; } },
     '@/src/lib/api': { __esModule: true, default: { chapters: { viewers: async (...params) => { requests.push(params); return viewers; } } } },
   };
   const code = ts.transpileModule(readFileSync(resolve(__dirname, 'LessonViewers.tsx'), 'utf8'), {

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { notificationHref } from '@/src/lib/notification-href';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
+import StudentPicker, { type PickedStudent } from '@/components/notifications/StudentPicker';
 import { toast } from 'sonner';
 import api, { type NotificationFilters, type NotificationOptions, type PlatformNotification } from '@/src/lib/api';
 
@@ -26,6 +27,7 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
   const [message, setMessage] = useState('');
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [audience, setAudience] = useState('course');
+  const [pickedStudents, setPickedStudents] = useState<PickedStudent[]>([]);
   const [draft, setDraft] = useState<NotificationFilters>({});
   const [filters, setFilters] = useState<NotificationFilters>({});
   const [options, setOptions] = useState<NotificationOptions>({ courses: [], departments: [] });
@@ -41,6 +43,15 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
     ['note', 'الملاحظات', 'Notes'], ['library', 'المكتبة', 'Library'], ['timetable', 'الجداول', 'Timetables'],
     ['community', 'المجتمع', 'Community'], ['discussion', 'المناقشات', 'Discussions'], ['support-issue', 'الدعم', 'Support'], ['feedback', 'رسائل أولياء الأمور', 'Guardian messages'], ['general', 'عام', 'General'],
   ];
+
+  // ?students=id1,id2 opens the compose form with those students chosen (admins only).
+  useEffect(() => {
+    if (!sendForm || instructor || typeof window === 'undefined') return;
+    const ids = (new URLSearchParams(window.location.search).get('students') ?? '').split(',').map(id => id.trim()).filter(Boolean);
+    if (!ids.length) return;
+    setAudience('students');
+    setPickedStudents([...new Set(ids)].map(id => ({ id, name: '' })));
+  }, [sendForm, instructor]);
 
   useEffect(() => {
     if (sendForm) return;
@@ -77,11 +88,15 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
         toast.error(ar ? 'اختر مادة واحدة أو أكثر من الشجرة الأكاديمية.' : 'Choose one or more courses from the academic tree.');
         return;
       }
+      if (!instructor && audience === 'students' && !pickedStudents.length) {
+        toast.error(ar ? 'اختار طالب واحد على الأقل.' : 'Choose at least one student.');
+        return;
+      }
       setSending(true);
       try {
-        const result = await api.notifications.send({ title, message, course_ids: instructor || audience === 'course' ? selectedCourses.map(Number) : undefined });
+        const result = await api.notifications.send({ title, message, course_ids: instructor || audience === 'course' ? selectedCourses.map(Number) : undefined, ...(!instructor && audience === 'students' ? { user_ids: pickedStudents.map(s => s.id) } : {}) });
         if (!result.sent) {
-          toast.warning(ar ? 'لا يوجد طلاب مفعّل لهم المحتوى المحدد. لم يتم إرسال إشعارات.' : 'No students have access to the selected content. No notifications were sent.');
+          toast.warning(!instructor && audience === 'students' ? (ar ? 'لم يتم إرسال إشعارات. تأكد إن الطلاب المختارين حساباتهم نشطة.' : 'No notifications were sent. Make sure the chosen students have active accounts.') : (ar ? 'لا يوجد طلاب مفعّل لهم المحتوى المحدد. لم يتم إرسال إشعارات.' : 'No students have access to the selected content. No notifications were sent.'));
           return;
         }
         toast.success(ar ? `تم إرسال ${result.sent} إشعار` : `Sent ${result.sent} notifications`);
@@ -93,13 +108,14 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
       <legend className="mb-3 font-semibold">{ar ? 'المستلمون' : 'Recipients'}</legend>
       {!instructor && <div className="flex flex-wrap gap-4">
         <label className="flex items-center gap-2"><input type="radio" name="audience" value="course" checked={audience === 'course'} onChange={() => setAudience('course')} />{ar ? 'طلاب مواد محددة' : 'Students in selected courses'}</label>
+        <label className="flex items-center gap-2"><input type="radio" name="audience" value="students" checked={audience === 'students'} onChange={() => setAudience('students')} />{ar ? 'طلاب محددين' : 'Specific students'}</label>
         <label className="flex items-center gap-2"><input type="radio" name="audience" value="all" checked={audience === 'all'} onChange={() => setAudience('all')} />{ar ? 'كل الطلاب' : 'All students'}</label>
       </div>}
-      {(instructor || audience === 'course') ? <CourseTreeSelect searchCoursesDirectly searchPlaceholder={ar ? 'ابحث باسم المادة أو الفرقة أو انتظام / انتساب' : 'Search by course, year or study track'} multiple value={selectedCourses} onMultiChange={setSelectedCourses} label={ar ? 'المواد' : 'Courses'} required /> : <p className="text-sm text-gray-600">{ar ? 'سيصل هذا الإشعار إلى كل حسابات الطلاب النشطة.' : 'This notification will reach all active student accounts.'}</p>}
+      {!instructor && audience === 'students' ? <StudentPicker value={pickedStudents} onChange={setPickedStudents} disabled={sending} /> : (instructor || audience === 'course') ? <CourseTreeSelect searchCoursesDirectly searchPlaceholder={ar ? 'ابحث باسم المادة أو الفرقة أو انتظام / انتساب' : 'Search by course, year or study track'} multiple value={selectedCourses} onMultiChange={setSelectedCourses} label={ar ? 'المواد' : 'Courses'} required /> : <p className="text-sm text-gray-600">{ar ? 'سيصل هذا الإشعار إلى كل حسابات الطلاب النشطة.' : 'This notification will reach all active student accounts.'}</p>}
       </fieldset>
       <label className="block">{ar ? 'العنوان' : 'Title'}<input required maxLength={255} value={title} onChange={e => setTitle(e.target.value)} className="mt-2 w-full rounded-xl border p-3" /></label>
       <label className="block">{ar ? 'الرسالة' : 'Message'}<textarea required maxLength={2000} value={message} onChange={e => setMessage(e.target.value)} className="mt-2 w-full rounded-xl border p-3" /></label>
-      <button disabled={sending || ((instructor || audience === 'course') && !selectedCourses.length)} className="rounded-xl bg-primary px-5 py-3 text-white disabled:opacity-50">{sending ? (ar ? 'جارٍ الإرسال…' : 'Sending…') : (ar ? 'إرسال' : 'Send')}</button>
+      <button disabled={sending || ((instructor || audience === 'course') && !selectedCourses.length) || (!instructor && audience === 'students' && !pickedStudents.length)} className="rounded-xl bg-primary px-5 py-3 text-white disabled:opacity-50">{sending ? (ar ? 'جارٍ الإرسال…' : 'Sending…') : (ar ? 'إرسال' : 'Send')}</button>
     </form>}
     {!sendForm && <>
       <form className="space-y-4 rounded-2xl border bg-white p-5" onSubmit={e => { e.preventDefault(); setPage(1); setLoading(true); setFilters({ ...draft }); }}>

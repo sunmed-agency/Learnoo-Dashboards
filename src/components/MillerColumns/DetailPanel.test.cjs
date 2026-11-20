@@ -8,7 +8,9 @@ new Function('require', 'module', 'exports', ts.transpileModule(readFileSync(`${
 }).outputText)(name => name === 'next-intl' ? { useTranslations: () => key => key, useLocale: () => 'ar' }
   : name === '@/src/lib/preactivation-phones' ? { readPreactivationPhones: async file => (await file.text()).split('\n') }
   : name === './ChapterPreview' ? { ChapterPreview: () => null }
-  : name === './StudentSelector' ? { StudentSelector: () => null } : require(name), component, component.exports);
+  : name === './StudentSelector' ? { StudentSelector: () => null }
+  : name === '@/src/hooks/useAuth' ? { useCurrentUser: () => ({ user: null }) }
+  : name === '@/src/lib/permissions' ? { can: () => true } : require(name), component, component.exports);
 
 test('course count opens its subscriber list and a hidden count has no action', () => {
   const node = { type: 'course', name: 'Course', data: { id: '12', attributes: {} }, stats: { students: 31 } };

@@ -31,6 +31,7 @@ function setup(path = '/notifications', locale = 'ar', sent = 1) {
     'next/link': () => null,
     '@/src/lib/notification-href': href.exports,
     '@/src/components/admin/CourseTreeSelect': { CourseTreeSelect },
+    '@/components/notifications/StudentPicker': { __esModule: true, default: () => null },
     '@/src/lib/api': { notifications: {
       options: async () => ({ courses, departments: [{ id: 10, name: 'الأولى' }, { id: 20, name: 'الثانية' }] }),
       list: async (page, filters) => {
@@ -60,7 +61,7 @@ for (const path of ['/notifications/add', '/doctor/notifications/add']) for (con
     assert.equal(elements(s.render()).find(node => node.type === 'input' && node.props.type === 'search'), undefined);
     assert.equal(find(s, CourseTreeSelect).props.required, true);
     assert.equal(find(s, CourseTreeSelect).props.multiple, true);
-    assert.equal(elements(s.render()).filter(node => node.props.name === 'audience').length, path.startsWith('/doctor/') ? 0 : 2);
+    assert.equal(elements(s.render()).filter(node => node.props.name === 'audience').length, path.startsWith('/doctor/') ? 0 : 3);
     elements(s.render()).find(node => node.type === 'input' && !node.props.type).props.onChange({ target: { value: 'Notice' } });
     find(s, 'textarea').props.onChange({ target: { value: 'Message' } });
     await find(s, 'form').props.onSubmit({ preventDefault() {} });

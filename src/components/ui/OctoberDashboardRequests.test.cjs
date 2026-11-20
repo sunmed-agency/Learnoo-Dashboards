@@ -25,7 +25,7 @@ function load(path, mocks = {}, source = readFileSync(resolve(root, path), 'utf8
   const compiled = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
-  new Function('require', 'module', 'exports', compiled)(id => mocks[id] || (id === 'next-intl' ? i18n : require(id)), module, module.exports);
+  new Function('require', 'module', 'exports', compiled)(id => mocks[id] || (id === 'next-intl' ? i18n : id === '@/src/hooks/useAuth' ? { useCurrentUser: () => ({ user: null }) } : id === '@/src/lib/permissions' ? { can: () => true } : require(id)), module, module.exports);
   return module.exports;
 }
 function elements(node) {

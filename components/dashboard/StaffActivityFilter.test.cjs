@@ -51,7 +51,7 @@ function select(tree) { return nodes(tree).find(node => node.type === 'select');
 
 for (const locale of ['ar', 'en']) test(`${locale} role filter resets the page and combines with date filters`, async () => {
   const s = setup(locale); s.render(); let tree = await s.settle();
-  assert.deepEqual(nodes(select(tree)).filter(node => node.type === 'option').map(node => node.props.children), locale === 'ar' ? ['كل العمليات', 'المدرسون', 'الأدمن'] : ['All activity', 'Instructors', 'Admins']);
+  assert.deepEqual(nodes(select(tree)).filter(node => node.type === 'option').map(node => node.props.children), locale === 'ar' ? ['كل العمليات', 'المدرسون', 'الأدمن', 'المشرفين'] : ['All activity', 'Instructors', 'Admins', 'Supervisors']);
   button(tree, locale === 'ar' ? 'التالي' : 'Next').props.onClick(); s.render(); tree = await s.settle();
   assert.equal(s.requests.at(-1).page, 2);
   select(tree).props.onChange({ target: { value: 'Instructor' } }); s.render(); tree = await s.settle();

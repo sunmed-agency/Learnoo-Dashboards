@@ -1,97 +1,161 @@
 "use client";
 
-import React from 'react';
+import React, { Suspense, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  ArrowLeft,
-  Edit2,
-  Mail,
-  Phone,
-  Calendar,
-  GraduationCap,
-  BookOpen,
-  ClipboardList,
-  Layout,
-  User,
-  ExternalLink,
-  ChevronRight,
-  MapPin,
-  Clock,
-  Smartphone,
-  Globe,
-  MoreVertical,
-  Building2,
-  Loader2
-} from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useStudent } from '@/src/hooks/useStudents';
-import { StudentStatusLabels } from '@/src/types';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import { BookOpen, Building2, ClipboardList, Eye, LayoutGrid, Loader2, Smartphone } from 'lucide-react';
+import { api } from '@/src/lib/api';
+import { can } from '@/src/lib/permissions';
+import { useCurrentUser } from '@/src/hooks/useAuth';
+import type { StudentAttributes } from '@/src/types';
+import StudentHeader from '@/components/students/profile/StudentHeader';
+import StudentTabs, { type ProfileTab } from '@/components/students/profile/StudentTabs';
+import OverviewTab from '@/components/students/profile/OverviewTab';
+import ViewsTab from '@/components/students/profile/ViewsTab';
+import DevicesTab from '@/components/students/profile/DevicesTab';
+import { CentersTab, CoursesTab, ExamsTab } from '@/components/students/profile/StudentSections';
+import { type ProfileStudent, useTr } from '@/components/students/profile/shared';
 
-// Helper to get initials from name
-function getInitials(firstName: string | null | undefined, lastName: string | null | undefined) {
-  const first = (firstName || '')[0] || '';
-  const last = (lastName || '')[0] || '';
-  return (first + last).toUpperCase();
+type TabKey = 'overview' | 'courses' | 'views' | 'exams' | 'devices' | 'academic';
+
+// ---- Flatten the JSON:API student into what the tabs show ----
+type Loose = Record<string, unknown>;
+const obj = (v: unknown): Loose => (v && typeof v === 'object' ? (v as Loose) : {});
+const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() !== '' ? v : typeof v === 'number' ? String(v) : null);
+const num = (v: unknown): number => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
+/** JSON:API items come as `{ attributes }` or plain objects. */
+const attrs = (v: unknown): Loose => { const o = obj(v); return o.attributes ? obj(o.attributes) : o; };
+
+function toProfileStudent(id: string, a: StudentAttributes): ProfileStudent {
+  const name = a.full_name || `${a.first_name || ''} ${a.last_name || ''}`.trim() || '—';
+  return {
+    id,
+    name,
+    code: str(a.student_code),
+    email: str(a.email),
+    phone: str(a.phone),
+    image: str(a.image),
+    active: (a.status ?? 1) === 1,
+    joined: str(a.joined) ?? str(a.created_at),
+    university: str(a.university?.data?.attributes?.name),
+    faculty: str(a.faculty?.data?.attributes?.name),
+    centers: (a.centers || []).map((c) => str(attrs(c).name)).filter((n): n is string => n !== null),
+    courses: (a.enrolled_courses || []).map((c: unknown) => {
+      const course = attrs(c);
+      const stats = obj(course.stats);
+      return {
+        title: str(course.title) ?? '—',
+        subtitle: str(course.sub_title) ?? '',
+        thumbnail: str(course.thumbnail),
+        lectures: num(stats.lectures),
+        chapters: num(stats.chapters),
+        exams: num(stats.exams),
+      };
+    }),
+    exams: (a.exam_results || []).map((e: unknown) => {
+      const exam = attrs(e);
+      const quiz = attrs(obj(exam.quiz).data);
+      return {
+        name: str(quiz.title) ?? '—',
+        score: num(exam.score),
+        total: num(exam.total_score),
+        percentage: num(exam.percentage),
+        date: str(exam.finished_at) ?? str(exam.created_at),
+      };
+    }),
+    activity: {
+      notesCreated: num(a.activity_stats?.notes_created),
+      downloads: num(a.activity_stats?.downloads),
+      liveAttendance: num(a.activity_stats?.live_attendance),
+      communityPosts: num(a.activity_stats?.community_posts),
+    },
+    device: { name: str(a.device_access?.device), lastIp: str(a.device_access?.last_ip) },
+  };
 }
 
-export default function StudentProfilePage() {
+function StudentProfile() {
   const t = useTranslations();
+  const { tr } = useTr();
   const params = useParams();
   const studentId = params.id as string;
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const { user, role } = useCurrentUser();
 
+  const canViews = can(user, 'views.manage|students.view');
+  const canManageViews = can(user, 'views.manage');
+  const canDevices = can(user, 'devices.manage');
+  const canNotify = can(user, 'notifications.send');
+  const canEdit = can(user, 'students.manage');
+  const isAdmin = role === 'Admin' || role === 'Super Admin';
 
-  // Fetch student data
-  const { data: studentResponse, isLoading, error } = useStudent(studentId);
+  const studentQuery = useQuery({
+    queryKey: ['student-profile', studentId],
+    queryFn: () => api.students.get(studentId),
+    enabled: Boolean(studentId),
+  });
+  const viewsQuery = useQuery({
+    queryKey: ['student-profile', studentId, 'views'],
+    queryFn: () => api.studentInsights.views(studentId),
+    enabled: Boolean(studentId) && canViews,
+    retry: false,
+  });
+  const devicesQuery = useQuery({
+    queryKey: ['student-profile', studentId, 'devices'],
+    queryFn: () => api.studentInsights.devices(studentId),
+    enabled: Boolean(studentId),
+    retry: false,
+  });
 
-  // New API response structure: { data: { id, type, attributes } }
-  const studentData = studentResponse?.data?.attributes;
+  const raw = studentQuery.data?.data;
+  const student = useMemo(() => (raw?.attributes ? toProfileStudent(String(raw.id ?? studentId), raw.attributes as StudentAttributes) : null), [raw, studentId]);
+  const views = viewsQuery.data?.data;
+  const devices = devicesQuery.data?.data;
 
-  const student = studentData ? {
-    id: studentResponse.data.id,
-    name: studentData.full_name || `${studentData.first_name || ''} ${studentData.last_name || ''}`.trim() || 'Unknown',
-    firstName: studentData.first_name,
-    lastName: studentData.last_name,
-    status: studentData.status ?? 1,
-    email: studentData.email,
-    phone: studentData.phone?.toString() || 'N/A',
-    university: studentData.university?.data?.attributes?.name || 'N/A',
-    faculty: studentData.faculty?.data?.attributes?.name || 'N/A',
-    year: 'N/A', // Not available in API
-    joined: studentData.joined || (studentData.created_at ? new Date(studentData.created_at).toLocaleDateString() : 'N/A'),
-    lastActive: 'Recently', // Not available in API
-    avatar: getInitials(studentData.first_name, studentData.last_name),
-    centers: studentData.centers || [],
-    enrolledCourses: studentData.enrolled_courses || [],
-    exams: studentData.exam_results || [],
-    activity: {
-      notesCreated: studentData.activity_stats?.notes_created || 0,
-      downloads: studentData.activity_stats?.downloads || 0,
-      liveAttendance: studentData.activity_stats?.live_attendance || 0,
-      communityPosts: studentData.activity_stats?.community_posts || 0
-    },
-    device: {
-      name: studentData.device_access?.device || 'Unknown Device',
-      lastIp: studentData.device_access?.last_ip || 'N/A'
-    }
-  } : null;
+  const refetchViews = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ['student-profile', studentId, 'views'] });
+  }, [queryClient, studentId]);
+  /** Device decisions change the student and the devices data: refetch every query of this profile. */
+  const refetchDevices = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ['student-profile', studentId] });
+  }, [queryClient, studentId]);
 
-  if (isLoading) {
+  const tabs: ProfileTab<TabKey>[] = [
+    { key: 'overview', label: tr('نظرة عامة', 'Overview'), icon: LayoutGrid },
+    { key: 'courses', label: tr('المواد والتفعيل', 'Subjects & activation'), icon: BookOpen },
+    ...(canViews ? [{ key: 'views' as const, label: tr('المشاهدات', 'Views'), icon: Eye }] : []),
+    { key: 'exams', label: tr('الاختبارات', 'Exams'), icon: ClipboardList },
+    { key: 'devices', label: tr('الأجهزة', 'Devices'), icon: Smartphone, badge: devices?.pending_device ? 1 : undefined },
+    { key: 'academic', label: tr('الكلية والسنتر', 'Faculty & center'), icon: Building2 },
+  ];
+  const requested = searchParams.get('tab');
+  const active: TabKey = tabs.find((tab) => tab.key === requested)?.key ?? 'overview';
+
+  const selectTab = (key: TabKey) => {
+    const next = new URLSearchParams(searchParams.toString());
+    if (key === 'overview') next.delete('tab'); else next.set('tab', key);
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
+
+  if (studentQuery.isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#2137D6] animate-spin" />
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#2137D6]" />
       </div>
     );
   }
 
-  if (error || !student) {
+  if (studentQuery.isError || !student) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
         <p className="text-red-500">{t('students.form.view.loadError')}</p>
-        <Link
-          href="/students"
-          className="px-4 py-2 bg-[#2137D6] text-white rounded-lg text-sm font-medium"
-        >
+        <Link href="/students" className="rounded-xl bg-[#2137D6] px-4 py-2 text-sm font-medium text-white">
           {t('students.form.view.backToStudents')}
         </Link>
       </div>
@@ -99,332 +163,54 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-[1400px] mx-auto pb-12">
-      {/* Top Navigation & Profile Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/students"
-            className="p-2 bg-white border border-[#E2E8F0] rounded-xl text-[#64748B] hover:text-[#1E293B] hover:shadow-sm transition-all"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-[#1E293B]">{student.name}</h1>
-            <div className="flex items-center gap-3 text-[12px] text-[#64748B] mt-0.5">
-              <span className="font-medium">{t('students.form.view.studentId')}: <span className="font-bold text-[#1E293B] uppercase">{student.id}</span></span>
-              <span className="w-1 h-1 bg-[#CBD5E1] rounded-full"></span>
-              <span>{t('students.form.view.lastActive')} <span className="font-bold text-[#1E293B]">{student.lastActive}</span></span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 pb-12">
+      <Toaster position="top-center" />
+      <StudentHeader
+        student={student}
+        canEdit={canEdit}
+        canNotify={canNotify}
+        canResetDevice={isAdmin && canDevices}
+        onDeviceChanged={refetchDevices}
+      />
 
-          <Link
-            href={`/students/${student.id}/edit`}
-            className="flex-1 md:flex-none px-5 py-2.5 bg-[#2137D6] hover:bg-[#1a2bb3] text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-200"
-          >
-            <Edit2 className="w-4 h-4" />
-            Edit Student
-          </Link>
-        </div>
+      <StudentTabs tabs={tabs} active={active} onChange={selectTab} />
+
+      <div role="tabpanel">
+        {active === 'overview' && (
+          <OverviewTab student={student} views={views} devices={devices} onShowViews={canViews ? () => selectTab('views') : undefined} />
+        )}
+        {active === 'courses' && <CoursesTab student={student} />}
+        {active === 'views' && (
+          <ViewsTab
+            studentId={student.id}
+            views={views}
+            isLoading={viewsQuery.isLoading}
+            isError={viewsQuery.isError}
+            canManage={canManageViews}
+            onChanged={refetchViews}
+          />
+        )}
+        {active === 'exams' && <ExamsTab student={student} />}
+        {active === 'devices' && (
+          <DevicesTab
+            studentId={student.id}
+            devices={devices}
+            isLoading={devicesQuery.isLoading}
+            isError={devicesQuery.isError}
+            canManage={canDevices}
+            onChanged={refetchDevices}
+          />
+        )}
+        {active === 'academic' && <CentersTab student={student} />}
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Details & Stats */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-
-          {/* Section 1: Personal Info */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <div className="p-1.5 bg-indigo-50 rounded-lg">
-                <User className="w-4 h-4 text-[#4F46E5]" />
-              </div>
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.personal')}</h2>
-            </div>
-            <div className="p-8 flex flex-col gap-8">
-              {/* Profile Image */}
-              <div className="flex items-center gap-4">
-                {studentData?.image ? (
-                  <img
-                    src={studentData.image}
-                    alt={student.name}
-                    className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 shadow-sm"
-                  />
-                ) : (
-                  <div className="w-20 h-20 bg-[#EEF2FF] rounded-full flex items-center justify-center border-2 border-indigo-100 shadow-sm">
-                    <span className="text-2xl font-bold text-[#4F46E5]">{student.avatar}</span>
-                  </div>
-                )}
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold text-[#1E293B]">{student.name}</span>
-                  <span className="text-sm text-[#64748B]">{student.email}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-12">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-[1px]">{t('students.form.view.fields.fullName')}</span>
-                <span className="text-[15px] font-bold text-[#1E293B]">{student.name}</span>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-[1px]">{t('students.form.view.fields.status')}</span>
-                <span className={`inline-flex w-fit px-3 py-1 text-[10px] font-bold rounded-lg border uppercase ${
-                    student.status === 1
-                      ? 'bg-[#EBFDF5] text-[#10B981] border-emerald-100'
-                      : student.status === 0
-                        ? 'bg-red-50 text-red-600 border-red-100'
-                        : 'bg-orange-50 text-orange-600 border-orange-100'
-                  }`}>
-                  {StudentStatusLabels[student.status]}
-                </span>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-[#F4F5FD] rounded-xl flex items-center justify-center border border-indigo-50 text-[#4F46E5]">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-[#94A3B8] uppercase">{t('students.form.view.fields.email')}</span>
-                  <span className="text-[14px] font-semibold text-[#475569]">{student.email}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-[#F4F5FD] rounded-xl flex items-center justify-center border border-indigo-50 text-[#4F46E5]">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-[#94A3B8] uppercase">{t('students.form.view.fields.phone')}</span>
-                  <span className="text-[14px] font-semibold text-[#475569]">{student.phone}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-[#F4F5FD] rounded-xl flex items-center justify-center border border-indigo-50 text-[#4F46E5]">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-[#94A3B8] uppercase">{t('students.form.view.fields.joined')}</span>
-                  <span className="text-[14px] font-semibold text-[#475569]">{student.joined}</span>
-                </div>
-              </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 2: Academic Info */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <div className="p-1.5 bg-indigo-50 rounded-lg">
-                <GraduationCap className="w-4 h-4 text-[#4F46E5]" />
-              </div>
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.academic')}</h2>
-            </div>
-            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-[1px]">{t('students.form.view.fields.university')}</span>
-                <span className="text-[15px] font-bold text-[#1E293B]">{student.university}</span>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-[1px]">{t('students.form.view.fields.faculty')}</span>
-                <span className="text-[15px] font-bold text-[#1E293B]">{student.faculty}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 3: Enrolled Courses */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <div className="p-1.5 bg-indigo-50 rounded-lg">
-                <BookOpen className="w-4 h-4 text-[#4F46E5]" />
-              </div>
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.enrolledCourses')}</h2>
-            </div>
-            <div className="p-6 flex flex-col gap-5">
-              {student.enrolledCourses.length > 0 ? (
-                student.enrolledCourses.map((course: any, idx: number) => {
-                  const courseAttrs = course.attributes || course;
-                  const courseTitle = courseAttrs.title || 'Untitled Course';
-                  const courseSubtitle = courseAttrs.sub_title || '';
-                  const thumbnail = courseAttrs.thumbnail;
-                  const stats = courseAttrs.stats || {};
-
-                  return (
-                    <div key={idx} className="p-5 bg-white border border-[#F1F5F9] rounded-2xl flex flex-col gap-4 group hover:shadow-sm transition-all">
-                      <div className="flex items-start gap-4">
-                        {thumbnail && (
-                          <img
-                            src={thumbnail}
-                            alt={courseTitle}
-                            className="w-16 h-16 rounded-xl object-cover border border-[#F1F5F9]"
-                          />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-bold text-[#1E293B] truncate">{courseTitle}</h3>
-                          {courseSubtitle && (
-                            <p className="text-[12px] text-[#64748B] mt-1 truncate">{courseSubtitle}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 text-[11px] text-[#64748B]">
-                        <span><strong className="text-[#1E293B]">{stats.lectures || 0}</strong> {t('students.form.view.fields.lectures')}</span>
-                        <span className="w-1 h-1 bg-[#CBD5E1] rounded-full"></span>
-                        <span><strong className="text-[#1E293B]">{stats.chapters || 0}</strong> {t('students.form.view.fields.chapters')}</span>
-                        <span className="w-1 h-1 bg-[#CBD5E1] rounded-full"></span>
-                        <span><strong className="text-[#1E293B]">{stats.exams || 0}</strong> {t('students.form.view.fields.exams')}</span>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-center py-8 text-[#94A3B8]">
-                  {t('students.form.view.noCourses')}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Section 4: Exam Results */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <div className="p-1.5 bg-indigo-50 rounded-lg">
-                <ClipboardList className="w-4 h-4 text-[#4F46E5]" />
-              </div>
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.examResults')}</h2>
-            </div>
-            <div className="overflow-x-auto p-4">
-              {student.exams.length > 0 ? (
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#F8FAFC] border-b border-[#F1F5F9]">
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">{t('students.form.view.fields.exam')}</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">{t('students.form.view.fields.score')}</th>
-                      <th className="px-6 py-4 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">{t('students.form.view.fields.date')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {student.exams.map((exam: any, idx: number) => {
-                      const examAttrs = exam.attributes || exam;
-                      const quizAttrs = examAttrs.quiz?.data?.attributes;
-                      const examName = quizAttrs?.title || 'Unknown Exam';
-                      const score = examAttrs.score ?? 0;
-                      const totalScore = examAttrs.total_score ?? 0;
-                      const percentage = examAttrs.percentage ?? 0;
-                      const date = examAttrs.finished_at || examAttrs.created_at;
-
-                      return (
-                        <tr key={idx} className="hover:bg-[#F8FAFC]/50 transition-colors">
-                          <td className="px-6 py-5 text-sm font-bold text-[#1E293B]">{examName}</td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-[#1E293B]">{score}/{totalScore}</span>
-                              <span className="text-[11px] text-[#64748B]">({percentage}%)</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5 text-sm text-[#64748B] font-medium">
-                            {date ? new Date(date).toLocaleDateString() : 'N/A'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-center py-8 text-[#94A3B8]">
-                  {t('students.form.view.noExams')}
-                </div>
-              )}
-            </div>
-          </section>
-
-
-        </div>
-
-        {/* Right Column: Cards */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
-
-          {/* Card 1: Centers */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <div className="p-1.5 bg-indigo-50 rounded-lg">
-                <Building2 className="w-4 h-4 text-[#4F46E5]" />
-              </div>
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.centers')}</h2>
-            </div>
-            <div className="p-6 flex flex-col gap-3">
-              {student.centers.length > 0 ? (
-                student.centers.map((center: any) => (
-                  <div key={center.id} className="p-4 bg-[#F8FAFC] border border-[#F1F5F9] rounded-2xl flex items-center gap-3">
-                    <div className="w-2 h-2 bg-[#4F46E5] rounded-full"></div>
-                    <span className="text-[13.5px] font-bold text-[#475569]">{center.attributes?.name || center.name || 'Unknown Center'}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="p-4 bg-[#F8FAFC] border border-[#F1F5F9] rounded-2xl text-[#94A3B8] text-sm">
-                  {t('students.form.view.noCenters')}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Card 2: Activity Summary */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <Layout className="w-4 h-4 text-[#4F46E5]" />
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.activity')}</h2>
-            </div>
-            <div className="p-6 flex flex-col gap-5">
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]/50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-500"><BookOpen className="w-4 h-4" /></div>
-                  <span className="text-[14px] font-medium text-[#64748B]">{t('students.form.view.fields.notesCreated')}</span>
-                </div>
-                <span className="text-base font-bold text-[#1E293B]">{student.activity.notesCreated}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]/50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-500"><Globe className="w-4 h-4" /></div>
-                  <span className="text-[14px] font-medium text-[#64748B]">{t('students.form.view.fields.downloads')}</span>
-                </div>
-                <span className="text-base font-bold text-[#1E293B]">{student.activity.downloads}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]/50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-500"><Clock className="w-4 h-4" /></div>
-                  <span className="text-[14px] font-medium text-[#64748B]">{t('students.form.view.fields.liveAttendance')}</span>
-                </div>
-                <span className="text-base font-bold text-[#1E293B]">{student.activity.liveAttendance}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9]/50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-500"><Smartphone className="w-4 h-4" /></div>
-                  <span className="text-[14px] font-medium text-[#64748B]">{t('students.form.view.fields.communityPosts')}</span>
-                </div>
-                <span className="text-base font-bold text-[#1E293B]">{student.activity.communityPosts}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Card 3: Device & Access */}
-          <section className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-center gap-2">
-              <Smartphone className="w-4 h-4 text-[#4F46E5]" />
-              <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{t('students.form.view.sections.device')}</h2>
-            </div>
-            <div className="p-6 flex flex-col gap-6">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-[1px]">{t('students.form.view.fields.device')}</span>
-                <span className="text-[14px] font-bold text-[#1E293B]">{student.device.name}</span>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-[1px]">{t('students.form.view.fields.lastIp')}</span>
-                <span className="text-[14px] font-bold text-[#1E293B]">{student.device.lastIp}</span>
-              </div>
-            </div>
-          </section>
-
-        </div>
-      </div>
-
-
     </div>
+  );
+}
+
+export default function StudentProfilePage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[400px] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#2137D6]" /></div>}>
+      <StudentProfile />
+    </Suspense>
   );
 }

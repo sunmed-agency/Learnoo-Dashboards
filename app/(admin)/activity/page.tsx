@@ -81,7 +81,7 @@ export default function OwnerActivityPage() {
           <option value="">{ar ? 'كل العمليات' : 'All activity'}</option>
           <option value="Instructor">{ar ? 'المدرسون' : 'Instructors'}</option>
           <option value="Admin">{ar ? 'الأدمن' : 'Admins'}</option>
-          <option value="Supervisor">{ar ? 'مشرف' : 'Supervisors'}</option>
+          <option value="Supervisor">{ar ? 'المشرفين' : 'Supervisors'}</option>
         </select>
       </label>
       <label className="max-w-full text-sm">{ar ? 'نوع العملية' : 'Activity type'}

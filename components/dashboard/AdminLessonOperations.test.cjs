@@ -88,6 +88,8 @@ function lesson(locale = 'en', fail = false, deferred = false) {
       }
       return cache.get(key);
     } },
+    '@/src/hooks/useAuth': { useCurrentUser: () => ({ user: null, role: 'Super Admin' }) }, '@/src/lib/permissions': { can: () => true }, 'use-debounce': { useDebounce: value => [value] }, sonner: { toast: { success() {}, error() {} } },
+    '@/src/hooks/useAuth': { useCurrentUser: () => ({ user: null, role: 'Super Admin' }) }, '@/src/lib/permissions': { can: () => true }, 'use-debounce': { useDebounce: value => [value] }, sonner: { toast: { success() {}, error() {} } },
     'next-intl': { useLocale: () => locale }, '@/src/lib/api': { chapters: { viewers: (id, page) => {
       requests.push({ id, page }); const data = { data: [{ id: 1, user: { first_name: 'Student', last_name: 'One', student_code: 'STU-01' }, count: 2, remaining_views: 3 }], max_views: 5, last_page: 2 };
       if (deferred) return new Promise((resolve, reject) => pending.push({ resolve, reject, data }));
@@ -125,6 +127,7 @@ for (const type of ['course', 'chapter']) test(`AcademicTree ${type} accepts an 
   const Detail = load('src/components/MillerColumns/DetailPanel.tsx', {
     'next-intl': { useLocale: () => 'en', useTranslations: () => key => key },
     '@/src/lib/preactivation-phones': phones, './ChapterPreview': { ChapterPreview: () => null }, './StudentSelector': { StudentSelector: () => null },
+    '@/src/hooks/useAuth': { useCurrentUser: () => ({ user: null }) }, '@/src/lib/permissions': { can: () => true },
   }).DetailPanel;
   const render = () => Detail({ node: { type, name: 'Selected', data: { id: '12', attributes: {} } }, isAdmin: true, isOwner: false, isInstructor: false, canUseActivations: true,
     activationTab: 'preactivation', preactivationNumbers: numbers, setPreactivationNumbers: value => { numbers = value; },

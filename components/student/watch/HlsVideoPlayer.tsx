@@ -191,17 +191,16 @@ function parseHlsQualityLevelsFromManifest(
 }
 
 /**
- * Product requirement: 1080p / 720p / 480p must always be offered in the
- * quality menu, even when the source only has a single real rendition (the
- * current disk-constrained 480p-only recovery mode). Picking an unavailable
+ * Product requirement: the gear menu always offers every common quality from
+ * 1080p (1920×1080) down to 144p, whether or not the video has a rendition at
+ * that height (and even when it has a single one). Picking an unavailable
  * quality silently plays the closest real rendition at or below it.
  */
-const ALWAYS_OFFERED_QUALITY_HEIGHTS = [1080, 720, 480] as const;
+const ALWAYS_OFFERED_QUALITY_HEIGHTS = [1080, 720, 480, 360, 240, 144] as const;
 
 function buildMergedQualityOptions(
   realLevels: Array<{ height?: number; bitrate?: number; index?: number }> = []
 ): QualityOption[] {
-  if (realLevels.length === 0) return [];
 
   const byHeight = new Map<number, { index: number; bitrate?: number }>();
   const unknownLevels: Array<{ index: number; bitrate?: number }> = [];

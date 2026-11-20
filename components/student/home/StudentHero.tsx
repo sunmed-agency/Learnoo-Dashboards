@@ -25,9 +25,9 @@ export default function StudentHero({ student, coursesCount, notesCount, liveSes
   const university = student?.university?.data?.attributes?.name || tC("notFound");
 
   const stats: { icon: typeof BookOpen; value: number; label: string; tone: string; href?: string }[] = [
-    { icon: BookOpen, value: coursesCount, label: t("activeCourses"), tone: "bg-white/15 text-white" },
-    { icon: Video, value: liveSessionsCount, label: t("liveToday"), tone: "bg-[#E8766A] text-white" },
-    { icon: FileText, value: notesCount, label: t("notes"), tone: "bg-[#14B8A6] text-white" },
+    { icon: BookOpen, value: coursesCount, label: t("activeCourses"), tone: "bg-white/15 text-white", href: `/${locale}/student/courses` },
+    { icon: Video, value: liveSessionsCount, label: t("liveToday"), tone: "bg-[#E8766A] text-white", href: `/${locale}/student/live-sessions` },
+    { icon: FileText, value: notesCount, label: t("notes"), tone: "bg-[#14B8A6] text-white", href: `/${locale}/student/notes` },
     { icon: ClipboardList, value: examsCount, label: t("exams"), tone: "bg-[#F5A524] text-white", href: `/${locale}/student/exams` },
   ];
 

@@ -179,11 +179,15 @@ export default function NewestExams({
                       </span>
                     </div>
 
-                    {endStr ? (
-                      <p className="text-xs text-[var(--text-placeholder)]">
-                        {t("courseFallback")}: {endStr}
-                      </p>
-                    ) : null}
+                    {/* What the exam belongs to (a lesson, else the subject), then when it closes.
+                        The end date used to show under the label «المادة». */}
+                    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-placeholder)]">
+                      <span>
+                        {exam.chapter_id != null && String(exam.chapter_id) !== "" ? t("onLesson") : t("onSubject")}
+                        {exam.course_title ? ` · ${exam.course_title}` : ""}
+                      </span>
+                      {endStr ? <span>{t("endsAt", { date: endStr })}</span> : null}
+                    </p>
 
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <ExamActionButton

@@ -767,7 +767,10 @@
         "upcomingBadge": "Upcoming",
         "durationMinutes": "{count} min",
         "questionsLabel": "{count} questions",
-        "courseFallback": "Course"
+        "courseFallback": "Course",
+        "onLesson": "Lesson exam",
+        "onSubject": "Subject exam",
+        "endsAt": "Ends {date}"
       },
       "posts": {
         "title": "Latest Community Posts",

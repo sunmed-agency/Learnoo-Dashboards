@@ -14,6 +14,10 @@ export interface LatestExamSummary {
   passing_marks: number | null;
   course_id: number | string | null;
   courses_ids?: (number | string)[];
+  /** Set when the exam belongs to a lesson (chapter); otherwise it belongs to the subject. */
+  chapter_id?: number | string | null;
+  /** The subject name of the exam. */
+  course_title?: string | null;
   created_at: string | null;
   /** Status derived from start_time/end_time comparison vs current time. */
   status: "available" | "upcoming" | "expired";
@@ -136,6 +140,8 @@ function summarize(quiz: Quiz, nowMs: number): LatestExamSummary | null {
     passing_marks: typeof attrs.passing_marks === "number" ? attrs.passing_marks : null,
     course_id: pickFirstCourseId(quiz),
     courses_ids: pickAllCourseIds(quiz),
+    chapter_id: attrs.chapter_id ?? null,
+    course_title: typeof attrs.course_title === "string" ? attrs.course_title.trim() || null : null,
     created_at: attrs.created_at ?? null,
     status,
   };

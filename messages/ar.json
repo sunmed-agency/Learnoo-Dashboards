@@ -782,12 +782,12 @@
         "seeAll": "جميع المواد"
       },
       "upcomingLive": {
-        "title": "الحصص المباشرة القادمة",
+        "title": "المحاضرات المباشرة القادمة",
         "viewAll": "عرض الكل",
         "setReminder": "تفعيل التذكير",
-        "emptyTitle": "لا توجد حصص مباشرة الآن",
-        "emptyDescription": "لا توجد حصص مباشرة قادمة حالياً، تحقق مرة أخرى لاحقاً.",
-        "fallbackTitle": "حصة مباشرة",
+        "emptyTitle": "لا توجد محاضرات مباشرة الآن",
+        "emptyDescription": "لا توجد محاضرات مباشرة قادمة حالياً، تحقق مرة أخرى لاحقاً.",
+        "fallbackTitle": "محاضرة مباشرة",
         "unknownInstructor": "مدرس غير معروف",
         "unknownCourse": "المادة غير متاحة",
         "unknownTime": "الوقت غير متاح"
@@ -811,7 +811,10 @@
         "upcomingBadge": "قريباً",
         "durationMinutes": "{count} دقيقة",
         "questionsLabel": "{count} سؤال",
-        "courseFallback": "المادة"
+        "courseFallback": "المادة",
+        "onLesson": "امتحان على درس",
+        "onSubject": "امتحان على المادة",
+        "endsAt": "ينتهي {date}"
       },
       "posts": {
         "title": "أحدث منشورات المجتمع",
@@ -3560,7 +3563,7 @@
     "title": "إحصائيات الأسبوع",
     "subtitle": "التفاعل ونشاط الدراسة لهذا الأسبوع.",
     "timeThisWeek": "الوقت هذا الأسبوع",
-    "sessionsThisWeek": "الحصص هذا الأسبوع",
+    "sessionsThisWeek": "المحاضرات هذا الأسبوع",
     "questionsAsked": "الأسئلة المطروحة",
     "avgPerDay": "متوسط في اليوم",
     "dailyTimeSpent": "الوقت اليومي",

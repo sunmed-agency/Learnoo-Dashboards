@@ -490,6 +490,45 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
      * native video player, which shows the video without the watermark.
      */
     const [inPageFullscreen, setInPageFullscreen] = useState(false);
+
+    /**
+     * In-page fullscreen (iPhone): the shell is `position: fixed` over the page, but an ancestor with its
+     * own stacking context (the student layout wraps the page in `relative z-[1]`) traps it under the
+     * page's fixed bars (the student bottom menu showed on top of the video). While it is on, every
+     * ancestor's z-index / isolation / transform is neutralised (and restored on exit), the page stops
+     * scrolling, and the shell takes the highest z-index, so the video covers the whole phone screen.
+     */
+    useEffect(() => {
+      if (!inPageFullscreen) return;
+      const shell = videoWrapperRef.current;
+      if (!shell || typeof document === 'undefined') return;
+      const touched: Array<{ el: HTMLElement; zIndex: string; isolation: string; transform: string; contain: string }> = [];
+      for (let el = shell.parentElement; el && el !== document.body; el = el.parentElement) {
+        touched.push({ el, zIndex: el.style.zIndex, isolation: el.style.isolation, transform: el.style.transform, contain: el.style.contain });
+        el.style.zIndex = 'auto';
+        el.style.isolation = 'auto';
+        el.style.transform = 'none';
+        el.style.contain = 'none';
+      }
+      const html = document.documentElement;
+      const prevHtmlOverflow = html.style.overflow;
+      const prevBodyOverflow = document.body.style.overflow;
+      html.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      html.classList.add('lr-player-fullscreen');
+      return () => {
+        touched.forEach(({ el, zIndex, isolation, transform, contain }) => {
+          el.style.zIndex = zIndex;
+          el.style.isolation = isolation;
+          el.style.transform = transform;
+          el.style.contain = contain;
+        });
+        html.style.overflow = prevHtmlOverflow;
+        document.body.style.overflow = prevBodyOverflow;
+        html.classList.remove('lr-player-fullscreen');
+      };
+    }, [inPageFullscreen]);
+
     /**
      * Tracks whether native HLS is being used (iOS). When true, we must NOT
      * set `crossOrigin="anonymous"` on the `<video>` element because it
@@ -1398,7 +1437,7 @@ export const HlsVideoPlayer = forwardRef<HTMLVideoElement, HlsVideoPlayerProps>(
     const wrapperClass = showCustomControls
       ? [
         inPageFullscreen
-          ? 'fixed inset-0 z-[9000] flex h-[100dvh] w-screen max-w-none min-h-0 min-w-0 overflow-hidden bg-black'
+          ? 'fixed inset-0 z-[2147483000] flex h-[100dvh] w-[100dvw] max-w-none min-h-0 min-w-0 overflow-hidden bg-black'
           : 'relative flex min-h-0 min-w-0 w-full overflow-hidden bg-black',
         hasWatchPanel ? 'flex-col md:flex-row items-stretch gap-0' : 'flex-col',
         '[&:fullscreen]:flex [&:fullscreen]:h-full [&:fullscreen]:max-h-none [&:fullscreen]:w-full',

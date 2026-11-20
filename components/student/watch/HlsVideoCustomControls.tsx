@@ -627,7 +627,7 @@ const speedMenuLabel =
           <button
             type="button"
             aria-label={t('videoControlsBack')}
-            className="fixed inset-0 z-20 cursor-default bg-black/30 sm:hidden"
+            className="fixed inset-0 z-[2147483500] cursor-default bg-black/30 sm:hidden"
             onClick={() => {
               setSettingsOpen(false);
               setSubMenu(null);
@@ -636,7 +636,7 @@ const speedMenuLabel =
           <div
             ref={settingsWrapRef}
             className={`
-              fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[9999]
+              fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[2147483600]
               pointer-events-auto max-h-[calc(100dvh-1.5rem)] overflow-y-auto
               rounded-2xl bg-black/85 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur-md
               transition duration-150 sm:inset-x-auto

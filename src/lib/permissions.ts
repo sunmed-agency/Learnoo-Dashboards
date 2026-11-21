@@ -7,7 +7,7 @@
 export type PermissionKey =
   | 'dashboard.view'
   | 'structure.view' | 'structure.manage' | 'views.manage' | 'exams.manage' | 'live.manage' | 'notes.manage' | 'library.manage' | 'schedules.manage'
-  | 'students.view' | 'students.manage' | 'devices.manage' | 'activation.codes' | 'activation.sheet'
+  | 'students.view' | 'students.manage' | 'devices.manage' | 'activation.codes' | 'activation.sheet' | 'preactivations.manage' | 'subscriptions.manage'
   | 'community.manage' | 'discussions.manage'
   | 'notifications.send' | 'support.manage' | 'downloads.view';
 
@@ -44,8 +44,9 @@ export const PAGE_PERMISSIONS: [prefix: string, permission: string][] = [
   ['/students', 'students.view'],
   ['/guardians', 'students.view'],
   ['/activity', 'devices.manage'],
-  ['/activation', 'activation.codes'],
-  ['/pre-activations', 'activation.sheet'],
+  ['/activation', 'activation.codes|activation.sheet'],
+  ['/pre-activations', 'preactivations.manage'],
+  ['/subscription-requests', 'subscriptions.manage'],
   ['/community', 'community.manage'],
   ['/discussions', 'discussions.manage'],
   ['/notifications', 'notifications.send'],
@@ -56,7 +57,7 @@ export const PAGE_PERMISSIONS: [prefix: string, permission: string][] = [
 ];
 
 /** Pages a supervisor can never open (owner / full-admin tools). */
-const NEVER_FOR_SUPERVISORS = ['/settings', '/feature-control', '/ota-upload', '/subscription-requests', '/supervisors', '/instructors'];
+const NEVER_FOR_SUPERVISORS = ['/settings', '/feature-control', '/ota-upload', '/supervisors', '/instructors'];
 
 export function canOpenPage(user: UserLike, pathname: string): boolean {
   if (!isSupervisor(user)) return true;

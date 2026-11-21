@@ -277,7 +277,7 @@
 //             <div>
 //               <div className="flex items-center gap-2">
 //                 <h3 className={`font-bold text-[#1E293B] ${isRoot ? 'text-base' : 'text-sm'}`}>
-//                   {discussion.attributes?.user?.data?.attributes?.full_name || t('badges.student')}
+//                   <StudentAuthor author={discussion.attributes?.user?.data?.attributes} fallback={t('badges.student')} />
 //                 </h3>
 //                 {getDiscussionTypeBadge(discussion.attributes?.type)}
 //                 <span className="rounded bg-[#E0E7FF] px-1.5 py-0.5 text-[9px] font-bold uppercase text-[#2137D6]">
@@ -469,6 +469,7 @@
 // };
 'use client';
 
+import StudentAuthor from '@/components/staff/StudentAuthor';
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -736,7 +737,7 @@ const DiscussionNode = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className={`font-bold text-[#1E293B] ${isRoot ? 'text-base' : 'text-sm'}`}>
-                  {discussion.attributes?.user?.data?.attributes?.full_name || t('badges.student')}
+                  <StudentAuthor author={discussion.attributes?.user?.data?.attributes} fallback={t('badges.student')} />
                 </h3>
                 {getDiscussionTypeBadge(discussion.attributes?.type)}
                 <span className="rounded bg-[#E0E7FF] px-1.5 py-0.5 text-[9px] font-bold uppercase text-[#2137D6]">

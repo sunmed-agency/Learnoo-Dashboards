@@ -6,6 +6,7 @@ import { useDebounce } from 'use-debounce';
 import toast, { Toaster } from 'react-hot-toast';
 import { Building2, ExternalLink, Inbox, Mail, MessageCircle, Phone, Search, Trash2, Users } from 'lucide-react';
 import { useCurrentUser } from '@/src/hooks/useAuth';
+import { can, isSupervisor } from '@/src/lib/permissions';
 import { useDeleteSubscriptionRequest, useSubscriptionRequests, useUpdateSubscriptionRequest } from '@/src/hooks';
 import {
   SUBSCRIPTION_REQUEST_STATUSES,
@@ -153,17 +154,17 @@ function RequestCard({ request }: { request: SubscriptionRequest }) {
 
 export default function SubscriptionRequestsPage() {
   const t = useTranslations('subscriptionRequests');
-  const { role } = useCurrentUser();
+  const { role, user } = useCurrentUser();
   const [status, setStatus] = useState<SubscriptionRequestStatus | undefined>('new');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [debouncedSearch] = useDebounce(search.trim(), 400);
   const { data, isLoading, isError, error, refetch } = useSubscriptionRequests({ status, search: debouncedSearch, page });
 
-  const forbidden = role !== undefined && role !== null && role !== 'Super Admin'
+  const forbidden = role !== undefined && role !== null && role !== 'Super Admin' && !(isSupervisor(user) && can(user, 'subscriptions.manage'))
     || (isError && /403|forbidden|unauthori[sz]ed/i.test(String((error as Error)?.message ?? '')));
   const tabs: (SubscriptionRequestStatus | undefined)[] = [undefined, ...SUBSCRIPTION_REQUEST_STATUSES];
-  const total = data ? Object.values(data.counts).reduce((a, b) => a + b, 0) : 0;
+  const total = data?.counts ? Object.values(data.counts).reduce((a, b) => a + b, 0) : 0;
 
   return (
     <div className="flex flex-col">
@@ -186,7 +187,7 @@ export default function SubscriptionRequestsPage() {
             <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
               {tabs.map((s) => {
                 const active = s === status;
-                const count = s ? data?.counts[s] : total;
+                const count = s ? data?.counts?.[s] : total;
                 return (
                   <button
                     key={s ?? 'all'}

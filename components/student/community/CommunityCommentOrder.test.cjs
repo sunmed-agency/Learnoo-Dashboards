@@ -14,7 +14,7 @@ const compile = source => ts.transpileModule(source, {
 function load(path, mocks = {}) {
   const loaded = { exports: {} };
   new Function('require', 'module', 'exports', compile(readFileSync(resolve(root, path), 'utf8')))(
-    name => mocks[name] || require(name), loaded, loaded.exports);
+    name => mocks[name] || (name === '@/components/staff/StudentAuthor' ? { __esModule: true, default: ({ author, fallback }) => author?.full_name || fallback } : require(name)), loaded, loaded.exports);
   return loaded.exports;
 }
 const order = load('src/lib/community-comment-order.ts');

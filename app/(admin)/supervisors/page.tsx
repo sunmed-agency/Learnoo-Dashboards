@@ -136,14 +136,14 @@ export default function SupervisorsPage() {
     <div className="flex flex-col pb-10">
       <Toaster position="top-right" />
 
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 sm:flex-1">
           <h1 className="text-[22px] font-bold text-[#111827]">{ar ? 'المشرفين' : 'Supervisors'}</h1>
           <p className="mt-1 max-w-2xl text-[14px] text-[#6B7280]">
             {ar ? 'حسابات بتشتغل نيابة عنك بصلاحيات إنت بتحددها، وكل حاجة بيعملوها بتتسجل عشان تعرف مين عمل إيه.' : 'Accounts that work on your behalf with permissions you choose; everything they do is logged so you know who did what.'}
           </p>
         </div>
-        <button type="button" onClick={() => openEditor('new')} className="inline-flex items-center gap-2 rounded-xl bg-[#2137D6] px-4 py-2.5 text-[14px] font-semibold text-white shadow-md shadow-[#2137D6]/20 transition hover:bg-[#1C2EB8]">
+        <button type="button" onClick={() => openEditor('new')} className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-[#2137D6] px-4 py-2.5 text-[14px] font-semibold text-white shadow-md shadow-[#2137D6]/20 transition hover:bg-[#1C2EB8]">
           <Plus className="h-4 w-4" />{ar ? 'مشرف جديد' : 'New supervisor'}
         </button>
       </div>

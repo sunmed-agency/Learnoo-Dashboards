@@ -1,4 +1,5 @@
 'use client';
+import StudentAuthor from '@/components/staff/StudentAuthor';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
@@ -1011,7 +1012,7 @@ export default function CommunityModerationPage() {
 
                   <div className="flex flex-col flex-1">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className="text-[15px] font-bold text-[#1E293B]">{userName}</span>
+                      <StudentAuthor author={user} fallback={userName} nameClassName="text-[15px] font-bold text-[#1E293B]" />
                       <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${userRole.toLowerCase() === 'admin' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
                         userRole.toLowerCase() === 'doctor' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
                           'bg-slate-100 text-slate-700 border border-slate-200'

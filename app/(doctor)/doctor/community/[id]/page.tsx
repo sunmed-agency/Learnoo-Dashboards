@@ -1,4 +1,5 @@
 'use client';
+import StudentAuthor from '@/components/staff/StudentAuthor';
 
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -229,7 +230,7 @@ export default function PostDetailsPage() {
 
               <div className="flex flex-col flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <span className="text-[16px] font-bold text-[#1E293B]">{userName}</span>
+                  <StudentAuthor author={user} fallback={userName} nameClassName="text-[16px] font-bold text-[#1E293B]" />
                   <span className="text-[13px] font-semibold text-[#94A3B8]">
                     {getTimeAgo(post.attributes.created_at || '', t)}
                   </span>
@@ -333,7 +334,7 @@ export default function PostDetailsPage() {
                     </div>
                     <div className="flex flex-col flex-1">
                       <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-                        <span className="text-[14px] font-bold text-[#1E293B]">{commentUserName}</span>
+                        <StudentAuthor author={commentUser} fallback={commentUserName} nameClassName="text-[14px] font-bold text-[#1E293B]" />
                         {isInstructor && (
                           <span className="px-2 py-0.5 rounded-md bg-[#DBEAFE] text-[#1D4ED8] text-[10px] font-bold uppercase tracking-wide">
                             {commentUser?.role}

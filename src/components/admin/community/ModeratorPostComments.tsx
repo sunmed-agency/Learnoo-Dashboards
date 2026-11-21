@@ -1,4 +1,5 @@
 'use client';
+import StudentAuthor from '@/components/staff/StudentAuthor';
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -169,9 +170,7 @@ export default function ModeratorPostComments({
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="flex flex-wrap items-center gap-2 mb-1">
-                                                <span className="text-[13px] font-bold text-[#1E293B]">
-                                                    {userName}
-                                                </span>
+                                                <StudentAuthor author={commentUser} fallback={userName} nameClassName="text-[13px] font-bold text-[#1E293B]" />
                                                 {instructor && (
                                                     <span className="px-2 py-0.5 rounded-md bg-[#DBEAFE] text-[#1D4ED8] text-[9px] font-bold uppercase tracking-wide">
                                                         {commentUser?.role}

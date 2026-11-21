@@ -6,12 +6,15 @@ import { useLocale } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCurrentUser } from '@/src/hooks/useAuth';
+import { can, isSupervisor } from '@/src/lib/permissions';
 import { ownerOperationsApi, preActivationApi, type PendingActivationFilters, type PendingActivationPage } from '@/src/lib/api';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 
 export default function PendingActivationsPage() {
   const ar = useLocale() === 'ar';
-  const { role } = useCurrentUser();
+  const { role, user } = useCurrentUser();
+  // The owner, or a supervisor the owner gave this page to.
+  const allowed = role === 'Super Admin' || (isSupervisor(user) && can(user, 'preactivations.manage'));
   const [phone, setPhone] = useState('');
   const [itemType, setItemType] = useState('');
   const [course, setCourse] = useState('');
@@ -21,7 +24,7 @@ export default function PendingActivationsPage() {
   const { data: result, isPending: loading, isError: error, refetch } = useQuery({
     queryKey: ['owner-pending-activations', page, filters],
     queryFn: () => ownerOperationsApi.pendingActivations(page, filters),
-    enabled: role === 'Super Admin',
+    enabled: allowed,
   });
   const types = ar ? { course: 'مادة', chapter: 'درس', category: 'قسم', library: 'مكتبة', quiz: 'امتحان' } : { course: 'Course', chapter: 'Lesson', category: 'Department', library: 'Library', quiz: 'Exam' };
 
@@ -42,7 +45,7 @@ export default function PendingActivationsPage() {
     }
   }
 
-  if (role !== 'Super Admin') return <p>{ar ? 'هذه الصفحة متاحة للأونر فقط.' : 'This page is available to the Owner only.'}</p>;
+  if (!allowed) return <p>{ar ? 'هذه الصفحة متاحة للأونر فقط.' : 'This page is available to the Owner only.'}</p>;
 
   return <main className="space-y-6 p-6">
     <div><h1 className="text-2xl font-bold">{ar ? 'التفعيل المسبق' : 'Pre-activation'}</h1>

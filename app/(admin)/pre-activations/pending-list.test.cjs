@@ -16,6 +16,7 @@ function setup(role, { rows = [{ id: 1, phone: '201010000001', title: 'QA course
     react: { ...React, useState: initial => { const i = cursor++; if (!(i in state)) state[i] = initial; return [state[i], value => { state[i] = typeof value === 'function' ? value(state[i]) : value; }]; } },
     'next-intl': { useLocale: () => 'en' },
     '@/src/hooks/useAuth': { useCurrentUser: () => ({ role }) },
+    '@/src/lib/permissions': { can: () => false, isSupervisor: () => false },
     '@tanstack/react-query': { useQuery: query => { queries.push(query); return { isPending: false, isError: false, refetch() { refetches++; }, data: { total: 31, last_page: 2, data: rows } }; } },
     'lucide-react': { Trash2 },
     sonner: { toast: { success: message => toasts.push(['success', message]), error: message => toasts.push(['error', message]) } },

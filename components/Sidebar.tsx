@@ -171,8 +171,9 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
   // The owner's device requests sit at the top of the platform activity page.
   items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: owner ? '/activity#devices' : '/activity', permission: 'devices.manage' });
   items.push({ name: t('sidebar.activation'), icon: Power, path: '/activation', permission: 'activation.codes|activation.sheet' });
-  if (owner) items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations' });
-  if (owner) items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests' });
+  // Owner tools a supervisor can be given; plain admins don't see them.
+  items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations', ...(owner ? {} : { permission: 'preactivations.manage', supervisorsOnly: true }) });
+  items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests', ...(owner ? {} : { permission: 'subscriptions.manage', supervisorsOnly: true }) });
 
   section('community');
   items.push({ name: t('sidebar.discussions'), icon: MessageCircle, path: '/discussions', permission: 'discussions.manage' });

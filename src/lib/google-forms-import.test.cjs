@@ -79,3 +79,22 @@ test('warnings and skip reasons read in Arabic and English', () => {
   assert.match(gf.skipReasonText('unsupported_scale', true), /غير مدعوم/);
   assert.match(gf.skipReasonText('something-new', false), /Unsupported/);
 });
+
+test('importing the same form again replaces its unsaved questions and sections instead of doubling them', () => {
+  const first = gf.mapGoogleFormToExam(preview, [question({ section: 'Part 2' }), question({ key: 'b', text: 'Q2' })], 10);
+  const manual = { id: 'new-1', text: 'Typed by hand', type: 'single_choice', score: 1, autoCorrect: true, answers: [] };
+  const placeholder = { id: 'new-2', text: '  ', type: 'single_choice', score: 1, autoCorrect: true, answers: [] };
+  const saved = { ...first.questions[1], id: '55' }; // already saved in this exam: never touched
+  const otherForm = gf.mapGoogleFormToExam({ ...preview, form_id: 'FORM_2' }, [question({ key: 'o', text: 'Other form' })], 11).questions[0];
+  const afterFirst = gf.mergeGoogleFormImport([manual, placeholder, saved, otherForm], [], first.questions, first.sections);
+  assert.equal(afterFirst.questions.length, 5);
+  assert.equal(afterFirst.sections.length, 1);
+  assert.deepEqual(afterFirst.removed, [placeholder]);
+
+  const second = gf.mapGoogleFormToExam(preview, [question({ key: 'b', text: 'Q2' })], 12);
+  const afterSecond = gf.mergeGoogleFormImport(afterFirst.questions, afterFirst.sections, second.questions, second.sections);
+  assert.deepEqual(afterSecond.questions.map((q) => q.text), ['Typed by hand', 'Q2', 'Other form', 'Q2']);
+  assert.equal(afterSecond.questions.filter((q) => q.id.startsWith('new-gf-12')).length, 1);
+  assert.equal(afterSecond.sections.length, 0); // the earlier import's section has no questions left
+  assert.equal(afterSecond.removed.length, 2);
+});

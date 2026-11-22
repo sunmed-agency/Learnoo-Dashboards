@@ -141,6 +141,39 @@ export function mapGoogleFormToExam(
   return { questions, sections };
 }
 
+function sourceFormId(question: Pick<ExamFormQuestion, 'source'>): string | null {
+  if (!question.source) return null;
+  try {
+    const source = JSON.parse(question.source) as { form_id?: unknown };
+    return typeof source.form_id === 'string' ? source.form_id : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Adds an import to the exam form. Importing the same Google Form again replaces the questions
+ * (and the sections) the earlier import of that form added and that are not saved yet, instead of
+ * adding them a second time. Questions typed by hand, other forms and saved questions stay;
+ * empty placeholder questions are dropped.
+ */
+export function mergeGoogleFormImport(
+  current: ExamFormQuestion[],
+  currentSections: ExamFormSection[],
+  imported: ExamFormQuestion[],
+  importedSections: ExamFormSection[],
+): { questions: ExamFormQuestion[]; sections: ExamFormSection[]; removed: ExamFormQuestion[] } {
+  const formIds = new Set(imported.map(sourceFormId).filter((id): id is string => id !== null));
+  const isReplaced = (question: ExamFormQuestion) => question.id.startsWith('new-gf-') && formIds.has(sourceFormId(question) ?? '');
+  const kept = current.filter((question) => question.text.trim() !== '' && !isReplaced(question));
+  const removed = current.filter((question) => !kept.includes(question));
+  // Sections an earlier import added and that no kept question uses any more.
+  const usedKeys = new Set(kept.map((question) => question.sectionKey).filter(Boolean));
+  const sections = currentSections.filter((section) => !section.key.startsWith('new-sec-gf-') || usedKeys.has(section.key));
+
+  return { questions: [...kept, ...imported], sections: [...sections, ...importedSections], removed };
+}
+
 /**
  * Opens Google's consent screen in a popup and resolves with the result the API callback posts back.
  * The popup is opened synchronously (inside the click) so browsers don't block it.

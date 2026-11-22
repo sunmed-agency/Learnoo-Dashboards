@@ -31,10 +31,13 @@ import { useCreateChapter, useUpdateChapter, useCopyChapter } from '@/src/hooks/
 import type { Course, Lecture, Chapter } from '@/src/types';
 
 import { toast } from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 
 
 export default function ContentManagerPage() {
+  const uiTx = useTx();
+  const tx = useTx();
 
   const t = useTranslations();
 
@@ -647,7 +650,7 @@ export default function ContentManagerPage() {
 
     setTimeout(() => setCopiedChapterCode(null), 2000);
 
-    toast.success('Code copied to clipboard');
+    toast.success(tx("Code copied to clipboard"));
 
   };
 
@@ -673,7 +676,7 @@ export default function ContentManagerPage() {
 
       });
 
-      toast.success('Chapter activated successfully!');
+      toast.success(tx("Chapter activated successfully!"));
 
       setSelectedChapterCode('');
 
@@ -755,7 +758,7 @@ export default function ContentManagerPage() {
 
     if (!selectedChapter) {
 
-      toast.error('Please select a chapter first');
+      toast.error(tx("Please select a chapter first"));
 
       return;
 
@@ -765,7 +768,7 @@ export default function ContentManagerPage() {
 
     if (!file) {
 
-      toast.error('Please select a file first');
+      toast.error(tx("Please select a file first"));
 
       return;
 
@@ -796,7 +799,7 @@ export default function ContentManagerPage() {
 
     } catch {
 
-      toast.error('Failed to upload pre-activation file');
+      toast.error(tx("Failed to upload pre-activation file"));
 
     }
 
@@ -1714,7 +1717,7 @@ export default function ContentManagerPage() {
 
                         <div className="flex flex-col">
 
-                          <span className="text-[13px] font-medium text-[#1E293B]">{attachment.attributes.name || attachment.attributes.path?.split('/').pop() || 'Untitled'}</span>
+                          <span className="text-[13px] font-medium text-[#1E293B]">{attachment.attributes.name || attachment.attributes.path?.split('/').pop() || uiTx("Untitled")}</span>
 
                           <button
 

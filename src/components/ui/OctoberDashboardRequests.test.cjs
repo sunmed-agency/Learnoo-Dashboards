@@ -7,6 +7,7 @@ const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
 const root = resolve(__dirname, '../../..');
 const translations = require(resolve(root, 'messages/ar.json'));
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 test('Arabic community ages use Arabic plurals without English suffixes', () => {
   const { createTranslator } = require('next-intl');
   const t = createTranslator({ locale: 'ar', messages: translations });
@@ -25,7 +26,7 @@ function load(path, mocks = {}, source = readFileSync(resolve(root, path), 'utf8
   const compiled = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
-  new Function('require', 'module', 'exports', compiled)(id => mocks[id] || (id === 'next-intl' ? i18n : id === '@/src/hooks/useAuth' ? { useCurrentUser: () => ({ user: null }) } : id === '@/src/lib/permissions' ? { can: () => true } : require(id)), module, module.exports);
+  new Function('require', 'module', 'exports', compiled)(id => mocks[id] || (id === 'next-intl' ? i18n : id === '@/src/hooks/useAuth' ? { useCurrentUser: () => ({ user: null }) } : id === '@/src/lib/permissions' ? { can: () => true } : requireWithUiText(id)), module, module.exports);
   return module.exports;
 }
 function elements(node) {
@@ -239,6 +240,7 @@ test('teacher course editor hides management fields and submits only the allowed
     import { useTranslations } from 'next-intl';
     import { X, Upload, ChevronDown, Loader2 } from 'lucide-react';
     const toLocalDateTime = () => '';
+    const useTx = () => (text: string) => text;
     ${file.slice(file.indexOf('function EditModal('), file.indexOf('// Add Modal Component'))}
     export default EditModal;`;
   const { default: Editor } = load('editor.tsx', {

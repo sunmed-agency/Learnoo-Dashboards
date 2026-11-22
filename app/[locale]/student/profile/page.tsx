@@ -2,7 +2,8 @@ import ProfileHeader from "@/components/student/profile/ProfileHeader";
 import ProfileInfoCard from "@/components/student/profile/ProfileInfoCard";
 import ProfileOverview from "@/components/student/profile/ProfileOverview";
 import { getUserProfileData } from "@/src/services/student/user.service";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { translateUiText } from "@/src/lib/ui-text";
 
 type ProfileAttributes = {
   student_code?: string | null;
@@ -74,6 +75,8 @@ const getInitials = (name?: string | null) => {
 
 export default async function StudentProfilePage() {
   const t = await getTranslations("studentProfile");
+  const locale = await getLocale();
+  const tx = (text: string) => translateUiText(text, locale);
 
   const response = await getUserProfileData();
 
@@ -82,15 +85,15 @@ export default async function StudentProfilePage() {
       ? response.data.data.attributes
       : null;
 
-  const fullName = student?.full_name || "Student";
-  const email = student?.email || "Not available";
-  const phone = student?.phone || "Not available";
+  const fullName = student?.full_name || tx("Student");
+  const email = student?.email || tx("Not available");
+  const phone = student?.phone || tx("Not available");
   const image = student?.image || "";
 
   const university =
-    student?.university?.data?.attributes?.name || "Not available";
+    student?.university?.data?.attributes?.name || tx("Not available");
   // The center chosen for the student in the dashboard is in `centers` (it was read only from the
-  // faculty's parent, which is empty for most students, so the profile said "Not available").
+  // faculty's parent, which is empty for most students, so the profile said tx("Not available")).
   const centerRows = Array.isArray(student?.centers)
     ? student.centers
     : (student?.centers as { data?: unknown[] } | undefined)?.data ?? [];
@@ -100,8 +103,8 @@ export default async function StudentProfilePage() {
   const center =
     centerNames.join("، ") ||
     student?.faculty?.data?.attributes?.parent?.data?.attributes?.name ||
-    "Not available";
-  const faculty = student?.faculty?.data?.attributes?.name || "Not available";
+    tx("Not available");
+  const faculty = student?.faculty?.data?.attributes?.name || tx("Not available");
   const department =
     student?.department?.data?.attributes?.name?.trim() || "";
   const initials = getInitials(fullName);
@@ -111,7 +114,7 @@ export default async function StudentProfilePage() {
     return (
       <main className="min-h-screen bg-[#FAFAF8] p-6 ">
         <div className="rounded-2xl border border-red-100 bg-red-50 p-5 text-sm font-medium text-red-600">
-          {response?.message || "Failed to load profile data"}
+          {response?.message || tx("Failed to load profile data")}
         </div>
       </main>
     );
@@ -133,8 +136,8 @@ export default async function StudentProfilePage() {
           faculty={faculty}
           department={department || undefined}
           status={student?.status || "Unknown"}
-          device={`${student?.device_access?.device || "Unknown"} - ${
-            student?.device_access?.last_ip || "Unknown IP"
+          device={`${student?.device_access?.device || tx("Unknown")} - ${
+            student?.device_access?.last_ip || tx("Unknown IP")
           }`}
           studentCode={student?.student_code || undefined}
         />

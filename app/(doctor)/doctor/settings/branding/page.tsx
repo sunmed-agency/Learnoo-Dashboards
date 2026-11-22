@@ -8,8 +8,10 @@ import api from '@/src/lib/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { Upload } from 'lucide-react';
 import { useCurrentUser } from '@/src/hooks/useAuth';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function BrandingSettingsPage() {
+  const tx = useTx();
   const { data: features, isLoading } = usePlatformFeature();
   const updateFeature = useUpdatePlatformFeature();
   // The system font applies to every page and account, so only the owner sees and changes it.
@@ -66,20 +68,20 @@ export default function BrandingSettingsPage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file (PNG, JPG, SVG)');
+      toast.error(tx("Please select an image file (PNG, JPG, SVG)"));
       return;
     }
 
     // Validate file size (2MB)
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image size must be less than 2MB');
+      toast.error(tx("Image size must be less than 2MB"));
       return;
     }
 
     setLogoFile(file);
     const previewUrl = URL.createObjectURL(file);
     setLogoPreview(previewUrl);
-    toast.success('Logo selected. Click Save Changes to upload.');
+    toast.success(tx("Logo selected. Click Save Changes to upload."));
   };
 
   const removeLogo = () => {
@@ -127,7 +129,7 @@ export default function BrandingSettingsPage() {
         }
       }
 
-      toast.success('Branding settings saved successfully!');
+      toast.success(tx("Branding settings saved successfully!"));
       setLogoFile(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to save branding settings');
@@ -155,11 +157,11 @@ export default function BrandingSettingsPage() {
     <div className="flex flex-col h-full">
       <Toaster position="top-right" />
       <SettingsPageHeader 
-        title="Branding" 
-        description="Logos, colors, and visual identity" 
+        title={tx("Branding")} 
+        description={tx("Logos, colors, and visual identity")} 
       />
 
-      <SettingsSection title="Logo">
+      <SettingsSection title={tx("Logo")}>
         <div className="flex items-center gap-6">
           <div 
             className="w-[100px] h-[100px] rounded-[16px] flex items-center justify-center border border-[#EEEEEE] shadow-sm shrink-0 overflow-hidden"
@@ -196,7 +198,7 @@ export default function BrandingSettingsPage() {
                   onClick={removeLogo}
                   className="px-4 py-2.5 text-[13px] font-semibold text-[#EF4444] hover:bg-[#FEE2E2] rounded-xl transition-colors"
                 >
-                  Remove
+                  {tx("Remove")}
                 </button>
               )}
             </div>
@@ -208,7 +210,7 @@ export default function BrandingSettingsPage() {
         </div>
       </SettingsSection>
 
-      <SettingsSection title="Colors & Typography">
+      <SettingsSection title={tx("Colors & Typography")}>
         {isLoading ? (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <div className="animate-pulse">
@@ -227,7 +229,7 @@ export default function BrandingSettingsPage() {
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <div className="grid grid-cols-1 gap-1.5 relative">
-              <label className="text-[13px] font-medium text-[#4B5563]">Primary Color</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Primary Color")}</label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <div 
@@ -239,7 +241,7 @@ export default function BrandingSettingsPage() {
                       value={formData.primaryColor}
                       onChange={(e) => handleColorChange('primaryColor', e.target.value)}
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                      title="Click to pick color"
+                      title={tx("Click to pick color")}
                     />
                   </div>
                   <input 
@@ -253,7 +255,7 @@ export default function BrandingSettingsPage() {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-1.5 relative">
-              <label className="text-[13px] font-medium text-[#4B5563]">Accent Color</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Accent Color")}</label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <div 
@@ -265,7 +267,7 @@ export default function BrandingSettingsPage() {
                       value={formData.accentColor}
                       onChange={(e) => handleColorChange('accentColor', e.target.value)}
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                      title="Click to pick color"
+                      title={tx("Click to pick color")}
                     />
                   </div>
                   <input 
@@ -279,7 +281,7 @@ export default function BrandingSettingsPage() {
               </div>
             </div>
             <div className={`grid grid-cols-1 gap-1.5 relative ${isOwner ? '' : 'hidden'}`}>
-               <label className="text-[13px] font-medium text-[#4B5563]">Font Family</label>
+               <label className="text-[13px] font-medium text-[#4B5563]">{tx("Font Family")}</label>
                 <select
                   name="fontFamily"
                   value={formData.fontFamily}
@@ -316,7 +318,7 @@ export default function BrandingSettingsPage() {
 
             {/* Font Family Preview: one font for Arabic and English */}
             <div className={`xl:col-span-3 ${isOwner ? '' : 'hidden'}`}>
-              <label className="text-[13px] font-medium text-[#4B5563] block mb-2">Font Preview</label>
+              <label className="text-[13px] font-medium text-[#4B5563] block mb-2">{tx("Font Preview")}</label>
               <link
                 rel="stylesheet"
                 href={`https://fonts.googleapis.com/css2?family=${formData.fontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`}
@@ -339,11 +341,11 @@ export default function BrandingSettingsPage() {
                   Pack my box with five dozen liquor jugs.
                 </p>
                 <div className="flex gap-4 mt-2 pt-3 border-t border-[#F3F4F6]">
-                  <span className="text-[12px] text-[#9CA3AF]">Light</span>
-                  <span className="text-[12px] text-[#4B5563] font-normal">Normal</span>
-                  <span className="text-[12px] text-[#111827] font-medium">Medium</span>
-                  <span className="text-[12px]" style={{ color: formData.primaryColor, fontWeight: 600 }}>Semibold</span>
-                  <span className="text-[12px] text-[#111827] font-bold">Bold</span>
+                  <span className="text-[12px] text-[#9CA3AF]">{tx("Light")}</span>
+                  <span className="text-[12px] text-[#4B5563] font-normal">{tx("Normal")}</span>
+                  <span className="text-[12px] text-[#111827] font-medium">{tx("Medium")}</span>
+                  <span className="text-[12px]" style={{ color: formData.primaryColor, fontWeight: 600 }}>{tx("Semibold")}</span>
+                  <span className="text-[12px] text-[#111827] font-bold">{tx("Bold")}</span>
                 </div>
               </div>
             </div>
@@ -357,7 +359,7 @@ export default function BrandingSettingsPage() {
           disabled={isLoading || updateFeature.isPending}
           className="px-5 py-2.5 text-[14px] font-semibold text-[#4B5563] bg-white border border-[#EEEEEE] hover:bg-[#F9FAFB] rounded-xl transition-colors hover:border-[#D1D5DB] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Cancel
+          {tx("Cancel")}
         </button>
         <button 
           onClick={handleSave}

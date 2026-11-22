@@ -8,6 +8,8 @@ import {
   isStudentAcademicProfileComplete,
 } from "@/src/lib/student-profile-completeness";
 import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { translateUiText } from "@/src/lib/ui-text";
 
 type ProfileAttributes = {
   first_name?: string | null;
@@ -40,7 +42,7 @@ export default async function StudentCompleteProfilePage({ params }: PageProps) 
   if (!response?.success) {
     return (
       <div className="w-full max-w-lg rounded-2xl border border-red-100 bg-red-50 p-5 text-sm font-medium text-red-600">
-        {response?.message || "Failed to load profile"}
+        {response?.message || translateUiText("Failed to load profile", await getLocale())}
       </div>
     );
   }

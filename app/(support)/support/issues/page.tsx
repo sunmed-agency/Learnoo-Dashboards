@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import api from '@/src/lib/api';
 import { createPortal } from 'react-dom';
 import { useRef } from 'react';
+import { useTx } from '@/src/lib/ui-text';
 
 interface Issue {
   id: string | number;
@@ -38,6 +39,7 @@ interface Issue {
 }
 
 export default function IssuesPage() {
+  const tx = useTx();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const searchParams = useSearchParams();
@@ -66,7 +68,7 @@ export default function IssuesPage() {
       setIssues(response.data);
     } catch (error) {
       console.error('Failed to fetch issues:', error);
-      toast.error('Failed to load issues');
+      toast.error(tx("Failed to load issues"));
     } finally {
       setIsLoading(false);
     }
@@ -81,10 +83,10 @@ export default function IssuesPage() {
     setDeletingId(id);
     try {
       await api.issues.delete(`${id}`);
-      toast.success('Issue deleted successfully');
+      toast.success(tx("Issue deleted successfully"));
       setIssues(prev => prev.filter(i => i.id !== id));
     } catch {
-      toast.error('Failed to delete issue');
+      toast.error(tx("Failed to delete issue"));
     } finally {
       setDeletingId(null);
     }
@@ -109,10 +111,10 @@ export default function IssuesPage() {
 
     try {
       await api.issues.update(id, { status: newStatus });
-      toast.success('Status updated successfully');
+      toast.success(tx("Status updated successfully"));
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error('Failed to update status');
+      toast.error(tx("Failed to update status"));
       // Rollback
       setIssues(prev => prev.map(issue =>
         issue.id === id ? { ...issue, status: originalStatus || null } : issue
@@ -231,15 +233,15 @@ export default function IssuesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1E293B]">Support Issues</h1>
-          <p className="text-[#64748B] text-sm mt-1">Manage and track all reported issues from users.</p>
+          <h1 className="text-2xl font-bold text-[#1E293B]">{tx("Support Issues")}</h1>
+          <p className="text-[#64748B] text-sm mt-1">{tx("Manage and track all reported issues from users.")}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={fetchIssues}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#1E293B] hover:bg-[#F8FAFC] transition-colors"
           >
-            Refresh
+            {tx("Refresh")}
           </button>
         </div>
       </div>
@@ -268,11 +270,11 @@ export default function IssuesPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-[#E5E7EB] bg-[#F8FAFC]">
-                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Issue Details</th>
-                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Category & Type</th>
-                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider text-right">Actions</th>
+                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">{tx("Issue Details")}</th>
+                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">{tx("Category & Type")}</th>
+                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">{tx("Priority")}</th>
+                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">{tx("Status")}</th>
+                <th className="px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider text-right">{tx("Actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E5E7EB]">
@@ -291,8 +293,8 @@ export default function IssuesPage() {
                   <td colSpan={5} className="px-6 py-12 text-center text-[#64748B]">
                     <div className="flex flex-col items-center gap-2">
                       <LifeBuoy className="w-12 h-12 text-[#E5E7EB]" />
-                      <p className="text-lg font-medium">No issues found</p>
-                      <p className="text-sm">Great job! All issues in this category have been cleared.</p>
+                      <p className="text-lg font-medium">{tx("No issues found")}</p>
+                      <p className="text-sm">{tx("Great job! All issues in this category have been cleared.")}</p>
                     </div>
                   </td>
                 </tr>
@@ -325,14 +327,14 @@ export default function IssuesPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           className="p-2 text-[#64748B] hover:text-[#4F46E5] hover:bg-[#4F46E5]/10 rounded-lg transition-all"
-                          title="View Details"
+                          title={tx("View Details")}
                           onClick={() => handleView(issue)}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           className={`p-2 text-[#EF4444] hover:bg-red-50 rounded-lg transition-all ${deletingId === issue.id ? 'opacity-50 pointer-events-none' : ''}`}
-                          title="Delete Issue"
+                          title={tx("Delete Issue")}
                           onClick={() => handleDelete(issue.id)}
                           disabled={deletingId === issue.id}
                         >
@@ -362,11 +364,11 @@ export default function IssuesPage() {
             <button
               className="absolute top-3 right-3 text-[#64748B] hover:text-[#1E293B]"
               onClick={() => setShowModal(false)}
-              aria-label="Close"
+              aria-label={tx("Close")}
             >
               ×
             </button>
-            <h2 className="text-xl font-bold mb-4 text-[#1E293B]">Issue Details</h2>
+            <h2 className="text-xl font-bold mb-4 text-[#1E293B]">{tx("Issue Details")}</h2>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {selectedIssue?.user && (
                 <>
@@ -405,19 +407,19 @@ export default function IssuesPage() {
                 </div>
               </div>
               <div>
-                <span className="font-semibold text-[#475569]">Steps Before Problem: </span>
+                <span className="font-semibold text-[#475569]">{tx("Steps Before Problem:")} </span>
                 <span className="text-[#1E293B]">{selectedIssue?.steps_before_problem_appears}</span>
               </div>
               <div>
-                <span className="font-semibold text-[#475569]">Expected Result: </span>
+                <span className="font-semibold text-[#475569]">{tx("Expected Result:")} </span>
                 <span className="text-[#1E293B]">{selectedIssue?.expected_result}</span>
               </div>
               <div>
-                <span className="font-semibold text-[#475569]">Actual Result: </span>
+                <span className="font-semibold text-[#475569]">{tx("Actual Result:")} </span>
                 <span className="text-[#1E293B]">{selectedIssue?.actual_result}</span>
               </div>
               <div>
-                <span className="font-semibold text-[#475569]">Created At: </span>
+                <span className="font-semibold text-[#475569]">{tx("Created At:")} </span>
                 <span className="text-[#1E293B]">{selectedIssue && new Date(selectedIssue.created_at).toLocaleString()}</span>
               </div>
               {selectedIssue?.attachment && (
@@ -465,7 +467,7 @@ export default function IssuesPage() {
                               rel="noopener noreferrer"
                               className="text-blue-600 hover:text-blue-700 underline"
                             >
-                              Download Attachment
+                              {tx("Download Attachment")}
                             </a>
                           </div>
                         );

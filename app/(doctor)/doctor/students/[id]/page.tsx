@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useStudent } from '@/src/hooks/useStudents';
 import { StudentStatusLabels } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 // Helper to get initials from name
 function getInitials(firstName: string | null | undefined, lastName: string | null | undefined) {
@@ -35,6 +36,7 @@ function getInitials(firstName: string | null | undefined, lastName: string | nu
 }
 
 export default function StudentProfilePage() {
+  const tx = useTx();
   const t = useTranslations();
   const params = useParams();
   const studentId = params.id as string;
@@ -70,7 +72,7 @@ export default function StudentProfilePage() {
       communityPosts: studentData.activity_stats?.community_posts || 0
     },
     device: {
-      name: studentData.device_access?.device || 'Unknown Device',
+      name: studentData.device_access?.device || tx("Unknown Device"),
       lastIp: studentData.device_access?.last_ip || 'N/A'
     }
   } : null;
@@ -231,7 +233,7 @@ export default function StudentProfilePage() {
               {student.enrolledCourses.length > 0 ? (
                 student.enrolledCourses.map((course: any, idx: number) => {
                   const courseAttrs = course.attributes || course;
-                  const courseTitle = courseAttrs.title || 'Untitled Course';
+                  const courseTitle = courseAttrs.title || tx("Untitled Course");
                   const courseSubtitle = courseAttrs.sub_title || '';
                   const thumbnail = courseAttrs.thumbnail;
                   const stats = courseAttrs.stats || {};
@@ -293,7 +295,7 @@ export default function StudentProfilePage() {
                     {student.exams.map((exam: any, idx: number) => {
                       const examAttrs = exam.attributes || exam;
                       const quizAttrs = examAttrs.quiz?.data?.attributes;
-                      const examName = quizAttrs?.title || 'Unknown Exam';
+                      const examName = quizAttrs?.title || tx("Unknown Exam");
                       const score = examAttrs.score ?? 0;
                       const totalScore = examAttrs.total_score ?? 0;
                       const percentage = examAttrs.percentage ?? 0;
@@ -343,7 +345,7 @@ export default function StudentProfilePage() {
                 student.centers.map((center: any) => (
                   <div key={center.id} className="p-4 bg-[#F8FAFC] border border-[#F1F5F9] rounded-2xl flex items-center gap-3">
                     <div className="w-2 h-2 bg-[#4F46E5] rounded-full"></div>
-                    <span className="text-[13.5px] font-bold text-[#475569]">{center.attributes?.name || center.name || 'Unknown Center'}</span>
+                    <span className="text-[13.5px] font-bold text-[#475569]">{center.attributes?.name || center.name || tx("Unknown Center")}</span>
                   </div>
                 ))
               ) : (

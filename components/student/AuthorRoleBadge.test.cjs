@@ -6,6 +6,7 @@ const { resolve } = require('node:path');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 const root = resolve(__dirname, '../..');
 const roleKeys = { Student: 'student', Instructor: 'instructor', Admin: 'admin', 'Super Admin': 'owner' };
 const compile = source => ts.transpileModule(source, {
@@ -14,7 +15,7 @@ const compile = source => ts.transpileModule(source, {
 function load(path, mocks = {}) {
   const loaded = { exports: {} };
   new Function('require', 'module', 'exports', compile(readFileSync(resolve(root, path), 'utf8')))(
-    name => mocks[name] || require(name), loaded, loaded.exports);
+    name => mocks[name] || requireWithUiText(name), loaded, loaded.exports);
   return loaded.exports;
 }
 function translations(locale) {
@@ -41,7 +42,7 @@ function loadDiscussionNode(AuthorRoleBadge) {
     && ['DiscussionNode', 'formatDiscussionTime', 'formatMomentSeconds'].includes(node.name?.text)).map(node => node.getText(ast));
   const loaded = { exports: {} };
   const bindings = { ...require('lucide-react'), ...load('components/student/watch/watchChapterDiscussionUtils.ts'),
-    useState: () => [true, () => {}], AuthorRoleBadge, API_BASE_URL: 'https://api.example.test' };
+    useState: () => [true, () => {}], useTx: () => (text) => text, AuthorRoleBadge, API_BASE_URL: 'https://api.example.test' };
   new Function('require', 'module', 'exports', ...Object.keys(bindings), compile(`${functions.join('\n')}\nmodule.exports = DiscussionNode;`))(
     require, loaded, loaded.exports, ...Object.values(bindings));
   return loaded.exports;

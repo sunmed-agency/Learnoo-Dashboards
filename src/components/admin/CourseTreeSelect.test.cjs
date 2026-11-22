@@ -5,6 +5,7 @@ const { readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const React = require('react');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 
 const courses = [
   { id: '10', attributes: { title: 'إدارة الإنتاج الثانية انتظام', category_id: 4 } },
@@ -65,7 +66,7 @@ function selector(options = {}) {
       const hook = id.split('/').at(-1);
       return { [hook]: () => ({ data: data[hook], isLoading: false }) };
     }
-    return require(id);
+    return requireWithUiText(id);
   }, loaded, loaded.exports, { addEventListener() {}, removeEventListener() {} });
   const render = () => {
     for (let pass = 0; pass < 10; pass++) {
@@ -169,7 +170,7 @@ for (const folder of ['(admin)', '(doctor)/doctor']) {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
     }).outputText;
     vm.runInNewContext(compile(`${modal}\nmodule.exports = CopyMoveModal;`), {
-      module: loaded, exports: loaded.exports, require, useLocale: () => 'ar', useMemo: fn => fn(), CourseTreeSelect: marker,
+      module: loaded, exports: loaded.exports, require, useLocale: () => 'ar', useTx: () => (text) => text, useMemo: fn => fn(), CourseTreeSelect: marker,
       X: () => null, Loader2: () => null,
     });
     const node = { data: { id: '99', attributes: { title: 'Source lesson', lecture_id: 20 } } };

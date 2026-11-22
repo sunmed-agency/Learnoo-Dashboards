@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { X, AlertTriangle } from 'lucide-react';
+import { useTx } from '@/src/lib/ui-text';
 
 interface DeletePostModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface DeletePostModalProps {
 }
 
 export default function DeletePostModal({ isOpen, onClose, onConfirm }: DeletePostModalProps) {
+  const tx = useTx();
   if (!isOpen) return null;
 
   return (
@@ -24,7 +26,7 @@ export default function DeletePostModal({ isOpen, onClose, onConfirm }: DeletePo
       <div className="relative bg-white rounded-[24px] w-[520px] max-w-[95vw] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#F1F5F9]">
-          <h2 className="text-xl font-bold text-[#1E293B]">Delete Post</h2>
+          <h2 className="text-xl font-bold text-[#1E293B]">{tx("Delete Post")}</h2>
           <button 
             onClick={onClose}
             className="text-[#94A3B8] hover:text-[#475569] transition-colors p-1 rounded-lg hover:bg-[#F8FAFC]"
@@ -40,7 +42,7 @@ export default function DeletePostModal({ isOpen, onClose, onConfirm }: DeletePo
               <AlertTriangle className="w-6 h-6 text-[#EF4444]" />
             </div>
             <p className="text-[15px] leading-relaxed text-[#475569] mt-1.5">
-              Are you sure you want to permanently delete this post and all its comments?
+              {tx("Are you sure you want to permanently delete this post and all its comments?")}
             </p>
           </div>
         </div>
@@ -51,13 +53,13 @@ export default function DeletePostModal({ isOpen, onClose, onConfirm }: DeletePo
             onClick={onClose}
             className="px-6 py-2.5 bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#475569] rounded-xl text-sm font-bold transition-all shadow-sm"
           >
-            Cancel
+            {tx("Cancel")}
           </button>
           <button 
             onClick={onConfirm}
             className="px-6 py-2.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white rounded-xl text-sm font-bold transition-all shadow-sm shadow-red-200/50"
           >
-            Delete
+            {tx("Delete")}
           </button>
         </div>
       </div>

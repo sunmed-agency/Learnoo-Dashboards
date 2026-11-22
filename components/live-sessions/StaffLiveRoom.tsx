@@ -10,8 +10,10 @@ import { JitsiMeeting } from '@jitsi/react-sdk';
 import LocalSessionRecording from './LocalSessionRecording';
 import LiveMeetingStage from './LiveMeetingStage';
 import { liveMeetingBranding, liveWhiteboardConfig, JITSI_DOMAIN, getJitsiRoomName, getJitsiAppUrl } from '@/src/lib/jitsi';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function StaffLiveRoom({ roomId, basePath, onClose }: { roomId: string; basePath: string; onClose: () => void }) {
+  const tx = useTx();
   const router = useRouter();
   const pathname = usePathname();
   const { data: liveRoom, isLoading } = useLiveRoom(parseInt(roomId));
@@ -64,7 +66,7 @@ export default function StaffLiveRoom({ roomId, basePath, onClose }: { roomId: s
             <button
               type="button"
               className="p-1.5 sm:p-2 hover:bg-[#334155] rounded-full transition-colors"
-              aria-label="Back to live sessions"
+              aria-label={tx("Back to live sessions")}
             >
               <ChevronLeft className="w-5 h-5 text-white" />
             </button>

@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Bell, ShieldCheck, RefreshCcw } from 'lucide-react';
 import { useStudentAlerts } from '@/src/hooks';
+import { useTx } from '@/src/lib/ui-text';
 
 type AlertRecord = Record<string, unknown>;
 
@@ -19,6 +20,8 @@ const alertFilters = [
 ];
 
 export default function ParentStudentAlertsPage() {
+  const uiTx = useTx();
+  const tx = useTx();
   const t = useTranslations('parentAlerts');
   const params = useParams();
   const studentId = params?.id as string | undefined;
@@ -73,9 +76,9 @@ export default function ParentStudentAlertsPage() {
         {isError ? (
           <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-rose-700">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <p>{alertsQuery.error?.message ?? 'Unable to load alerts.'}</p>
+              <p>{alertsQuery.error?.message ?? uiTx("Unable to load alerts.")}</p>
               <button onClick={() => alertsQuery.refetch()} className="inline-flex h-11 items-center justify-center rounded-2xl bg-white px-5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
-                <RefreshCcw className="mr-2 h-4 w-4" /> Retry
+                <RefreshCcw className="mr-2 h-4 w-4" /> {tx("Retry")}
               </button>
             </div>
           </div>
@@ -99,7 +102,7 @@ export default function ParentStudentAlertsPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{String(alert.title ?? alert.subject ?? 'Notification')}</p>
-                      <p className="text-sm text-slate-600 mt-2">{String(alert.message ?? alert.description ?? 'Details are not available.')}</p>
+                      <p className="text-sm text-slate-600 mt-2">{String(alert.message ?? alert.description ?? uiTx("Details are not available."))}</p>
                     </div>
                     <div className="space-y-2 text-right">
                       <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">{priority}</span>

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
+import { useTx } from '@/src/lib/ui-text';
 
 interface TermsModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface TermsModalProps {
 }
 
 export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
+  const tx = useTx();
   const t = useTranslations('auth.createAccount.termsContent');
 
   if (!isOpen) return null;
@@ -30,7 +32,7 @@ export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-            aria-label="Close"
+            aria-label={tx("Close")}
           >
             <X size={20} className="text-text-muted" />
           </button>

@@ -33,22 +33,6 @@ export default function PlatformSettingsPage() {
       adminOnly: true
     },
     {
-      icon: 'Bell' as const,
-      titleKey: 'notifications',
-      href: '/settings/notifications',
-      soon: true,
-      disabled: true,
-      adminOnly: true
-    },
-    {
-      icon: 'Globe' as const,
-      titleKey: 'languageRegion',
-      href: '/settings/language',
-      soon: true,
-      disabled: true,
-      adminOnly: true
-    },
-    {
       icon: 'FileText' as const,
       titleKey: 'termsPrivacy',
       href: '/settings/terms',

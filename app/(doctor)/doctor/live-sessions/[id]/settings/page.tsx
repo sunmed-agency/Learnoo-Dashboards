@@ -9,8 +9,10 @@ import { toast } from 'react-hot-toast';
 import FeatureToggle from '@/components/live-sessions/FeatureToggle';
 import { api } from '@/src/lib/api';
 import type { LiveRoom, Chapter, Department, Course, Lecture } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function SessionSettingsPage() {
+  const tx = useTx();
   const params = useParams();
   const id = params.id as string;
   const t = useTranslations();
@@ -199,7 +201,7 @@ export default function SessionSettingsPage() {
             {settings.enable_recording && (
               <div className="mt-2">
                 <label className="block text-sm font-medium text-[#1E293B] mb-1">
-                  Select Chapter for Recording
+                  {tx("Select Chapter for Recording")}
                 </label>
                 <button
                   onClick={handleOpenChapterPopup}
@@ -219,7 +221,7 @@ export default function SessionSettingsPage() {
                   <ChevronDown className="w-4 h-4 text-[#64748B]" />
                 </button>
                 <p className="text-xs text-[#64748B] mt-1">
-                  Recording will be saved as an attachment to the selected chapter
+                  {tx("Recording will be saved as an attachment to the selected chapter")}
                 </p>
               </div>
             )}
@@ -249,7 +251,7 @@ export default function SessionSettingsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-xl">
             <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
-              <h3 className="text-lg font-bold text-[#1E293B]">Select Chapter</h3>
+              <h3 className="text-lg font-bold text-[#1E293B]">{tx("Select Chapter")}</h3>
               <button
                 onClick={() => setIsChapterPopupOpen(false)}
                 className="p-2 hover:bg-[#F8FAFC] rounded-xl transition-colors"
@@ -262,7 +264,7 @@ export default function SessionSettingsPage() {
               {chaptersLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-6 h-6 animate-spin text-[#7C3AED]" />
-                  <span className="ml-2 text-sm text-[#64748B]">Loading chapters...</span>
+                  <span className="ml-2 text-sm text-[#64748B]">{tx("Loading chapters...")}</span>
                 </div>
               ) : (
                 (() => {
@@ -388,7 +390,7 @@ export default function SessionSettingsPage() {
                 onClick={() => setIsChapterPopupOpen(false)}
                 className="w-full px-4 py-2 bg-white border border-[#E2E8F0] text-[#64748B] rounded-xl text-sm font-bold hover:bg-[#F8FAFC] transition-all"
               >
-                Cancel
+                {tx("Cancel")}
               </button>
             </div>
           </div>

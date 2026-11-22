@@ -4,6 +4,7 @@ const { readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const React = require('react');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 const root = resolve(__dirname, '../..');
 function load(path, role, mocks = {}) {
   const module = { exports: {} };
@@ -20,7 +21,7 @@ function load(path, role, mocks = {}) {
   const code = ts.transpileModule(readFileSync(resolve(root, path), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
-  new Function('require', 'module', 'exports', code)(name => mocks[name] || defaults[name] || (name.startsWith('@/components/') || name.startsWith('@/src/components/') ? { default: Stub, StatCardSkeleton: Stub, QuickActionSkeleton: Stub, ChartSkeleton: Stub, ActivityItemSkeleton: Stub, Skeleton: Stub, TableSkeleton: Stub } : require(name)), module, module.exports);
+  new Function('require', 'module', 'exports', code)(name => mocks[name] || defaults[name] || (name.startsWith('@/components/') || name.startsWith('@/src/components/') ? { default: Stub, StatCardSkeleton: Stub, QuickActionSkeleton: Stub, ChartSkeleton: Stub, ActivityItemSkeleton: Stub, Skeleton: Stub, TableSkeleton: Stub } : requireWithUiText(name)), module, module.exports);
   return module.exports.default;
 }
 function elements(node) { return !node || typeof node !== 'object' ? [] : [node, ...React.Children.toArray(node.props?.children).flatMap(elements)]; }

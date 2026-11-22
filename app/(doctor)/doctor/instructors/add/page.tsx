@@ -18,8 +18,10 @@ import {
 } from '@/src/hooks';
 import type { CreateStudentRequest, StudentStatus } from '@/src/types';
 import { StudentStatusLabels } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AddInstructorPage() {
+  const tx = useTx();
   const t = useTranslations();
   const router = useRouter();
 
@@ -187,7 +189,7 @@ export default function AddInstructorPage() {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6] focus:ring-opacity-10 transition-all"
-                placeholder="Confirm password"
+                placeholder={tx("Confirm password")}
               />
             </div>
 

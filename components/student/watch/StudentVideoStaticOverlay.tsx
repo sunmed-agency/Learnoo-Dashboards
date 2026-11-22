@@ -3,6 +3,7 @@
 import { useLayoutEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { initializeAuthStore, useAuthStore } from '@/src/stores/authStore';
+import { useTx } from '@/src/lib/ui-text';
 
 export type StudentVideoStaticOverlayProps = {
   /** e.g. lecture or chapter title — optional second line */
@@ -13,6 +14,7 @@ export type StudentVideoStaticOverlayProps = {
  * Non-interactive static badge on the video (top area). Does not replace the platform watermark.
  */
 export function StudentVideoStaticOverlay({ subtitle }: StudentVideoStaticOverlayProps) {
+  const tx = useTx();
   useLayoutEffect(() => {
     initializeAuthStore();
   }, []);
@@ -36,7 +38,7 @@ export function StudentVideoStaticOverlay({ subtitle }: StudentVideoStaticOverla
         title={name}
       >
         <p className="hidden text-[0.625rem] font-semibold uppercase tracking-wide text-white/80 sm:block sm:text-xs">
-          Student
+          {tx("Student")}
         </p>
         <p className="line-clamp-1 text-[0.65rem] font-semibold leading-tight text-white sm:mt-0.5 sm:line-clamp-2 sm:text-sm sm:font-medium">
           {name}

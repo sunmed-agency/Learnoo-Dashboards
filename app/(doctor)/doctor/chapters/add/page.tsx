@@ -13,10 +13,12 @@ import { useCreateChapter } from '@/src/hooks/useChapters';
 import { useLectures } from '@/src/hooks/useLectures';
 
 import { EntityForm, FormSection, FormInput, FormSelect } from '@/src/components/admin/EntityForm';
+import { useTx } from '@/src/lib/ui-text';
 
 
 
 export default function AddChapterPage() {
+  const tx = useTx();
 
   const router = useRouter();
 
@@ -88,9 +90,9 @@ export default function AddChapterPage() {
 
     <EntityForm
 
-      title="Add New Chapter"
+      title={tx("Add New Chapter")}
 
-      description="Create a new chapter for a lecture"
+      description={tx("Create a new chapter for a lecture")}
 
       backHref="/chapters"
 
@@ -102,11 +104,11 @@ export default function AddChapterPage() {
 
     >
 
-      <FormSection title="Chapter Information" icon={<FileVideo className="w-4 h-4" />}>
+      <FormSection title={tx("Chapter Information")} icon={<FileVideo className="w-4 h-4" />}>
 
         <FormSelect
 
-          label="Lecture"
+          label={tx("Lecture")}
 
           required
 
@@ -122,7 +124,7 @@ export default function AddChapterPage() {
 
         <FormInput
 
-          label="Chapter Title"
+          label={tx("Chapter Title")}
 
           required
 
@@ -136,7 +138,7 @@ export default function AddChapterPage() {
 
         <FormInput
 
-          label="Duration"
+          label={tx("Duration")}
 
           required
 
@@ -166,7 +168,7 @@ export default function AddChapterPage() {
 
           <label htmlFor="is_free_preview" className="text-sm text-[#475569]">
 
-            Free Preview (available without purchase)
+            {tx("Free Preview (available without purchase)")}
 
           </label>
 

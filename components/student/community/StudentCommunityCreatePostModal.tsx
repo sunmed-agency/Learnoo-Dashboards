@@ -4,6 +4,7 @@ import { Loader2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { CreatePostRequest } from '@/src/types';
 import { useCallback, useEffect, useState } from 'react';
+import { useTx } from '@/src/lib/ui-text';
 
 export type StudentCreatePostFormState = {
   title: string;
@@ -51,6 +52,7 @@ export default function StudentCommunityCreatePostModal({
   onSubmitPost,
   onSubmitReply,
 }: Props) {
+  const tx = useTx();
   const t = useTranslations('community.createPost');
   const tTypes = useTranslations('community.postTypes');
   const tTags = useTranslations('courses.studentCommunity');
@@ -124,7 +126,7 @@ export default function StudentCommunityCreatePostModal({
             type="button"
             onClick={handleClose}
             className="rounded-xl p-2 transition-colors hover:bg-[#F8FAFC]"
-            aria-label="Close"
+            aria-label={tx("Close")}
           >
             <X className="size-5 text-[#64748B]" />
           </button>

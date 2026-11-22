@@ -5,6 +5,7 @@ const { join } = require('node:path');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 
 function room({ pathname = '/live-sessions/70/room', capture = true, recording = false, enabled = true, userAgent = 'iPad' } = {}) {
   const state = [], refs = [], effects = [], commands = [], destinations = [];
@@ -27,7 +28,7 @@ function room({ pathname = '/live-sessions/70/room', capture = true, recording =
     if (id === './LiveMeetingStage') return { __esModule: true, default: ({ children }) => React.createElement('div', { 'data-meeting-stage': true }, children) };
     if (id === './LocalSessionRecording') return { __esModule: true, default: props => { localRecording = props; return React.createElement('span', null, 'Local recorder'); } };
     if (id === '@jitsi/react-sdk') return { JitsiMeeting: props => { meeting = props; return React.createElement('iframe'); } };
-    return require(id);
+    return requireWithUiText(id);
   }, module, module.exports, { userAgent, mediaDevices: capture ? { getDisplayMedia: () => { throw new Error('Must not capture browser media'); } } : {} }, { env: { NEXT_PUBLIC_JITSI_RECORDING_ENABLED: String(recording) } });
   const render = () => {
     cursor = refCursor = 0;

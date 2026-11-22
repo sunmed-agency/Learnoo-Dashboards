@@ -18,6 +18,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { deleteNote, updateNote } from "@/src/services/student/note.service";
 import { IStudentNote } from "@/src/interfaces/notes.interface";
 import NoteAttachmentPreview from "@/components/student/notes-summaries/NoteAttachmentPreview";
+import { useTx } from '@/src/lib/ui-text';
 
 type NoteType = "note" | "summary" | "highlights";
 
@@ -28,6 +29,8 @@ const normalizeNoteType = (value?: string | null): NoteType => {
 };
 
 export default function NoteDetailsClient({ note }: { note: IStudentNote }) {
+  const uiTx = useTx();
+  const tx = useTx();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("notesDetails");
@@ -129,11 +132,11 @@ export default function NoteDetailsClient({ note }: { note: IStudentNote }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/25 bg-white/15 px-3 py-3 text-lg font-bold text-white outline-none placeholder:text-white/70 sm:text-2xl"
-              placeholder="Note title"
+              placeholder={tx("Note title")}
             />
           ) : (
             <h1 className="text-xl font-bold leading-tight tracking-tight sm:text-2xl md:text-3xl">
-              {note.attributes?.title || "Untitled Note"}
+              {note.attributes?.title || uiTx("Untitled Note")}
             </h1>
           )}
 
@@ -161,7 +164,7 @@ export default function NoteDetailsClient({ note }: { note: IStudentNote }) {
                 onChange={(e) => setContent(e.target.value)}
                 rows={12}
                 className="min-h-[200px] w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-base leading-6 text-[#1E293B] outline-none transition focus:border-[#2D43D1] focus:ring-2 focus:ring-[#2D43D1]/10 sm:min-h-[280px] sm:text-sm"
-                placeholder="Write note content..."
+                placeholder={tx("Write note content...")}
               />
             </div>
           ) : (
@@ -174,7 +177,7 @@ export default function NoteDetailsClient({ note }: { note: IStudentNote }) {
                 />
               ) : null}
               <p className="whitespace-pre-line break-words">
-                {note.attributes?.content || "No content available."}
+                {note.attributes?.content || uiTx("No content available.")}
               </p>
             </article>
           )}

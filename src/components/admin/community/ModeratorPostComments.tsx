@@ -8,6 +8,7 @@ import { useComments, useDeleteComment } from '@/src/hooks/useComments';
 import { useReactToPost, useUpdatePost } from '@/src/hooks/usePosts';
 import { useAuth } from '@/src/stores/authStore';
 import { sortCommentsOldestFirst } from '@/src/lib/community-comment-order';
+import { useTx } from '@/src/lib/ui-text';
 
 interface ModeratorPostCommentsProps {
     postId: string | number;
@@ -44,6 +45,7 @@ export default function ModeratorPostComments({
     onToggleExpanded,
     revealCommentId = null,
 }: ModeratorPostCommentsProps) {
+  const tx = useTx();
     const t = useTranslations('courses.studentCommunity');
     const tActions = useTranslations('community.posts.actions');
     const { user: currentUser } = useAuth();
@@ -224,7 +226,7 @@ export default function ModeratorPostComments({
                                                 className="w-full rounded-xl border border-[#E2E8F0] p-3 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2137D6] focus:ring-opacity-10 transition-all resize-none"
                                                 rows={2}
                                                 autoFocus
-                                                placeholder="Edit comment..."
+                                                placeholder={tx("Edit comment...")}
                                             />
                                             <div className="mt-2 flex items-center gap-2">
                                                 <button
@@ -251,7 +253,7 @@ export default function ModeratorPostComments({
                                                     disabled={isUpdating}
                                                     className="px-4 py-2 border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC] text-xs font-bold rounded-xl transition-all"
                                                 >
-                                                    <X className="w-4 h-4 inline-block -mt-0.5" /> Cancel
+                                                    <X className="w-4 h-4 inline-block -mt-0.5" /> {tx("Cancel")}
                                                 </button>
                                             </div>
                                         </div>

@@ -32,6 +32,7 @@ import { usePlatformFeature, useUpdatePlatformFeature } from '@/src/hooks';
 
 
 import toast, { Toaster } from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 
 
@@ -189,6 +190,7 @@ const Switch = ({ enabled, onChange, disabled }: { enabled: boolean; onChange: (
 
 
 export default function FeatureControlPage() {
+  const tx = useTx();
 
   const t = useTranslations();
 
@@ -563,7 +565,7 @@ export default function FeatureControlPage() {
                     {feature.id === 'feature_screen_share_max_resolution' && feature.enabled && (
                       <div className="mt-4 grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-[11px] font-semibold text-[#64748B] mb-1 block">Max Width (px)</label>
+                          <label className="text-[11px] font-semibold text-[#64748B] mb-1 block">{tx("Max Width (px)")}</label>
                           <input
                             type="number"
                             value={screenShareWidth}
@@ -576,7 +578,7 @@ export default function FeatureControlPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] font-semibold text-[#64748B] mb-1 block">Max Height (px)</label>
+                          <label className="text-[11px] font-semibold text-[#64748B] mb-1 block">{tx("Max Height (px)")}</label>
                           <input
                             type="number"
                             value={screenShareHeight}

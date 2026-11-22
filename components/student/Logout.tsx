@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "@/lib/cookies";
+import { useTx } from "@/src/lib/ui-text";
 
 type LogoutProps = {
   collapsed?: boolean;
@@ -12,16 +13,17 @@ type LogoutProps = {
 
 export default function Logout({ collapsed = false }: LogoutProps) {
   const router = useRouter();
+  const tx = useTx();
 
 const handleLogout = async () => {
   const res = await userLogout();
 
   if (!res.success) {
-    toast.error(res.message || "Logout failed");
+    toast.error(res.message || tx("Logout failed"));
     return;
   }
 
-  toast.success(res.message || "Logged out successfully");
+  toast.success(res.message || tx("Logged out successfully"));
 
   Cookies.remove("token");
 
@@ -36,7 +38,7 @@ const handleLogout = async () => {
     >
       <LogOut size={16} />
       
-      {!collapsed && <span>Logout</span>}
+      {!collapsed && <span>{tx("Logout")}</span>}
     </button>
   );
 }

@@ -44,7 +44,7 @@ export const PAGE_PERMISSIONS: [prefix: string, permission: string][] = [
   ['/students', 'students.view'],
   ['/guardians', 'students.view'],
   ['/activity', 'devices.manage'],
-  ['/activation', 'activation.codes|activation.sheet'],
+  ['/activation', 'activation.codes'], // codes only; sheet activation is in the academic plan
   ['/pre-activations', 'preactivations.manage'],
   ['/subscription-requests', 'subscriptions.manage'],
   ['/community', 'community.manage'],

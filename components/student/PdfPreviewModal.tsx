@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+import { useTx } from '@/src/lib/ui-text';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -245,6 +246,7 @@ export default function PdfPreviewModal({
   chapterId,
   viewByMinute = 0,
 }: Props) {
+  const tx = useTx();
   const tViewer = useTranslations('pdfViewer');
   const { user } = useCurrentUser();
   const [watermarkConfig, setWatermarkConfig] = useState<WatermarkResolution | null>(null);
@@ -482,7 +484,7 @@ export default function PdfPreviewModal({
                 type="button"
                 onClick={handleZoomOut}
                 className="flex size-8 items-center justify-center rounded-md text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A]"
-                title="Zoom Out"
+                title={tx("Zoom Out")}
               >
                 <ZoomOut className="size-4" />
               </button>
@@ -493,7 +495,7 @@ export default function PdfPreviewModal({
                 type="button"
                 onClick={handleZoomIn}
                 className="flex size-8 items-center justify-center rounded-md text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A]"
-                title="Zoom In"
+                title={tx("Zoom In")}
               >
                 <ZoomIn className="size-4" />
               </button>
@@ -502,7 +504,7 @@ export default function PdfPreviewModal({
                 type="button"
                 onClick={handleResetZoom}
                 className="flex size-8 items-center justify-center rounded-md text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A]"
-                title="Reset Zoom"
+                title={tx("Reset Zoom")}
               >
                 <RotateCcw className="size-4" />
               </button>

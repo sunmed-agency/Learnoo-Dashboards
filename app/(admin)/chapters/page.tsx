@@ -13,8 +13,10 @@ import { SearchFilter } from '@/src/components/admin/SearchFilter';
 import { DataTable, Column } from '@/src/components/ui/DataTable';
 
 import type { Chapter } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function ChaptersPage() {
+  const tx = useTx();
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -139,7 +141,7 @@ export default function ChaptersPage() {
 
               >
 
-                Retry conversion
+                {tx("Retry conversion")}
 
               </button>
 
@@ -203,9 +205,9 @@ export default function ChaptersPage() {
 
         <AdminPageHeader
 
-          title="Chapters Management"
+          title={tx("Chapters Management")}
 
-          description="Manage lecture chapters and videos"
+          description={tx("Manage lecture chapters and videos")}
 
         />
 
@@ -221,7 +223,7 @@ export default function ChaptersPage() {
 
           >
 
-            Retry
+            {tx("Retry")}
 
           </button>
 
@@ -239,9 +241,9 @@ export default function ChaptersPage() {
 
       <AdminPageHeader
 
-        title="Chapters Management"
+        title={tx("Chapters Management")}
 
-        description="Manage lecture chapters and videos"
+        description={tx("Manage lecture chapters and videos")}
 
       />
 
@@ -285,7 +287,7 @@ export default function ChaptersPage() {
 
         showActions={false}
 
-        emptyMessage="No chapters found."
+        emptyMessage={tx("No chapters found.")}
 
       />
 

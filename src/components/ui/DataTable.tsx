@@ -4,6 +4,7 @@ import React from 'react';
 import { Edit, Trash2, Eye, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useTx } from '@/src/lib/ui-text';
 
 export interface Column<T> {
   key: string;
@@ -84,6 +85,7 @@ export function DataTable<T>({
   emptyMessage = 'No items found',
   showActions = true,
 }: DataTableProps<T>) {
+  const tx = useTx();
   if (isLoading) {
     return <DataTableSkeleton rows={loadingRows} columns={columns.length} />;
   }
@@ -113,7 +115,7 @@ export function DataTable<T>({
               ))}
               {showActions && (
                 <th className="px-6 py-4 text-right text-sm font-bold text-[#475569] uppercase tracking-wider">
-                  Actions
+                  {tx("Actions")}
                 </th>
               )}
             </tr>
@@ -139,7 +141,7 @@ export function DataTable<T>({
                         <Link
                           href={viewHref(item)}
                           className="p-2 text-[#64748B] hover:text-[#2137D6] hover:bg-blue-50 rounded-full transition-all"
-                          title="View"
+                          title={tx("View")}
                         >
                           <Eye className="w-4 h-4" />
                         </Link>
@@ -148,7 +150,7 @@ export function DataTable<T>({
                         <button
                           onClick={() => onView(item)}
                           className="p-2 text-[#64748B] hover:text-[#2137D6] hover:bg-blue-50 rounded-full transition-all"
-                          title="View"
+                          title={tx("View")}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -157,7 +159,7 @@ export function DataTable<T>({
                         <Link
                           href={editHref(item)}
                           className="p-2 text-[#64748B] hover:text-[#2137D6] hover:bg-blue-50 rounded-full transition-all"
-                          title="Edit"
+                          title={tx("Edit")}
                         >
                           <Edit className="w-4 h-4" />
                         </Link>
@@ -166,7 +168,7 @@ export function DataTable<T>({
                         <button
                           onClick={() => onEdit(item)}
                           className="p-2 text-[#64748B] hover:text-[#2137D6] hover:bg-blue-50 rounded-full transition-all"
-                          title="Edit"
+                          title={tx("Edit")}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
@@ -176,7 +178,7 @@ export function DataTable<T>({
                           type="button"
                           onClick={() => onCopy(item)}
                           className="p-2 text-[#64748B] hover:text-[#2137D6] hover:bg-blue-50 rounded-full transition-all"
-                          title="Copy"
+                          title={tx("Copy")}
                         >
                           <Copy className="w-4 h-4" />
                         </button>
@@ -185,7 +187,7 @@ export function DataTable<T>({
                         <button
                           onClick={() => onDelete(item)}
                           className="p-2 text-[#64748B] hover:text-[#EF4444] hover:bg-red-50 rounded-full transition-all"
-                          title="Delete"
+                          title={tx("Delete")}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

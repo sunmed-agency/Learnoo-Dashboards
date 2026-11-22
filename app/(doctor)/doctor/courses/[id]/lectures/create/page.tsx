@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Upload, X, FileText, Video, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AddLecturePage() {
+  const tx = useTx();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -30,7 +32,7 @@ export default function AddLecturePage() {
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">Add New Lecture</span>
+          <span className="font-medium">{tx("Add New Lecture")}</span>
         </button>
       </div>
 
@@ -38,23 +40,23 @@ export default function AddLecturePage() {
         <div className="space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Lecture Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Lecture Title")}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter lecture title"
+              placeholder={tx("Enter lecture title")}
               className="w-full px-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Description")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter lecture description..."
+              placeholder={tx("Enter lecture description...")}
               rows={4}
               className="w-full px-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
@@ -62,7 +64,7 @@ export default function AddLecturePage() {
 
           {/* Video Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Video</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Video")}</label>
             <div 
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
@@ -76,17 +78,17 @@ export default function AddLecturePage() {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Video className="w-8 h-8 text-blue-600" />
               </div>
-              <p className="text-sm text-gray-600 mb-2">Drag and drop your video here, or click to browse</p>
-              <p className="text-xs text-gray-400 mb-4">Supported formats: MP4, MOV, AVI (max 500MB)</p>
+              <p className="text-sm text-gray-600 mb-2">{tx("Drag and drop your video here, or click to browse")}</p>
+              <p className="text-xs text-gray-400 mb-4">{tx("Supported formats: MP4, MOV, AVI (max 500MB)")}</p>
               <button className="px-4 py-2 bg-white border border-[#E5E7EB] text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                Choose File
+                {tx("Choose File")}
               </button>
             </div>
           </div>
 
           {/* Attachments */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Attachments")}</label>
             <div className="space-y-2">
               {attachments.map((file, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -109,7 +111,7 @@ export default function AddLecturePage() {
               ))}
               <button className="flex items-center gap-2 px-4 py-2.5 border border-dashed border-[#E5E7EB] rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors">
                 <Plus className="w-4 h-4" />
-                Add Attachment
+                {tx("Add Attachment")}
               </button>
             </div>
           </div>
@@ -120,10 +122,10 @@ export default function AddLecturePage() {
               onClick={() => router.back()}
               className="px-6 py-2.5 text-gray-700 font-medium hover:bg-gray-50 rounded-lg transition-colors"
             >
-              Cancel
+              {tx("Cancel")}
             </button>
             <button className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-              Add Lecture
+              {tx("Add Lecture")}
             </button>
           </div>
         </div>

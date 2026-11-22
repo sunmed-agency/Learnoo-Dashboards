@@ -20,6 +20,7 @@ import {
 import type { TreeNode } from "./useMillerState";
 import { useCurrentUser } from "@/src/hooks/useAuth";
 import { can } from "@/src/lib/permissions";
+import { useTx } from '@/src/lib/ui-text';
 
 interface ColumnItemProps {
   item: TreeNode;
@@ -113,6 +114,7 @@ export function ColumnItem({
   onCopyMove,
   isInstructor,
 }: ColumnItemProps) {
+  const tx = useTx();
   const locale = useLocale();
   const { user } = useCurrentUser();
   // Supervisors without "structure.manage" see the tree read-only.
@@ -156,10 +158,10 @@ export function ColumnItem({
         if (isInstructor) return null;
         return (
           <>
-            <ActionBtn onClick={() => onAdd("center", item.id)} title="Add Center" className="text-teal-500 hover:bg-teal-50">
+            <ActionBtn onClick={() => onAdd("center", item.id)} title={tx("Add Center")} className="text-teal-500 hover:bg-teal-50">
               <MapPin className="w-3 h-3" />
             </ActionBtn>
-            {/* <ActionBtn onClick={() => onAdd("faculty", item.id)} title="Add Faculty" className="text-pink-500 hover:bg-pink-50">
+            {/* <ActionBtn onClick={() => onAdd("faculty", item.id)} title={tx("Add Faculty")} className="text-pink-500 hover:bg-pink-50">
               <Award className="w-3 h-3" />
             </ActionBtn> */}
           </>
@@ -167,14 +169,14 @@ export function ColumnItem({
       case "center":
         if (isInstructor) return null;
         return (
-          <ActionBtn onClick={() => onAdd("faculty", item.id)} title="Add Faculty" className="text-pink-500 hover:bg-pink-50">
+          <ActionBtn onClick={() => onAdd("faculty", item.id)} title={tx("Add Faculty")} className="text-pink-500 hover:bg-pink-50">
             <Award className="w-3 h-3" />
           </ActionBtn>
         );
       case "faculty":
         if (isInstructor) return null;
         return (
-          <ActionBtn onClick={() => onAdd("department", item.id)} title="Add Department" className="text-blue-500 hover:bg-blue-50">
+          <ActionBtn onClick={() => onAdd("department", item.id)} title={tx("Add Department")} className="text-blue-500 hover:bg-blue-50">
             <GraduationCap className="w-3 h-3" />
           </ActionBtn>
         );
@@ -182,11 +184,11 @@ export function ColumnItem({
         return (
           <>
             {!isInstructor && (
-              <ActionBtn onClick={() => onAdd("department", item.id)} title="Add Sub-Department" className="text-blue-400 hover:bg-blue-50">
+              <ActionBtn onClick={() => onAdd("department", item.id)} title={tx("Add Sub-Department")} className="text-blue-400 hover:bg-blue-50">
                 <GraduationCap className="w-3 h-3" />
               </ActionBtn>
             )}
-            <ActionBtn onClick={() => onAdd("course", item.id)} title="Add Course" className="text-amber-500 hover:bg-amber-50">
+            <ActionBtn onClick={() => onAdd("course", item.id)} title={tx("Add Course")} className="text-amber-500 hover:bg-amber-50">
               <BookOpen className="w-3 h-3" />
             </ActionBtn>
           </>
@@ -194,10 +196,10 @@ export function ColumnItem({
       case "course":
         return (
           <>
-            <ActionBtn onClick={() => onAdd("lecture", item.id)} title="Add Lecture" className="text-purple-500 hover:bg-purple-50">
+            <ActionBtn onClick={() => onAdd("lecture", item.id)} title={tx("Add Lecture")} className="text-purple-500 hover:bg-purple-50">
               <Plus className="w-3 h-3" />
             </ActionBtn>
-            <ActionBtn onClick={() => onAdd("note", item.id)} title="Add Note" className="text-slate-500 hover:bg-slate-50">
+            <ActionBtn onClick={() => onAdd("note", item.id)} title={tx("Add Note")} className="text-slate-500 hover:bg-slate-50">
               <FileText className="w-3 h-3" />
             </ActionBtn>
           </>
@@ -208,7 +210,7 @@ export function ColumnItem({
             <ActionBtn
               ref={addButtonRef}
               onClick={() => openDropdown()}
-              title="Add Lesson"
+              title={tx("Add Lesson")}
               className={addDropdownOpen ? "text-orange-600 bg-orange-100" : "text-orange-400 hover:bg-orange-50"}
             >
               <Plus className="w-3 h-3" />
@@ -260,10 +262,10 @@ export function ColumnItem({
     if (item.type !== "chapter" || !onCopyMove) return null;
     return (
       <>
-        <ActionBtn onClick={() => onCopyMove(item, "copy")} title="Copy" className="text-blue-400 hover:bg-blue-50">
+        <ActionBtn onClick={() => onCopyMove(item, "copy")} title={tx("Copy")} className="text-blue-400 hover:bg-blue-50">
           <Copy className="w-3 h-3" />
         </ActionBtn>
-        <ActionBtn onClick={() => onCopyMove(item, "move")} title="Move" className="text-purple-400 hover:bg-purple-50">
+        <ActionBtn onClick={() => onCopyMove(item, "move")} title={tx("Move")} className="text-purple-400 hover:bg-purple-50">
           <ArrowRightLeft className="w-3 h-3" />
         </ActionBtn>
       </>
@@ -320,14 +322,14 @@ export function ColumnItem({
 
         {/* Edit */}
         {(!isInstructor || ["course", "lecture", "chapter", "note"].includes(item.type)) && (
-        <ActionBtn onClick={() => onEdit(item)} title="Edit" className="text-gray-400 hover:text-orange-600 hover:bg-orange-50">
+        <ActionBtn onClick={() => onEdit(item)} title={tx("Edit")} className="text-gray-400 hover:text-orange-600 hover:bg-orange-50">
           <Edit className="w-3 h-3" />
         </ActionBtn>
         )}
 
         {/* Delete */}
         {(!isInstructor || ["lecture", "chapter", "note"].includes(item.type)) && (
-          <ActionBtn onClick={() => onDelete(item)} title="Delete" className="text-gray-400 hover:text-red-600 hover:bg-red-50">
+          <ActionBtn onClick={() => onDelete(item)} title={tx("Delete")} className="text-gray-400 hover:text-red-600 hover:bg-red-50">
             <Trash2 className="w-3 h-3" />
           </ActionBtn>
         )}

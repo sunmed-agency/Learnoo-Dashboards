@@ -58,6 +58,7 @@ import PdfPreviewModal from './PdfPreviewModal';
 import type { WatermarkResolution } from '@/src/lib/watermark-from-features';
 import { HlsVideoPlayer } from '@/components/student/watch/HlsVideoPlayer';
 import { AuthorRoleBadge } from '@/components/student/AuthorRoleBadge';
+import { useTx } from '@/src/lib/ui-text';
 
 type ChapterAttachment = NonNullable<Chapter['attributes']['attachments']>[number];
 
@@ -134,6 +135,7 @@ function DiscussionNode({
   onSubmitReply,
   onPreviewImage,
 }: DiscussionNodeProps) {
+  const tx = useTx();
   const d = discussion;
   const content = discussionContent(d);
   const author = discussionAuthorName(d) ?? t('anonymousUser');
@@ -183,7 +185,7 @@ function DiscussionNode({
               {isVoice && (
                 <span className="inline-flex items-center gap-1 rounded-md bg-violet-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-violet-300">
                   <Mic className="size-2.5" />
-                  Voice
+                  {tx("Voice")}
                 </span>
               )}
               {!isVoice && !isReply && (
@@ -335,6 +337,7 @@ export default function ChapterWatchView({
   /** The parent course (banner: title, thumbnail, instructor, lecture count). */
   course?: { id?: string | number; attributes?: Record<string, unknown> } | null;
 }) {
+  const tx = useTx();
   const locale = useLocale();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const router = useRouter();
@@ -958,7 +961,7 @@ export default function ChapterWatchView({
 
       if (composerMode === 'voice') {
         if (!audioBlob) {
-          toast.error('Please record a voice note first');
+          toast.error(tx("Please record a voice note first"));
           return;
         }
         const formData = new FormData();
@@ -1117,7 +1120,7 @@ export default function ChapterWatchView({
                 type="button"
                 onClick={() => setPdfScale((s) => Math.max(0.5, s - 0.1))}
                 className="flex size-7 items-center justify-center rounded text-[#64748B] hover:bg-slate-100"
-                title="Zoom Out"
+                title={tx("Zoom Out")}
               >
                 <ZoomOut className="size-3.5" />
               </button>
@@ -1128,7 +1131,7 @@ export default function ChapterWatchView({
                 type="button"
                 onClick={() => setPdfScale((s) => Math.min(2.5, s + 0.1))}
                 className="flex size-7 items-center justify-center rounded text-[#64748B] hover:bg-slate-100"
-                title="Zoom In"
+                title={tx("Zoom In")}
               >
                 <ZoomIn className="size-3.5" />
               </button>
@@ -1137,7 +1140,7 @@ export default function ChapterWatchView({
                 type="button"
                 onClick={() => setPdfScale(1.0)}
                 className="flex size-7 items-center justify-center rounded text-[#64748B] hover:bg-slate-100"
-                title="Reset Zoom"
+                title={tx("Reset Zoom")}
               >
                 <RotateCcw className="size-3.5" />
               </button>
@@ -1503,7 +1506,7 @@ export default function ChapterWatchView({
                       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${composerMode === 'text' ? 'bg-[#2D43D1] text-white' : 'border border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}
                     >
                       <MessageCircle className="size-3.5" />
-                      Text
+                      {tx("Text")}
                     </button>
                     <button
                       type="button"
@@ -1511,7 +1514,7 @@ export default function ChapterWatchView({
                       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${composerMode === 'voice' ? 'bg-[#2D43D1] text-white' : 'border border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}
                     >
                       <Mic className="size-3.5" />
-                      Voice
+                      {tx("Voice")}
                     </button>
                   </div>
 
@@ -1636,7 +1639,7 @@ export default function ChapterWatchView({
                                 className="flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-red-700"
                               >
                                 <Square className="size-4" />
-                                Stop Recording
+                                {tx("Stop Recording")}
                               </button>
                             </>
                           ) : (
@@ -1644,14 +1647,14 @@ export default function ChapterWatchView({
                               <div className="flex size-16 items-center justify-center rounded-full bg-[#2D43D1]/20 ring-4 ring-[#2D43D1]/20">
                                 <Mic className="size-8 text-[#2D43D1]" />
                               </div>
-                              <p className="text-sm text-slate-400">Tap the button to start recording your voice note</p>
+                              <p className="text-sm text-slate-400">{tx("Tap the button to start recording your voice note")}</p>
                               <button
                                 type="button"
                                 onClick={() => void startRecording()}
                                 className="flex items-center gap-2 rounded-xl bg-[#2D43D1] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2436b0]"
                               >
                                 <Mic className="size-4" />
-                                Start Recording
+                                {tx("Start Recording")}
                               </button>
                             </>
                           )}
@@ -1700,7 +1703,7 @@ export default function ChapterWatchView({
                               className="flex items-center gap-1.5 rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400 hover:border-slate-500 hover:text-red-400"
                             >
                               <Trash2 className="size-3.5" />
-                              Discard
+                              {tx("Discard")}
                             </button>
                             <button
                               type="button"

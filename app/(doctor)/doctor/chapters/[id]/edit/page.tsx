@@ -13,10 +13,12 @@ import { useChapter, useUpdateChapter } from '@/src/hooks/useChapters';
 import { useLectures } from '@/src/hooks/useLectures';
 
 import { EntityForm, FormSection, FormInput, FormSelect } from '@/src/components/admin/EntityForm';
+import { useTx } from '@/src/lib/ui-text';
 
 
 
 export default function EditChapterPage() {
+  const tx = useTx();
 
   const router = useRouter();
 
@@ -112,7 +114,7 @@ export default function EditChapterPage() {
 
         <Loader2 className="w-8 h-8 animate-spin text-[#2137D6]" />
 
-        <p className="mt-4 text-[#64748B]">Loading chapter...</p>
+        <p className="mt-4 text-[#64748B]">{tx("Loading chapter...")}</p>
 
       </div>
 
@@ -128,7 +130,7 @@ export default function EditChapterPage() {
 
       <div className="flex flex-col items-center justify-center min-h-[400px]">
 
-        <p className="text-[#64748B]">Chapter not found</p>
+        <p className="text-[#64748B]">{tx("Chapter not found")}</p>
 
       </div>
 
@@ -152,9 +154,9 @@ export default function EditChapterPage() {
 
     <EntityForm
 
-      title="Edit Chapter"
+      title={tx("Edit Chapter")}
 
-      description="Update chapter information"
+      description={tx("Update chapter information")}
 
       backHref="/chapters"
 
@@ -166,11 +168,11 @@ export default function EditChapterPage() {
 
     >
 
-      <FormSection title="Chapter Information" icon={<FileVideo className="w-4 h-4" />}>
+      <FormSection title={tx("Chapter Information")} icon={<FileVideo className="w-4 h-4" />}>
 
         <FormSelect
 
-          label="Lecture"
+          label={tx("Lecture")}
 
           required
 
@@ -186,7 +188,7 @@ export default function EditChapterPage() {
 
         <FormInput
 
-          label="Chapter Title"
+          label={tx("Chapter Title")}
 
           required
 
@@ -200,7 +202,7 @@ export default function EditChapterPage() {
 
         <FormInput
 
-          label="Duration"
+          label={tx("Duration")}
 
           required
 
@@ -230,7 +232,7 @@ export default function EditChapterPage() {
 
           <label htmlFor="is_free_preview" className="text-sm text-[#475569]">
 
-            Free Preview (available without purchase)
+            {tx("Free Preview (available without purchase)")}
 
           </label>
 

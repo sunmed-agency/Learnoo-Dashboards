@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from 'react';
 import { getStudentInfo, type StudentInfo } from '@/src/lib/get-student-info';
+import { useTx } from '@/src/lib/ui-text';
 
 export type VideoPlayerWithWatermarkProps = {
   videoUrl: string;
@@ -19,6 +20,7 @@ export function VideoPlayerWithWatermark({
   label = 'Video with student watermark',
   className = '',
 }: VideoPlayerWithWatermarkProps) {
+  const tx = useTx();
   const regionId = useId();
   const [student, setStudent] = useState<StudentInfo | null>(null);
   const [loadState, setLoadState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
@@ -51,7 +53,7 @@ export function VideoPlayerWithWatermark({
         className={`flex min-h-[12rem] w-full items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-neutral-50 text-sm text-neutral-600 ${className}`}
         role="status"
       >
-        No video URL provided.
+        {tx("No video URL provided.")}
       </div>
     );
   }
@@ -71,14 +73,14 @@ export function VideoPlayerWithWatermark({
           preload="metadata"
           controlsList="nodownload"
         >
-          Your browser does not support embedded video.
+          {tx("Your browser does not support embedded video.")}
         </video>
 
         {/* Above the video surface; pointer-events-none keeps controls usable (esp. bottom bar). */}
         <div
           className="pointer-events-none absolute inset-0 z-50 flex items-start justify-start p-2 sm:p-3"
           role="note"
-          aria-label="Student identification watermark"
+          aria-label={tx("Student identification watermark")}
         >
           {loadState === 'ready' && student ? (
             <div
@@ -86,7 +88,7 @@ export function VideoPlayerWithWatermark({
               style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
             >
               <p className="text-[0.625rem] font-semibold uppercase tracking-wide text-white/80 sm:text-xs">
-                Student
+                {tx("Student")}
               </p>
               <p className="mt-0.5 line-clamp-2 text-xs font-medium leading-snug sm:text-sm">{student.name}</p>
               <p className="mt-1.5 text-[0.625rem] text-white/85 sm:text-xs">
@@ -101,14 +103,14 @@ export function VideoPlayerWithWatermark({
               className="rounded-md px-2.5 py-2 text-[0.625rem] text-white/90 sm:text-xs"
               style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
             >
-              Loading student…
+              {tx("Loading student…")}
             </div>
           ) : loadState === 'error' ? (
             <div
               className="rounded-md px-2.5 py-2 text-[0.625rem] text-white/90 sm:text-xs"
               style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
             >
-              Watermark unavailable
+              {tx("Watermark unavailable")}
             </div>
           ) : null}
         </div>

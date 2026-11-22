@@ -115,6 +115,7 @@ import type {
 } from "@/src/types";
 import { MillerColumns } from "@/src/components/MillerColumns";
 import { useMillerState } from "@/src/components/MillerColumns/useMillerState";
+import { useTx } from '@/src/lib/ui-text';
 
 type NodeType =
   | "university"
@@ -802,6 +803,7 @@ function TreeItem({
   isSelected,
   isInstructor = false,
 }: TreeItemProps) {
+  const tx = useTx();
   const t = useTranslations();
 
   const { role } = useCurrentUser();
@@ -974,7 +976,7 @@ function TreeItem({
 
             {node.meta?.isFree && (
               <span className="text-[10px] px-1.5 py-0.5 bg-green-100 text-green-600 rounded">
-                Free
+                {tx("Free")}
               </span>
             )}
 
@@ -1045,7 +1047,7 @@ function TreeItem({
             <button
               onClick={() => onAdd("center", node.id)}
               className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-all"
-              title="Add center"
+              title={tx("Add center")}
             >
               <MapPin className="w-4 h-4" />
             </button>
@@ -1055,7 +1057,7 @@ function TreeItem({
             <button
               onClick={() => onAdd("faculty", node.id)}
               className="p-1.5 text-gray-400 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all"
-              title="Add faculty"
+              title={tx("Add faculty")}
             >
               <Award className="w-4 h-4" />
             </button>
@@ -1065,7 +1067,7 @@ function TreeItem({
             <button
               onClick={() => onAdd("department", node.id)}
               className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-              title="Add department"
+              title={tx("Add department")}
             >
               <GraduationCap className="w-4 h-4" />
             </button>
@@ -1077,7 +1079,7 @@ function TreeItem({
                 <button
                   onClick={() => onAdd("department", node.id)}
                   className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                  title="Add sub-department"
+                  title={tx("Add sub-department")}
                 >
                   <GraduationCap className="w-4 h-4" />
                 </button>
@@ -1086,7 +1088,7 @@ function TreeItem({
               <button
                 onClick={() => onAdd("course", node.id)}
                 className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
-                title="Add course"
+                title={tx("Add course")}
               >
                 <BookOpen className="w-4 h-4" />
               </button>
@@ -1098,7 +1100,7 @@ function TreeItem({
               <button
                 onClick={() => onAdd("lecture", node.id)}
                 className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
-                title="Add lecture"
+                title={tx("Add lecture")}
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -1110,7 +1112,7 @@ function TreeItem({
               <button
                 onClick={() => setIsAddDropdownOpen(!isAddDropdownOpen)}
                 className={`p-1.5 rounded-lg transition-all ${isAddDropdownOpen ? 'text-orange-600 bg-orange-100' : 'text-gray-400 hover:text-orange-600 hover:bg-orange-50'}`}
-                title="Add lesson"
+                title={tx("Add lesson")}
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -1124,7 +1126,7 @@ function TreeItem({
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 flex items-center gap-2"
                   >
-                    <Plus className="w-3 h-3" /> Video and PDF
+                    <Plus className="w-3 h-3" /> {tx("Video and PDF")}
                   </button>
                   <button
                     onClick={() => {
@@ -1133,7 +1135,7 @@ function TreeItem({
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 flex items-center gap-2"
                   >
-                    <Plus className="w-3 h-3" /> Video Only
+                    <Plus className="w-3 h-3" /> {tx("Video Only")}
                   </button>
                   <button
                     onClick={() => {
@@ -1142,7 +1144,7 @@ function TreeItem({
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 flex items-center gap-2"
                   >
-                    <Plus className="w-3 h-3" /> PDF Only
+                    <Plus className="w-3 h-3" /> {tx("PDF Only")}
                   </button>
                 </div>
               )}
@@ -1154,7 +1156,7 @@ function TreeItem({
               <button
                 onClick={() => onCopyMove(node, "copy")}
                 className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                title="Copy lesson"
+                title={tx("Copy lesson")}
               >
                 <Copy className="w-4 h-4" />
               </button>
@@ -1162,7 +1164,7 @@ function TreeItem({
               <button
                 onClick={() => onCopyMove(node, "move")}
                 className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
-                title="Move lesson"
+                title={tx("Move lesson")}
               >
                 <ArrowRightLeft className="w-4 h-4" />
               </button>
@@ -1240,6 +1242,8 @@ function TreeItem({
 }
 
 export default function DepartmentsPage() {
+  const uiTx = useTx();
+  const tx = useTx();
   const t = useTranslations();
   const ar = useLocale() === "ar";
   const { role, canUseActivations } = useCurrentUser();
@@ -1286,7 +1290,7 @@ export default function DepartmentsPage() {
       const chapterId = Number(rawId);
 
       if (!rawId || Number.isNaN(chapterId)) {
-        toast.error("Invalid chapter id");
+        toast.error(tx("Invalid chapter id"));
         setViewersLoading(false);
         return;
       }
@@ -1512,7 +1516,7 @@ export default function DepartmentsPage() {
 
         return; // Wait for refetch before proceeding with reorder
       } catch (error) {
-        toast.error("Failed to initialize department orders");
+        toast.error(tx("Failed to initialize department orders"));
 
         return;
       }
@@ -1584,11 +1588,11 @@ export default function DepartmentsPage() {
         });
       }
 
-      toast.success("Department order updated successfully");
+      toast.success(tx("Department order updated successfully"));
 
       refetchDepts();
     } catch (error) {
-      toast.error("Failed to update department order");
+      toast.error(tx("Failed to update department order"));
     }
   };
 
@@ -2103,7 +2107,7 @@ export default function DepartmentsPage() {
 
     setCopiedCode(code);
 
-    toast.success("Code copied to clipboard");
+    toast.success(tx("Code copied to clipboard"));
 
     setTimeout(() => setCopiedCode(null), 2000);
   };
@@ -2112,11 +2116,11 @@ export default function DepartmentsPage() {
     try {
       await deleteCode(parseInt(codeId));
 
-      toast.success("Code deleted successfully");
+      toast.success(tx("Code deleted successfully"));
 
       refetchCodes();
     } catch {
-      toast.error("Failed to delete code");
+      toast.error(tx("Failed to delete code"));
     }
   };
 
@@ -2125,7 +2129,7 @@ export default function DepartmentsPage() {
     itemType: "course" | "chapter",
   ) => {
     if (!selectedCode || !selectedStudent) {
-      toast.error("Please select a code and student");
+      toast.error(tx("Please select a code and student"));
 
       return;
     }
@@ -2145,7 +2149,7 @@ export default function DepartmentsPage() {
         user_id: selectedStudent,
       });
 
-      toast.success("Activated successfully");
+      toast.success(tx("Activated successfully"));
 
       setSelectedCode("");
 
@@ -2211,7 +2215,7 @@ export default function DepartmentsPage() {
     const file = fileOverride || preactivationFileRef.current?.files?.[0];
 
     if (!file) {
-      toast.error("Please select a file or add phone numbers");
+      toast.error(tx("Please select a file or add phone numbers"));
 
       return;
     }
@@ -2242,7 +2246,7 @@ export default function DepartmentsPage() {
 
       setPreactivationNumbers([]);
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Upload failed";
+      const errorMessage = error?.response?.data?.message || error?.message || uiTx("Upload failed");
       toast.error(errorMessage);
     }
   };
@@ -2486,7 +2490,7 @@ export default function DepartmentsPage() {
           break;
       }
 
-      toast.success("Updated successfully");
+      toast.success(tx("Updated successfully"));
 
       setEditModalOpen(false);
 
@@ -2653,7 +2657,7 @@ export default function DepartmentsPage() {
           break;
       }
 
-      toast.success("Created successfully");
+      toast.success(tx("Created successfully"));
 
       setAddModalOpen(false);
 
@@ -3222,7 +3226,7 @@ export default function DepartmentsPage() {
                   <div className="flex items-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
-                        {noteAttachment?.name || "Current attachment"}
+                        {noteAttachment?.name || uiTx("Current attachment")}
                       </p>
                       <p className="text-xs text-gray-500">
                         {noteAttachment
@@ -3236,7 +3240,7 @@ export default function DepartmentsPage() {
                           rel="noopener noreferrer"
                           className="text-xs text-blue-600 hover:underline"
                         >
-                          Download attachment
+                          {tx("Download attachment")}
                         </a>
                       )}
                     </div>
@@ -3244,7 +3248,7 @@ export default function DepartmentsPage() {
                       type="button"
                       onClick={handleNoteAttachmentRemove}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Remove attachment"
+                      title={tx("Remove attachment")}
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -3257,10 +3261,10 @@ export default function DepartmentsPage() {
                     <div className="flex flex-col items-center">
                       <Upload className="w-8 h-8 text-gray-400 mb-2" />
                       <span className="text-sm font-medium text-gray-600">
-                        Click to upload attachment
+                        {tx("Click to upload attachment")}
                       </span>
                       <span className="text-xs text-gray-400 mt-1">
-                        Any file type supported
+                        {tx("Any file type supported")}
                       </span>
                     </div>
                   </div>
@@ -3352,6 +3356,7 @@ function EditModal({
   isLoading,
   progress = 0,
 }: EditModalProps) {
+  const tx = useTx();
   const t = useTranslations();
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     switch (node.type) {
@@ -3664,7 +3669,7 @@ function EditModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -3694,7 +3699,7 @@ function EditModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -3724,7 +3729,7 @@ function EditModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -3754,7 +3759,7 @@ function EditModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -3784,7 +3789,7 @@ function EditModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -3814,7 +3819,7 @@ function EditModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -3844,7 +3849,7 @@ function EditModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -3874,7 +3879,7 @@ function EditModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -3920,7 +3925,7 @@ function EditModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Subtitle
+                  {tx("Subtitle")}
                 </label>
 
                 <input
@@ -3936,7 +3941,7 @@ function EditModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
+                    {tx("Description")}
                   </label>
 
                   <textarea
@@ -3951,7 +3956,7 @@ function EditModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Objectives
+                    {tx("Objectives")}
                   </label>
 
                   <textarea
@@ -3968,7 +3973,7 @@ function EditModal({
               <div className="grid grid-cols-3 gap-4">
                 <div className="col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Thumbnail
+                    {tx("Thumbnail")}
                   </label>
 
                   <input
@@ -3998,7 +4003,7 @@ function EditModal({
                       <Upload className="w-6 h-6 text-gray-400 mb-1" />
 
                       <span className="text-gray-400 text-xs text-center leading-tight">
-                        Click to
+                        {tx("Click to")}
                         <br />
                         upload
                       </span>
@@ -4009,7 +4014,7 @@ function EditModal({
                 <div className="col-span-2 space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
+                      {tx("Status")}
                     </label>
 
                     <select
@@ -4023,8 +4028,8 @@ function EditModal({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       <option value="">select Status</option>
-                      <option value={1}>Active</option>
-                      <option value={0}>Draft</option>
+                      <option value={1}>{tx("Active")}</option>
+                      <option value={0}>{tx("Draft")}</option>
 
                     </select>
                   </div>
@@ -4033,7 +4038,7 @@ function EditModal({
                     <div className="flex flex-col gap-3 w-full">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule Start
+                      {tx("Schedule Start")}
                     </label>
                     <input
                       type="datetime-local"
@@ -4044,7 +4049,7 @@ function EditModal({
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule End
+                      {tx("Schedule End")}
                     </label>
                     <input
                       type="datetime-local"
@@ -4058,7 +4063,7 @@ function EditModal({
 
                   {!isInstructor && <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Instructor
+                      {tx("Instructor")}
                     </label>
 
                     <InstructorSelect
@@ -4078,7 +4083,7 @@ function EditModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price
+                    {tx("Price")}
                   </label>
 
                   <input
@@ -4095,7 +4100,7 @@ function EditModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Max Views
+                    {tx("Max Views")}
                   </label>
 
                   <input
@@ -4116,7 +4121,7 @@ function EditModal({
               {/* Show In Field */}
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-bold text-[#475569]">
-                  Show In
+                  {tx("Show In")}
                 </label>
                 <div className="relative">
                   <select
@@ -4129,9 +4134,9 @@ function EditModal({
                       })
                     }
                   >
-                    <option value="both">Both (App & Web)</option>
-                    <option value="app">Mobile App Only</option>
-                    <option value="web">Web Portal Only</option>
+                    <option value="both">{tx("Both (App & Web)")}</option>
+                    <option value="app">{tx("Mobile App Only")}</option>
+                    <option value="web">{tx("Web Portal Only")}</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
                 </div>
@@ -4146,7 +4151,7 @@ function EditModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
+                  {tx("Title")}
                 </label>
 
                 <input
@@ -4162,7 +4167,7 @@ function EditModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {tx("Description")}
                 </label>
 
                 <textarea
@@ -4178,7 +4183,7 @@ function EditModal({
               <div className="flex flex-col gap-3 w-full">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule Start
+                      {tx("Schedule Start")}
                     </label>
                     <input
                       type="datetime-local"
@@ -4189,7 +4194,7 @@ function EditModal({
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule End
+                      {tx("Schedule End")}
                     </label>
                     <input
                       type="datetime-local"
@@ -4211,14 +4216,14 @@ function EditModal({
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
                 <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                   <FileVideo className="w-4 h-4 text-orange-500" />
-                  Media Files
+                  {tx("Media Files")}
                 </h4>
 
                 {/* Video Upload */}
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
-                    Video
+                    {tx("Video")}
                   </label>
 
                   <input
@@ -4244,7 +4249,7 @@ function EditModal({
 
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <span className="text-white text-sm font-medium">
-                            Change Video
+                            {tx("Change Video")}
                           </span>
                         </div>
                       </div>
@@ -4273,7 +4278,7 @@ function EditModal({
                       </div>
 
                       <span className="text-sm font-medium text-gray-600">
-                        Click to upload video
+                        {tx("Click to upload video")}
                       </span>
 
                       <span className="text-xs text-gray-400 mt-1">
@@ -4287,7 +4292,7 @@ function EditModal({
 
                 {/* <div>
                   <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
-                    Thumbnail
+                    {tx("Thumbnail")}
                   </label>
 
                   <input
@@ -4337,7 +4342,7 @@ function EditModal({
                       <ImageIcon className="w-6 h-6 text-gray-400 mb-1" />
 
                       <span className="text-xs text-gray-500">
-                        Add thumbnail
+                        {tx("Add thumbnail")}
                       </span>
                     </div>
                   )}
@@ -4365,7 +4370,7 @@ function EditModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Max Views
+                    {tx("Max Views")}
                   </label>
 
                   <input
@@ -4386,7 +4391,7 @@ function EditModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Duration
+                    {tx("Duration")}
                   </label>
 
                   <input
@@ -4394,14 +4399,14 @@ function EditModal({
                     value={formData.duration || ""}
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-50"
-                    placeholder="Auto-extracted from video"
+                    placeholder={tx("Auto-extracted from video")}
                   />
                 </div>
 
                 <div className="flex flex-col gap-3 w-full">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule Start
+                      {tx("Schedule Start")}
                     </label>
                     <input
                       type="datetime-local"
@@ -4412,7 +4417,7 @@ function EditModal({
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule End
+                      {tx("Schedule End")}
                     </label>
                     <input
                       type="datetime-local"
@@ -4429,7 +4434,7 @@ function EditModal({
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
                 <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-blue-500" />
-                  Attachments
+                  {tx("Attachments")}
                 </h4>
 
                 <input
@@ -4450,7 +4455,7 @@ function EditModal({
                   </div>
 
                   <span className="text-sm font-medium text-gray-600">
-                    Click to upload attachments
+                    {tx("Click to upload attachments")}
                   </span>
 
                   <span className="text-xs text-gray-400 mt-1">
@@ -4502,7 +4507,7 @@ function EditModal({
               {/* Type Field */}
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-bold text-[#475569]">
-                  Type
+                  {tx("Type")}
                 </label>
                 <div className="relative">
                   <select
@@ -4517,8 +4522,8 @@ function EditModal({
                       })
                     }
                   >
-                    <option value="chapter">Chapter (Lesson)</option>
-                    <option value="note">Note</option>
+                    <option value="chapter">{tx("Chapter (Lesson)")}</option>
+                    <option value="note">{tx("Note")}</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
                 </div>
@@ -4528,7 +4533,7 @@ function EditModal({
               {(formData.type === "note") && (
                 <div className="flex flex-col gap-2">
                   <label className="text-[13px] font-bold text-[#475569]">
-                    Note Type <span className="text-[#EF4444]">*</span>
+                    {tx("Note Type")} <span className="text-[#EF4444]">*</span>
                   </label>
                   <div className="relative">
                     <select
@@ -4556,11 +4561,11 @@ function EditModal({
               {(formData.type === "note") && (
                 <div className="flex flex-col gap-2">
                   <label className="text-[13px] font-bold text-[#475569]">
-                    Content / Text
+                    {tx("Content / Text")}
                   </label>
                   <textarea
                     className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6] transition-all min-h-[120px]"
-                    placeholder="Enter the note content or summary text here..."
+                    placeholder={tx("Enter the note content or summary text here...")}
                     value={formData.content || ""}
                     onChange={(e) =>
                       setFormData({
@@ -4578,7 +4583,7 @@ function EditModal({
                   htmlFor="edit_is_free_preview"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Video Free Preview
+                  {tx("Video Free Preview")}
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -4611,7 +4616,7 @@ function EditModal({
                   htmlFor="edit_is_free_preview_attachment"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Is Preview Attachment
+                  {tx("Is Preview Attachment")}
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -4643,7 +4648,7 @@ function EditModal({
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-2">
                   <PlayCircle className="w-4 h-4" />
-                  View Detection Timestamp
+                  {tx("View Detection Timestamp")}
                 </label>
 
                 <p className="text-xs text-gray-500 mb-2">
@@ -4718,7 +4723,7 @@ function EditModal({
               onClick={onClose}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
             >
-              Close
+              {tx("Close")}
             </button>
 
             <button
@@ -4775,6 +4780,7 @@ function AddModal({
   progress = 0,
   lessonCreateType = "video-pdf",
 }: AddModalProps) {
+  const tx = useTx();
   const t = useTranslations();
   const [formData, setFormData] = useState<Record<string, any>>(
     type === "chapter" ? { view_by_minute: 30 } : {},
@@ -4803,7 +4809,7 @@ function AddModal({
 
     const videoFile = formData.video as File | undefined;
     if (videoFile && videoFile.size > MAX_VIDEO_SIZE_BYTES) {
-      toast.error("Video file is too large. Please upload a file smaller than 500MB.");
+      toast.error(tx("Video file is too large. Please upload a file smaller than 500MB."));
       return;
     }
 
@@ -4835,7 +4841,7 @@ function AddModal({
 
     if (file) {
       if (file.size > MAX_VIDEO_SIZE_BYTES) {
-        toast.error("Video file is too large. Please upload a file smaller than 500MB.");
+        toast.error(tx("Video file is too large. Please upload a file smaller than 500MB."));
         e.target.value = "";
         return;
       }
@@ -4931,7 +4937,7 @@ function AddModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -4961,7 +4967,7 @@ function AddModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -4991,7 +4997,7 @@ function AddModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -5021,7 +5027,7 @@ function AddModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -5051,7 +5057,7 @@ function AddModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -5081,7 +5087,7 @@ function AddModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -5111,7 +5117,7 @@ function AddModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  {tx("Image")}
                 </label>
 
                 <input
@@ -5141,7 +5147,7 @@ function AddModal({
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -5201,7 +5207,7 @@ function AddModal({
                     <Upload className="w-6 h-6 text-gray-400 mb-1" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -5225,7 +5231,7 @@ function AddModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sub Title
+                  {tx("Sub Title")}
                 </label>
 
                 <input
@@ -5240,7 +5246,7 @@ function AddModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {tx("Description")}
                 </label>
 
                 <textarea
@@ -5255,7 +5261,7 @@ function AddModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Objectives
+                  {tx("Objectives")}
                 </label>
 
                 <textarea
@@ -5271,7 +5277,7 @@ function AddModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price
+                    {tx("Price")}
                   </label>
 
                   <input
@@ -5288,7 +5294,7 @@ function AddModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Max Views
+                    {tx("Max Views")}
                   </label>
 
                   <input
@@ -5308,7 +5314,7 @@ function AddModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  {tx("Status")}
                 </label>
 
                 <select
@@ -5321,9 +5327,9 @@ function AddModal({
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
-                  <option value={0}>Draft</option>
+                  <option value={0}>{tx("Draft")}</option>
 
-                  <option value={1}>Active</option>
+                  <option value={1}>{tx("Active")}</option>
                 </select>
               </div>
 
@@ -5331,7 +5337,7 @@ function AddModal({
                 <div className="flex flex-col gap-3 w-full">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule Start
+                      {tx("Schedule Start")}
                     </label>
                     <input
                       type="datetime-local"
@@ -5342,7 +5348,7 @@ function AddModal({
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule End
+                      {tx("Schedule End")}
                     </label>
                     <input
                       type="datetime-local"
@@ -5356,7 +5362,7 @@ function AddModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Instructor
+                  {tx("Instructor")}
                 </label>
 
                 <InstructorSelect
@@ -5373,7 +5379,7 @@ function AddModal({
               {/* Show In Field */}
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-bold text-[#475569]">
-                  Show In
+                  {tx("Show In")}
                 </label>
                 <div className="relative">
                   <select
@@ -5386,9 +5392,9 @@ function AddModal({
                       })
                     }
                   >
-                    <option value="both">Both (App & Web)</option>
-                    <option value="app">Mobile App Only</option>
-                    <option value="web">Web Portal Only</option>
+                    <option value="both">{tx("Both (App & Web)")}</option>
+                    <option value="app">{tx("Mobile App Only")}</option>
+                    <option value="web">{tx("Web Portal Only")}</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
                 </div>
@@ -5402,7 +5408,7 @@ function AddModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Thumbnail
+                  {tx("Thumbnail")}
                 </label>
 
                 <input
@@ -5432,7 +5438,7 @@ function AddModal({
                     <Upload className="w-6 h-6 text-gray-400 mb-1" />
 
                     <span className="text-gray-400 text-xs">
-                      Click to upload
+                      {tx("Click to upload")}
                     </span>
                   </div>
                 )}
@@ -5456,7 +5462,7 @@ function AddModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {tx("Description")}
                 </label>
 
                 <textarea
@@ -5472,7 +5478,7 @@ function AddModal({
               <div className="flex flex-col gap-3 w-full">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule Start
+                      {tx("Schedule Start")}
                     </label>
                     <input
                       type="datetime-local"
@@ -5483,7 +5489,7 @@ function AddModal({
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule End
+                      {tx("Schedule End")}
                     </label>
                     <input
                       type="datetime-local"
@@ -5505,7 +5511,7 @@ function AddModal({
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
                 <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                   <FileVideo className="w-4 h-4 text-orange-500" />
-                  Media Files
+                  {tx("Media Files")}
                 </h4>
 
                 {/* Video Upload */}
@@ -5514,7 +5520,7 @@ function AddModal({
                   lessonCreateType === "video") && (
                     <div>
                       <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
-                        Video
+                        {tx("Video")}
                       </label>
 
                       <input
@@ -5540,7 +5546,7 @@ function AddModal({
 
                             <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                               <span className="text-white text-sm font-medium">
-                                Change Video
+                                {tx("Change Video")}
                               </span>
                             </div>
                           </div>
@@ -5569,7 +5575,7 @@ function AddModal({
                           </div>
 
                           <span className="text-sm font-medium text-gray-600">
-                            Click to upload video
+                            {tx("Click to upload video")}
                           </span>
 
                           <span className="text-xs text-gray-400 mt-1">
@@ -5584,7 +5590,7 @@ function AddModal({
 
                 {/* <div>
                   <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
-                    Thumbnail
+                    {tx("Thumbnail")}
                   </label>
 
                   <input
@@ -5634,7 +5640,7 @@ function AddModal({
                       <ImageIcon className="w-6 h-6 text-gray-400 mb-1" />
 
                       <span className="text-xs text-gray-500">
-                        Add thumbnail
+                        {tx("Add thumbnail")}
                       </span>
                     </div>
                   )}
@@ -5662,7 +5668,7 @@ function AddModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Max Views
+                    {tx("Max Views")}
                   </label>
 
                   <input
@@ -5683,7 +5689,7 @@ function AddModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Duration
+                    {tx("Duration")}
                   </label>
 
                   <input
@@ -5691,14 +5697,14 @@ function AddModal({
                     value={formData.duration || ""}
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-50"
-                    placeholder="Auto-extracted from video"
+                    placeholder={tx("Auto-extracted from video")}
                   />
                 </div>
 
                 <div className="flex flex-col gap-3 w-full">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule Start
+                      {tx("Schedule Start")}
                     </label>
                     <input
                       type="datetime-local"
@@ -5709,7 +5715,7 @@ function AddModal({
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Schedule End
+                      {tx("Schedule End")}
                     </label>
                     <input
                       type="datetime-local"
@@ -5727,7 +5733,7 @@ function AddModal({
                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
                   <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-500" />
-                    Attachments
+                    {tx("Attachments")}
                   </h4>
 
                   <input
@@ -5748,7 +5754,7 @@ function AddModal({
                     </div>
 
                     <span className="text-sm font-medium text-gray-600">
-                      Click to upload attachments
+                      {tx("Click to upload attachments")}
                     </span>
 
                     <span className="text-xs text-gray-400 mt-1">
@@ -5790,7 +5796,7 @@ function AddModal({
               {/* Type Field */}
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-bold text-[#475569]">
-                  Type
+                  {tx("Type")}
                 </label>
                 <div className="relative">
                   <select
@@ -5805,8 +5811,8 @@ function AddModal({
                       })
                     }
                   >
-                    <option value="chapter">Chapter (Lesson)</option>
-                    <option value="note">Note</option>
+                    <option value="chapter">{tx("Chapter (Lesson)")}</option>
+                    <option value="note">{tx("Note")}</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
                 </div>
@@ -5816,7 +5822,7 @@ function AddModal({
               {(formData.type === "note") && (
                 <div className="flex flex-col gap-2">
                   <label className="text-[13px] font-bold text-[#475569]">
-                    Note Type <span className="text-[#EF4444]">*</span>
+                    {tx("Note Type")} <span className="text-[#EF4444]">*</span>
                   </label>
                   <div className="relative">
                     <select
@@ -5844,11 +5850,11 @@ function AddModal({
               {(formData.type === "note") && (
                 <div className="flex flex-col gap-2">
                   <label className="text-[13px] font-bold text-[#475569]">
-                    Content / Text
+                    {tx("Content / Text")}
                   </label>
                   <textarea
                     className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6] transition-all min-h-[120px]"
-                    placeholder="Enter the note content or summary text here..."
+                    placeholder={tx("Enter the note content or summary text here...")}
                     value={formData.content || ""}
                     onChange={(e) =>
                       setFormData({
@@ -5902,7 +5908,7 @@ function AddModal({
                     htmlFor="add_is_free_preview_attachment"
                     className="text-sm font-medium text-gray-700"
                   >
-                    Is Preview Attachment
+                    {tx("Is Preview Attachment")}
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -5935,7 +5941,7 @@ function AddModal({
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <label className="block text-sm font-medium text-blue-700 mb-2 flex items-center gap-2">
                   <PlayCircle className="w-4 h-4" />
-                  View Detection Timestamp
+                  {tx("View Detection Timestamp")}
                 </label>
 
                 <p className="text-xs text-gray-500 mb-2">
@@ -6004,7 +6010,7 @@ function AddModal({
               onClick={onClose}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
             >
-              Close
+              {tx("Close")}
             </button>
 
             <button
@@ -6070,6 +6076,7 @@ function CopyMoveModal({
 
   isLoading,
 }: CopyMoveModalProps) {
+  const tx = useTx();
   const ar = useLocale() === "ar";
   const chapter = node.data as Chapter;
 
@@ -6119,7 +6126,7 @@ function CopyMoveModal({
 
         <div className="flex-1 overflow-y-auto p-4">
           <label className="block text-sm font-medium text-gray-700 mb-3">
-            Select Target Lectures
+            {tx("Select Target Lectures")}
           </label>
 
           <CourseTreeSelect
@@ -6185,6 +6192,7 @@ function GenerateCodeModal({
   itemId,
   onClose,
 }: GenerateCodeModalProps) {
+  const tx = useTx();
   const t = useTranslations();
 
   const { mutate: createCode, isLoading: isGenerating } = useCreateCode();
@@ -6213,7 +6221,7 @@ function GenerateCodeModal({
     e.preventDefault();
 
     if (!itemId) {
-      toast.error("Please select an item");
+      toast.error(tx("Please select an item"));
 
       return;
     }
@@ -6257,7 +6265,7 @@ function GenerateCodeModal({
 
     setCopiedIndex(index);
 
-    toast.success("Code copied");
+    toast.success(tx("Code copied"));
 
     setTimeout(() => setCopiedIndex(null), 2000);
   };
@@ -6270,7 +6278,7 @@ function GenerateCodeModal({
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
-              Generate Activation Codes
+              {tx("Generate Activation Codes")}
             </h3>
 
             <p className="text-sm text-gray-500 mt-0.5">
@@ -6294,7 +6302,7 @@ function GenerateCodeModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quantity <span className="text-red-500">*</span>
+                {tx("Quantity")} <span className="text-red-500">*</span>
               </label>
 
               <input
@@ -6308,7 +6316,7 @@ function GenerateCodeModal({
               />
 
               <p className="text-xs text-[#94A3B8] mt-1">
-                Maximum 100 codes per generation
+                {tx("Maximum 100 codes per generation")}
               </p>
             </div>
 
@@ -6335,7 +6343,7 @@ function GenerateCodeModal({
                         type="button"
                         onClick={() => handleCopy(code, index)}
                         className="p-1 hover:bg-green-50 rounded transition-colors"
-                        title="Copy code"
+                        title={tx("Copy code")}
                       >
                         {copiedIndex === index ? (
                           <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
@@ -6359,7 +6367,7 @@ function GenerateCodeModal({
             onClick={onClose}
             className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
           >
-            Close
+            {tx("Close")}
           </button>
 
           <button
@@ -6370,7 +6378,7 @@ function GenerateCodeModal({
             {isGenerating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Generating...
+                {tx("Generating...")}
               </>
             ) : (
               "Generate"

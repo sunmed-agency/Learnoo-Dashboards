@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { ArrowLeft, Save, Smartphone, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function ParentalMonitoringSettingsPage() {
+  const tx = useTx();
   const [enabled, setEnabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -13,9 +15,9 @@ export default function ParentalMonitoringSettingsPage() {
     setIsSaving(true);
     try {
       await new Promise((r) => setTimeout(r, 500));
-      toast.success('Settings saved successfully');
+      toast.success(tx("Settings saved successfully"));
     } catch {
-      toast.error('Failed to save settings');
+      toast.error(tx("Failed to save settings"));
     } finally {
       setIsSaving(false);
     }
@@ -31,8 +33,8 @@ export default function ParentalMonitoringSettingsPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1E293B]">Parental Monitoring</h1>
-          <p className="text-sm text-[#64748B] mt-0.5">Configure parental monitoring settings</p>
+          <h1 className="text-2xl font-bold text-[#1E293B]">{tx("Parental Monitoring")}</h1>
+          <p className="text-sm text-[#64748B] mt-0.5">{tx("Configure parental monitoring settings")}</p>
         </div>
       </div>
 
@@ -41,7 +43,7 @@ export default function ParentalMonitoringSettingsPage() {
         <div>
           <p className="text-sm font-bold text-amber-800">Backend/Mobile Required</p>
           <p className="text-sm text-amber-700 mt-1">
-            Parental monitoring features require mobile SDK integration. This UI enables the backend feature flag only.
+            {tx("Parental monitoring features require mobile SDK integration. This UI enables the backend feature flag only.")}
           </p>
         </div>
       </div>
@@ -49,7 +51,7 @@ export default function ParentalMonitoringSettingsPage() {
       <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]/50 flex items-center gap-2">
           <Smartphone className="w-4 h-4 text-[#2137D6]" />
-          <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">Parental Monitoring</h2>
+          <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{tx("Parental Monitoring")}</h2>
         </div>
         <div className="p-6">
           <label className="relative inline-flex items-center cursor-pointer">
@@ -60,7 +62,7 @@ export default function ParentalMonitoringSettingsPage() {
               onChange={(e) => setEnabled(e.target.checked)}
             />
             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2137D6]"></div>
-            <span className="ml-3 text-sm font-bold text-[#1E293B]">Enable Parental Monitoring</span>
+            <span className="ml-3 text-sm font-bold text-[#1E293B]">{tx("Enable Parental Monitoring")}</span>
           </label>
           <p className="text-xs text-[#64748B] mt-3">
             When enabled, parents can monitor their children&apos;s:

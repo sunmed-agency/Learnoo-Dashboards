@@ -19,10 +19,12 @@ import { useLiveRooms } from '@/src/hooks/useLiveRooms';
 import { useQuizzes } from '@/src/hooks/useQuizzes';
 import type { Code, Student, Course, Chapter, Library, LiveRoom, Quiz, ActivateCodeRequest } from '@/src/types';
 import toast from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 type TabType = 'codes' | 'assign' | 'history';
 
 export default function ActivationPage() {
+  const tx = useTx();
   const t = useTranslations();
   const [activeTab, setActiveTab] = useState<TabType>('codes');
   const [searchQuery, setSearchQuery] = useState('');
@@ -415,7 +417,7 @@ export default function ActivationPage() {
                 ],
                 value: typeFilter === 'All Types' ? '' : typeFilter,
                 onChange: (val) => {
-                  setTypeFilter(val || 'All Types');
+                  setTypeFilter(val || tx("All Types"));
                   setItemFilter('All Items');
                 },
               },
@@ -424,7 +426,7 @@ export default function ActivationPage() {
                 label: t('activation.filters.allItems'),
                 options: getItemOptions(),
                 value: itemFilter === 'All Items' ? '' : itemFilter,
-                onChange: (val: string) => setItemFilter(val || 'All Items'),
+                onChange: (val: string) => setItemFilter(val || tx("All Items")),
               }] : []),
               {
                 key: 'status',

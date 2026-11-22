@@ -6,8 +6,10 @@ import { Video } from 'lucide-react';
 import { useCreateLecture } from '@/src/hooks/useLectures';
 import { useCourses } from '@/src/hooks/useCourses';
 import { EntityForm, FormSection, FormInput, FormTextarea, FormSelect } from '@/src/components/admin/EntityForm';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AddLecturePage() {
+  const tx = useTx();
   const router = useRouter();
   const { mutate: createLecture, isLoading, error } = useCreateLecture();
   const { data: courses, isLoading: isLoadingCourses } = useCourses();
@@ -40,16 +42,16 @@ export default function AddLecturePage() {
 
   return (
     <EntityForm
-      title="Add New Lecture"
-      description="Create a new lecture for a course"
+      title={tx("Add New Lecture")}
+      description={tx("Create a new lecture for a course")}
       backHref="/lectures"
       onSubmit={handleSubmit}
       isLoading={isLoading || isLoadingCourses}
       error={error}
     >
-      <FormSection title="Lecture Information" icon={<Video className="w-4 h-4" />}>
+      <FormSection title={tx("Lecture Information")} icon={<Video className="w-4 h-4" />}>
         <FormSelect
-          label="Course"
+          label={tx("Course")}
           required
           value={formData.course_id}
           onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
@@ -57,18 +59,18 @@ export default function AddLecturePage() {
           className="md:col-span-2"
         />
         <FormInput
-          label="Lecture Title"
+          label={tx("Lecture Title")}
           required
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           placeholder="e.g., Introduction to Physics"
         />
         <FormTextarea
-          label="Description"
+          label={tx("Description")}
           required
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Enter lecture description..."
+          placeholder={tx("Enter lecture description...")}
           rows={4}
         />
       </FormSection>

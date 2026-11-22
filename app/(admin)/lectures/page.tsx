@@ -8,8 +8,10 @@ import { SearchFilter } from '@/src/components/admin/SearchFilter';
 import { DataTable, Column } from '@/src/components/ui/DataTable';
 import { DeleteModal } from '@/src/components/ui/DeleteModal';
 import type { Lecture } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function LecturesPage() {
+  const tx = useTx();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourse, setSelectedCourse] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -87,8 +89,8 @@ export default function LecturesPage() {
     return (
       <div className="flex flex-col gap-8">
         <AdminPageHeader
-          title="Lectures Management"
-          description="Manage course lectures"
+          title={tx("Lectures Management")}
+          description={tx("Manage course lectures")}
           actionLabel="Add Lecture"
           actionHref="/lectures/add"
         />
@@ -98,7 +100,7 @@ export default function LecturesPage() {
             onClick={refetch}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
-            Retry
+            {tx("Retry")}
           </button>
         </div>
       </div>
@@ -108,8 +110,8 @@ export default function LecturesPage() {
   return (
     <div className="flex flex-col gap-8 pb-12">
       <AdminPageHeader
-        title="Lectures Management"
-        description="Manage course lectures"
+        title={tx("Lectures Management")}
+        description={tx("Manage course lectures")}
         actionLabel="Add Lecture"
         actionHref="/lectures/add"
       />
@@ -136,7 +138,7 @@ export default function LecturesPage() {
         keyExtractor={(item) => item.id}
         onDelete={handleDelete}
         editHref={(item) => `/lectures/${item.id}/edit`}
-        emptyMessage="No lectures found. Create your first lecture!"
+        emptyMessage={tx("No lectures found. Create your first lecture!")}
       />
 
       <DeleteModal
@@ -146,7 +148,7 @@ export default function LecturesPage() {
           setSelectedLecture(null);
         }}
         onConfirm={handleConfirmDelete}
-        title="Delete Lecture"
+        title={tx("Delete Lecture")}
         itemName={selectedLecture?.attributes.title || ''}
         isLoading={isDeleting}
       />

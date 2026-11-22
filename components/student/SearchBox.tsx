@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Loader2, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { globalSearch, SearchItem } from "@/src/services/student/search.service";
+import { useTx } from "@/src/lib/ui-text";
 
 export default function SearchBox() {
       const router = useRouter();
+  const tx = useTx();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchItem[]>([]);
@@ -86,7 +88,7 @@ const getSearchHref = (item: SearchItem) => {
       <input
         value={query}
         onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Search..."
+        placeholder={tx("Search...")}
         className="h-12 w-full rounded-2xl border border-[var(--border)] bg-white ps-11 pe-11 text-sm text-[var(--text-main)] outline-none transition focus:border-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/10"
       />
 
@@ -140,7 +142,7 @@ const getSearchHref = (item: SearchItem) => {
           ) : (
             !loading && (
               <div className="px-4 py-6 text-center text-sm text-[var(--text-muted)]">
-                No results found
+                {tx("No results found")}
               </div>
             )
           )}

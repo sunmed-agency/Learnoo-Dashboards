@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { LifeBuoy, Send } from 'lucide-react';
 import api, { getApiErrorMessage } from '@/src/lib/api';
 import Logo from '@/components/Logo';
+import { useTx } from '@/src/lib/ui-text';
 
 interface IssuesFormProps {
   isAdmin?: boolean;
@@ -25,6 +26,7 @@ interface IssueFormData {
 }
 
 export default function IssuesForm({ isAdmin = false }: IssuesFormProps) {
+  const tx = useTx();
   const t = useTranslations('issues');
   const locale = useLocale();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -265,7 +267,7 @@ export default function IssuesForm({ isAdmin = false }: IssuesFormProps) {
                   )}
                 </div>
                 <span className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200">
-                  Browse file
+                  {tx("Browse file")}
                 </span>
                 <input
                   ref={fileInputRef}

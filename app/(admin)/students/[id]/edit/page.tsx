@@ -28,8 +28,10 @@ import {
 import type { CreateStudentRequest, StudentStatus } from '@/src/types';
 import { StudentStatusLabels, parseStudentStatus } from '@/src/types';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function EditStudentPage() {
+  const tx = useTx();
   const t = useTranslations();
   const router = useRouter();
   const params = useParams();
@@ -85,7 +87,7 @@ export default function EditStudentPage() {
       if (attrs.centers) {
         setSelectedCenters(attrs.centers.map((c: any) => ({
           id: c.id,
-          name: c.attributes?.name || 'Unknown'
+          name: c.attributes?.name || tx("Unknown")
         })));
       }
 

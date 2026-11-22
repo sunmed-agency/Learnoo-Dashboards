@@ -11,6 +11,7 @@ import { useCodes, useActivateCode, useUploadPreActivation } from '@/src/hooks';
 import { useStudents } from '@/src/hooks/useStudents';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import toast from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 function formatDate(dateString: string | null): string {
   if (!dateString) return 'N/A';
@@ -27,6 +28,7 @@ function getMaterialTypeColor(type: string): string {
 }
 
 export default function LibraryDetailPage() {
+  const tx = useTx();
   const t = useTranslations();
   const router = useRouter();
   const params = useParams();
@@ -259,7 +261,7 @@ export default function LibraryDetailPage() {
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-[#94A3B8]">
-                  No Cover Image
+                  {tx("No Cover Image")}
                 </div>
               )}
             </div>
@@ -388,7 +390,7 @@ export default function LibraryDetailPage() {
                 <Link
                   href={`/activation/generate?library_id=${libraryId}`}
                   className="p-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-[#64748B] hover:text-[#2137D6] hover:border-[#2137D6] transition-all"
-                  title="Generate Activation Codes"
+                  title={tx("Generate Activation Codes")}
                 >
                   <Plus className="w-4 h-4" />
                 </Link>
@@ -540,7 +542,7 @@ export default function LibraryDetailPage() {
 
                   {/* Manual Add */}
                   <div>
-                    <label className="text-xs font-bold text-[#64748B] mb-2 block">Phone numbers (manual)</label>
+                    <label className="text-xs font-bold text-[#64748B] mb-2 block">{tx("Phone numbers (manual)")}</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -552,7 +554,7 @@ export default function LibraryDetailPage() {
                             addLibraryManualNumbers();
                           }
                         }}
-                        placeholder="Enter number(s) and press Enter"
+                        placeholder={tx("Enter number(s) and press Enter")}
                         className="flex-1 px-3 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#2137D6] focus:ring-opacity-10"
                       />
                       <button
@@ -561,10 +563,10 @@ export default function LibraryDetailPage() {
                         disabled={!libraryPreactivationManualInput.trim()}
                         className="px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-xl text-xs font-bold hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Add
+                        {tx("Add")}
                       </button>
                     </div>
-                    <p className="text-[10px] text-[#94A3B8] mt-2">Separate multiple numbers with comma or new line.</p>
+                    <p className="text-[10px] text-[#94A3B8] mt-2">{tx("Separate multiple numbers with comma or new line.")}</p>
                   </div>
 
                   {/* Phone Numbers Preview */}

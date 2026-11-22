@@ -178,7 +178,10 @@
     "logout": "تسجيل الخروج",
     "logoutConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
     "welcome": "مرحباً",
-    "dashboard": "لوحة التحكم"
+    "dashboard": "لوحة التحكم",
+    "download": "تحميل",
+    "errorLoading": "حدث خطأ أثناء تحميل البيانات",
+    "retry": "إعادة المحاولة"
   },
   "pdfViewer": {
     "preview": "معاينة PDF",
@@ -222,7 +225,8 @@
     "recordVoiceFirst": "يرجى تسجيل رسالة صوتية أولًا",
     "showReplies": "عرض الردود",
     "hideReplies": "إخفاء الردود",
-    "watchMoment": "شاهد هذه اللحظة من الدرس"
+    "watchMoment": "شاهد هذه اللحظة من الدرس",
+    "discussionContentRequired": "اكتب محتوى المناقشة أولًا"
   },
   "auth": {
     "login": {
@@ -457,7 +461,8 @@
       "connected": "متصل بخدمة OTP",
       "errors": {
         "codeRequired": "الرجاء إدخال رمز مكون من 6 خانات",
-        "verificationFailed": "فشل التحقق. حاول مرة أخرى."
+        "verificationFailed": "فشل التحقق. حاول مرة أخرى.",
+        "userNotFound": "المستخدم غير موجود"
       }
     },
     "resetPassword": {
@@ -567,7 +572,8 @@
       "system": "النظام"
     },
     "deviceApprovals": "طلبات الأجهزة",
-    "guardians": "أولياء الأمور"
+    "guardians": "أولياء الأمور",
+    "examsAndResults": "الامتحانات والنتائج"
   },
   "issues": {
     "title": "الدعم الفني",
@@ -1097,7 +1103,8 @@
       "viewers": "المشاهدين",
       "edit": "تعديل",
       "delete": "حذف",
-      "videoNotSupported": "متصفحك لا يدعم وسم الفيديو."
+      "videoNotSupported": "متصفحك لا يدعم وسم الفيديو.",
+      "na": "غير متاح"
     },
     "studentActivation": {
       "description": "أدخل رمز التفعيل أدناه لفتح الوصول الكامل إلى هذه المادة.",
@@ -1671,7 +1678,8 @@
       "imageSelected": "تم اختيار الصورة بنجاح",
       "selectCodeAndStudent": "يرجى اختيار الرمز والطالب",
       "courseActivated": "تم تفعيل المادة بنجاح!",
-      "codeCopied": "تم نسخ الرمز إلى الحافظة"
+      "codeCopied": "تم نسخ الرمز إلى الحافظة",
+      "loadError": "تعذّر تحميل المواد"
     },
     "review": {
       "0": "قيد المراجعة",
@@ -1867,7 +1875,10 @@
       "generateCodesLink": "إنشاء رموز",
       "studentNoCodes": "لم يستخدم هذا الطالب أي رموز تفعيل بعد.",
       "codesGenerated": "رمز/رموز تم إنشاؤها بنجاح!",
-      "selectItem": "يرجى اختيار عنصر"
+      "selectItem": "يرجى اختيار عنصر",
+      "codeUpdated": "تم تحديث الكود بنجاح",
+      "generateError": "تعذّر إنشاء الأكواد",
+      "loadError": "تعذّر تحميل أكواد التفعيل"
     },
     "sections": {
       "selectStudent": "اختيار الطالب",
@@ -2454,7 +2465,9 @@
         "scoreEarned": "الدرجة المحرزة",
         "feedback": "ملاحظات"
       }
-    }
+    },
+    "createError": "تعذّر إنشاء الامتحان",
+    "createSuccess": "تم إنشاء الامتحان بنجاح"
   },
   "notesSummaries": {
     "pageTitle": "الملاحظات والملخصات",
@@ -2566,7 +2579,9 @@
       "linkedLecture": "المحاضرة المرتبطة",
       "date": "التاريخ",
       "status": "الحالة"
-    }
+    },
+    "loadFailed": "تعذّر تحميل الملاحظات والملخصات",
+    "retry": "إعادة المحاولة"
   },
   "community": {
     "pageTitle": "المنشورات",
@@ -3017,7 +3032,11 @@
       "title": "باقات صفحة الهبوط",
       "description": "باقات المحاضرين وأسعارها وعدد الطلاب اللي بتظهر في صفحة Learnoo الرئيسية."
     },
-    "soon": "قريباً"
+    "soon": "قريباً",
+    "profile": {
+      "title": "الملف الشخصي",
+      "description": "اسمك وصورتك وبيانات حسابك."
+    }
   },
   "electronicLibrary": {
     "pageTitle": "المكتبة الإلكترونية",
@@ -3566,7 +3585,12 @@
     "alerts": "التنبيهات",
     "noRecentActivity": "لا يوجد نشاط حديث.",
     "noAlerts": "لا توجد تنبيهات.",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "alertsSubtitle": "الإشعارات والتذكيرات الحالية لهذا الطالب.",
+    "enrolledCourse": "مادة مسجّلة",
+    "lastExamScore": "درجة آخر امتحان",
+    "noExamsTaken": "لم يمتحن أي امتحان بعد.",
+    "recentActivitySubtitle": "آخر نشاطات المواد والتحديثات."
   },
   "parentStudentProgress": {
     "title": "تقدم المقرر",
@@ -3588,7 +3612,11 @@
     "interactionMetrics": "مؤشرات التفاعل",
     "learningConsistency": "انتظام التعلم",
     "consistencyMessage": "انتظام رائع! حافظ طفلك على جلسات تعلم منتظمة خلال الأسابيع الماضية.",
-    "noData": "إحصائيات الأسبوع غير متاحة لهذا الطالب بعد."
+    "noData": "إحصائيات الأسبوع غير متاحة لهذا الطالب بعد.",
+    "activeDays": "أيام النشاط",
+    "attended": "حضر",
+    "exams": "الامتحانات",
+    "missed": "غاب"
   },
   "parentAlerts": {
     "title": "الإشعارات والتنبيهات",
@@ -3599,7 +3627,8 @@
     "filterPerformance": "الأداء",
     "highPriority": "أولوية عالية",
     "markAsRead": "تحديد كمقروء",
-    "noAlerts": "لا توجد تنبيهات للعرض."
+    "noAlerts": "لا توجد تنبيهات للعرض.",
+    "subtitle": "التنبيهات والتحديثات المهمة الخاصة بابنك."
   },
   "parentFeedback": {
     "title": "تعليقات المعلمين",
@@ -3619,7 +3648,10 @@
     "filterAttended": "حضرت",
     "filterMissed": "تغيب",
     "timeline": "جدول النشاط",
-    "noActivity": "لا يوجد نشاط حضور حتى الآن."
+    "noActivity": "لا يوجد نشاط حضور حتى الآن.",
+    "filterExam": "الامتحانات",
+    "filterLecture": "المحاضرات",
+    "totalActivities": "إجمالي الأنشطة"
   },
   "doctorDashboard": {
     "pageTitle": "لوحة تحكم الدكتور",

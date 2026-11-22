@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 import { normalizeLocalPhone } from '@/src/lib/local-phone';
+import { useTx } from '@/src/lib/ui-text';
 
 export interface CountryCode {
   code: string;
@@ -220,6 +221,7 @@ interface CountryCodeSelectProps {
 }
 
 export default function CountryCodeSelect({ value, onChange, className }: CountryCodeSelectProps) {
+  const tx = useTx();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -341,7 +343,7 @@ export default function CountryCodeSelect({ value, onChange, className }: Countr
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search country..."
+                placeholder={tx("Search country...")}
                 className="w-full h-9 sm:h-8 px-3 sm:px-2.5 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-md font-sans text-sm sm:text-xs leading-5 text-text-main outline-none transition-colors placeholder:text-text-placeholder focus:border-primary focus:bg-white"
               />
             </div>
@@ -350,7 +352,7 @@ export default function CountryCodeSelect({ value, onChange, className }: Countr
             <div id="country-code-options" ref={listRef} role="listbox" className="max-h-[50vh] sm:max-h-[240px] overflow-y-auto overscroll-contain">
               {filteredCountries.length === 0 ? (
                 <div className="px-3 py-6 sm:py-4 text-center font-sans text-sm sm:text-xs text-text-muted">
-                  No countries found
+                  {tx("No countries found")}
                 </div>
               ) : (
                 filteredCountries.map((country) => {

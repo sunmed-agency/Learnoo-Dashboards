@@ -5,6 +5,7 @@ const { resolve } = require('node:path');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 
 test('admin and instructor code editors support Quiz and retain an exam outside the first search page', () => {
   for (const folder of ['(admin)', '(doctor)/doctor']) {
@@ -26,7 +27,7 @@ test('admin and instructor code editors support Quiz and retain an exam outside 
       };
       if (id.startsWith('@/src/hooks/')) return new Proxy({}, { get: () => () => ({ data: [], isLoading: false }) });
       if (id === '@/src/components/admin/CourseTreeSelect') return { CourseTreeSelect: () => null };
-      return require(id);
+      return requireWithUiText(id);
     }, loaded, loaded.exports);
     const html = renderToStaticMarkup(React.createElement(loaded.exports.default));
     assert.match(html, /activation.types.quiz/);
@@ -60,7 +61,7 @@ test('activation pages expose the exam filter and assign exam and live codes wit
         };
         if (id.startsWith('@/src/hooks/')) return new Proxy({}, { get: () => () => ({ data: [], isLoading: false }) });
         if (id.startsWith('@/src/components/')) return new Proxy({}, { get: () => () => null });
-        return require(id);
+        return requireWithUiText(id);
       }, loaded, loaded.exports);
       const elements = [];
       const walk = element => {

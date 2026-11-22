@@ -16,6 +16,7 @@ import {
   type WatermarkPosition,
   type WatermarkSize,
 } from '@/src/types/watermark-config';
+import { useTx } from '@/src/lib/ui-text';
 
 type ContentType = WatermarkContentType;
 
@@ -40,6 +41,7 @@ interface PreviewSettings {
 }
 
 export default function WatermarkSettingsPage() {
+  const tx = useTx();
   const t = useTranslations('watermarkSettings');
   const tCommon = useTranslations('common');
   const { data: features, isLoading } = usePlatformFeature();
@@ -251,7 +253,7 @@ export default function WatermarkSettingsPage() {
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                             activeType === key ? 'bg-white text-green-600' : 'bg-green-500 text-white'
                           }`}>
-                            ON
+                            {tx("ON")}
                           </span>
                         )}
                       </span>

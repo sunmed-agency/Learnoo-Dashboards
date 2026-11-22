@@ -28,6 +28,7 @@ import type {
   QuizAttemptResultQuiz,
   QuizAttemptResultResponse,
 } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 interface ExamResultsViewProps {
   params: Promise<{ id: string }>;
@@ -336,19 +337,20 @@ function formatDateTime(value: string | null | undefined): string {
 }
 
 function PassedBadge({ passed }: { passed: boolean | null | undefined }) {
+  const tx = useTx();
   if (passed == null) return <span className="text-[#94A3B8]">—</span>;
   if (passed) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
         <CheckCircle2 className="h-3 w-3" />
-        Passed
+        {tx("Passed")}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-700">
       <XCircle className="h-3 w-3" />
-      Failed
+      {tx("Failed")}
     </span>
   );
 }

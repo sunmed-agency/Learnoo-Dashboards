@@ -15,6 +15,7 @@ import {
 import Logo from '@/components/Logo';
 import { useAuthActions, useAuth } from '@/src/stores/authStore';
 import { usePlatformFeature } from '@/src/hooks';
+import { useTx } from '@/src/lib/ui-text';
 
 interface SupportSidebarProps {
   isCollapsed: boolean;
@@ -42,6 +43,7 @@ const menuItems: MenuItem[] = [
 ];
 
 export default function SupportSidebar({ isCollapsed, onToggle }: SupportSidebarProps) {
+  const tx = useTx();
   const pathname = usePathname();
   const { user } = useAuth();
   const { logout } = useAuthActions();
@@ -117,7 +119,7 @@ export default function SupportSidebar({ isCollapsed, onToggle }: SupportSidebar
       {/* Navigation Menu */}
       <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide flex flex-col gap-1">
         {!isCollapsed && (
-          <p className="text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4">SUPPORT PANEL</p>
+          <p className="text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4">{tx("SUPPORT PANEL")}</p>
         )}
         <nav className="flex flex-col gap-1.5">
           {menuItems.map((item) => {

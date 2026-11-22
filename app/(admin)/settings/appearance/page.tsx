@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Save, Palette, Check } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useTx } from '@/src/lib/ui-text';
 
 const THEME_PRESETS = [
   { id: 'default', name: 'Default', primary: '#2137D6', bg: '#FFFFFF' },
@@ -21,6 +22,7 @@ const ICON_PRESETS = [
 ];
 
 export default function AppearanceSettingsPage() {
+  const tx = useTx();
   const [activeTheme, setActiveTheme] = useState('default');
   const [activeIconSet, setActiveIconSet] = useState('default');
   const [isSaving, setIsSaving] = useState(false);
@@ -29,9 +31,9 @@ export default function AppearanceSettingsPage() {
     setIsSaving(true);
     try {
       await new Promise((r) => setTimeout(r, 500));
-      toast.success('Appearance settings saved');
+      toast.success(tx("Appearance settings saved"));
     } catch {
-      toast.error('Failed to save');
+      toast.error(tx("Failed to save"));
     } finally {
       setIsSaving(false);
     }
@@ -47,15 +49,15 @@ export default function AppearanceSettingsPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1E293B]">App Appearance</h1>
-          <p className="text-sm text-[#64748B] mt-0.5">Customize the visual theme and icon set</p>
+          <h1 className="text-2xl font-bold text-[#1E293B]">{tx("App Appearance")}</h1>
+          <p className="text-sm text-[#64748B] mt-0.5">{tx("Customize the visual theme and icon set")}</p>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]/50 flex items-center gap-2">
           <Palette className="w-4 h-4 text-[#2137D6]" />
-          <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">Color Theme</h2>
+          <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{tx("Color Theme")}</h2>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-3 gap-4">
@@ -89,7 +91,7 @@ export default function AppearanceSettingsPage() {
       <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]/50 flex items-center gap-2">
           <Palette className="w-4 h-4 text-[#2137D6]" />
-          <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">Icon Set</h2>
+          <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">{tx("Icon Set")}</h2>
         </div>
         <div className="p-6">
           <div className="flex gap-4">

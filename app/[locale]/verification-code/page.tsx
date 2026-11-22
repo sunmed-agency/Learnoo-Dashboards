@@ -9,8 +9,10 @@ import { toast } from 'sonner';
 import { useAuthActions, useAuthStore } from '@/src/stores/authStore';
 import { authApi, getApiErrorMessage } from '@/src/lib/api';
 import AuthPageLayout from '../../(auth)/components/AuthLayout';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function VerificationCodePage() {
+  const tx = useTx();
   const t = useTranslations('auth.verification');
   const tc = useTranslations('common');
   const router = useRouter();
@@ -123,7 +125,7 @@ export default function VerificationCodePage() {
           <input
             type="text"
             className="w-full h-10 px-3 py-[9px] bg-white border border-border-color shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-md font-sans text-sm leading-5 text-text-main outline-none focus:border-primary focus:shadow-[0px_0px_0px_3px_rgba(33,55,214,0.1)] transition-colors placeholder:text-text-placeholder tracking-[2px] placeholder:tracking-normal"
-            placeholder="Enter 6-character code"
+            placeholder={tx("Enter 6-character code")}
             maxLength={6}
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}

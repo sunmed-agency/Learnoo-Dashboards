@@ -1,6 +1,7 @@
 import React from "react";
 import { ColumnItem } from "./ColumnItem";
 import type { TreeNode } from "./useMillerState";
+import { useTx } from '@/src/lib/ui-text';
 
 interface ColumnProps {
   title: string;
@@ -27,6 +28,7 @@ export function Column({
   onCopyMove,
   isInstructor,
 }: ColumnProps) {
+  const tx = useTx();
   return (
     <div className="flex-shrink-0 w-[240px] bg-white border border-gray-200 rounded-2xl flex flex-col overflow-hidden max-h-[calc(100vh-220px)] shadow-xs">
       {/* Column Header */}
@@ -58,7 +60,7 @@ export function Column({
 
         {items.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full py-8 text-center px-4">
-            <p className="text-xs text-gray-400 italic">No items found</p>
+            <p className="text-xs text-gray-400 italic">{tx("No items found")}</p>
           </div>
         )}
       </div>

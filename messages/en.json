@@ -178,7 +178,10 @@
     "logout": "Logout",
     "logoutConfirm": "Are you sure you want to logout?",
     "welcome": "Welcome",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "download": "Download",
+    "errorLoading": "Error loading data",
+    "retry": "Retry"
   },
   "auth": {
     "login": {
@@ -413,7 +416,8 @@
       "connected": "Connected to OTP service",
       "errors": {
         "codeRequired": "Please enter a valid 6-character code",
-        "verificationFailed": "Verification failed. Please try again."
+        "verificationFailed": "Verification failed. Please try again.",
+        "userNotFound": "User not found"
       }
     },
     "resetPassword": {
@@ -550,7 +554,8 @@
       "system": "System"
     },
     "deviceApprovals": "Device requests",
-    "guardians": "Guardians"
+    "guardians": "Guardians",
+    "examsAndResults": "Exams and results"
   },
   "issues": {
     "title": "Technical Support",
@@ -1053,7 +1058,8 @@
       "viewers": "Viewers",
       "edit": "Edit",
       "delete": "Delete",
-      "videoNotSupported": "Your browser does not support the video tag."
+      "videoNotSupported": "Your browser does not support the video tag.",
+      "na": "N/A"
     },
     "studentActivation": {
       "description": "Enter your activation code below to unlock full access to this course.",
@@ -1627,7 +1633,8 @@
       "imageSelected": "Image selected successfully",
       "selectCodeAndStudent": "Please select both a code and a student",
       "courseActivated": "Course activated successfully!",
-      "codeCopied": "Code copied to clipboard"
+      "codeCopied": "Code copied to clipboard",
+      "loadError": "Failed to load subjects"
     },
     "review": {
       "0": "Pending review",
@@ -1823,7 +1830,10 @@
       "generateCodesLink": "Generate codes",
       "studentNoCodes": "This student has not used any activation codes yet.",
       "codesGenerated": "code(s) generated successfully!",
-      "selectItem": "Please select an item"
+      "selectItem": "Please select an item",
+      "codeUpdated": "Code updated successfully",
+      "generateError": "Failed to generate codes",
+      "loadError": "Failed to load activation codes"
     },
     "sections": {
       "selectStudent": "Select Student",
@@ -2410,7 +2420,9 @@
         "scoreEarned": "Score earned",
         "feedback": "Feedback"
       }
-    }
+    },
+    "createError": "Failed to create the exam",
+    "createSuccess": "Exam created successfully"
   },
   "notesSummaries": {
     "pageTitle": "Notes & Summaries",
@@ -2522,7 +2534,9 @@
       "linkedLecture": "Linked Lecture",
       "date": "Date",
       "status": "Status"
-    }
+    },
+    "loadFailed": "Failed to load notes and summaries",
+    "retry": "Retry"
   },
   "community": {
     "pageTitle": "Posts",
@@ -2713,7 +2727,8 @@
     "recordVoiceFirst": "Please record a voice note first",
     "showReplies": "Show replies",
     "hideReplies": "Hide replies",
-    "watchMoment": "Watch this moment"
+    "watchMoment": "Watch this moment",
+    "discussionContentRequired": "Discussion content is required"
   },
   "universities": {
     "pageTitle": "Universities Management",
@@ -3017,7 +3032,11 @@
       "title": "Landing Page Plans",
       "description": "Lecturer plans, prices and student limits shown on the Learnoo landing page."
     },
-    "soon": "Soon"
+    "soon": "Soon",
+    "profile": {
+      "title": "Profile",
+      "description": "Your name, photo and account details."
+    }
   },
   "electronicLibrary": {
     "pageTitle": "Electronic Library",
@@ -3566,7 +3585,12 @@
     "alerts": "Alerts",
     "noRecentActivity": "No recent activity found.",
     "noAlerts": "No alerts available.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "alertsSubtitle": "Current notifications and reminders for this student.",
+    "enrolledCourse": "Enrolled subject",
+    "lastExamScore": "Last exam score",
+    "noExamsTaken": "No exams taken yet.",
+    "recentActivitySubtitle": "Latest subject events and activity updates."
   },
   "parentStudentProgress": {
     "title": "Course Progress",
@@ -3588,7 +3612,11 @@
     "interactionMetrics": "Interaction Metrics",
     "learningConsistency": "Learning Consistency",
     "consistencyMessage": "Great consistency! Your child has maintained regular learning sessions over the past few weeks.",
-    "noData": "Weekly statistics are not available for this student yet."
+    "noData": "Weekly statistics are not available for this student yet.",
+    "activeDays": "Active days",
+    "attended": "Attended",
+    "exams": "Exams",
+    "missed": "Missed"
   },
   "parentAlerts": {
     "title": "Notifications & Alerts",
@@ -3599,7 +3627,8 @@
     "filterPerformance": "Performance",
     "highPriority": "High Priority",
     "markAsRead": "Mark as read",
-    "noAlerts": "No alerts to show."
+    "noAlerts": "No alerts to show.",
+    "subtitle": "Alerts and priority updates for your child."
   },
   "parentFeedback": {
     "title": "Teacher Feedback",
@@ -3619,7 +3648,10 @@
     "filterAttended": "Attended",
     "filterMissed": "Missed",
     "timeline": "Activity Timeline",
-    "noActivity": "No attendance activity found yet."
+    "noActivity": "No attendance activity found yet.",
+    "filterExam": "Exams",
+    "filterLecture": "Lectures",
+    "totalActivities": "Total activities"
   },
   "doctorDashboard": {
     "pageTitle": "Doctor Dashboard",

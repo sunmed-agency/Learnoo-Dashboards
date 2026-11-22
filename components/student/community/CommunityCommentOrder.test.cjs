@@ -6,6 +6,7 @@ const { resolve } = require('node:path');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 
 const root = resolve(__dirname, '../../..');
 const compile = source => ts.transpileModule(source, {
@@ -14,7 +15,7 @@ const compile = source => ts.transpileModule(source, {
 function load(path, mocks = {}) {
   const loaded = { exports: {} };
   new Function('require', 'module', 'exports', compile(readFileSync(resolve(root, path), 'utf8')))(
-    name => mocks[name] || (name === '@/components/staff/StudentAuthor' ? { __esModule: true, default: ({ author, fallback }) => author?.full_name || fallback } : require(name)), loaded, loaded.exports);
+    name => mocks[name] || (name === '@/components/staff/StudentAuthor' ? { __esModule: true, default: ({ author, fallback }) => author?.full_name || fallback } : requireWithUiText(name)), loaded, loaded.exports);
   return loaded.exports;
 }
 const order = load('src/lib/community-comment-order.ts');

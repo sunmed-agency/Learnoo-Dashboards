@@ -34,6 +34,7 @@ import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 import SearchBox from "./SearchBox";
 import StudentAppMenu from "./StudentAppMenu";
+import { useTx } from '@/src/lib/ui-text';
 
 type DropdownType = "language" | "notifications" | "profile" | null;
 
@@ -74,6 +75,7 @@ export default function Navbar({
 }: {
   currentUser?: CurrentUser | null;
 }) {
+  const tx = useTx();
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
@@ -87,11 +89,11 @@ export default function Navbar({
     const res = await userLogout();
 
     if (!res.success) {
-      toast.error(res.message || "Logout failed");
+      toast.error(res.message || tx("Logout failed"));
       return;
     }
 
-    toast.success(res.message || "Logged out successfully");
+    toast.success(res.message || tx("Logged out successfully"));
 
     Cookies.remove("token");
 

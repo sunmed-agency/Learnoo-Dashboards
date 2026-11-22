@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { RefreshCcw } from 'lucide-react';
 import { useStudentProgress } from '@/src/hooks';
+import { useTx } from '@/src/lib/ui-text';
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 type JsonObject = { [key: string]: JsonValue };
@@ -34,6 +35,7 @@ function isObject(value: JsonValue | undefined): value is JsonObject {
 const safeNumber = (value: JsonValue | undefined) => (typeof value === 'number' ? value : Number(value ?? 0) || 0);
 
 export default function ParentStudentProgressPage() {
+  const tx = useTx();
   const t = useTranslations('parentStudentProgress');
   const params = useParams();
   const studentId = params?.id as string | undefined;
@@ -86,7 +88,7 @@ export default function ParentStudentProgressPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p>{errorMessage || 'Unable to load course progress. Please try again.'}</p>
             <button onClick={() => progressQuery.refetch()} className="inline-flex h-11 items-center justify-center rounded-2xl bg-white px-5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
-              <RefreshCcw className="mr-2 h-4 w-4" /> Retry
+              <RefreshCcw className="mr-2 h-4 w-4" /> {tx("Retry")}
             </button>
           </div>
         </div>

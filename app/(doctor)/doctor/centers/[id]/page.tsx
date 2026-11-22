@@ -12,8 +12,10 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function CenterDetailsPage() {
+  const tx = useTx();
   const router = useRouter();
   const params = useParams();
   
@@ -65,7 +67,7 @@ export default function CenterDetailsPage() {
           className="bg-[#2137D6] hover:bg-[#1a2bb3] text-white px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-semibold transition-all shadow-sm shadow-blue-100"
         >
           <Edit2 className="w-4 h-4" />
-          Edit Center
+          {tx("Edit Center")}
         </Link>
       </div>
 
@@ -89,7 +91,7 @@ export default function CenterDetailsPage() {
       <div className="bg-white rounded-3xl border border-[#F1F5F9] shadow-sm overflow-hidden p-8 flex flex-col gap-6">
         <div className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-[#4F46E5]" />
-          <h2 className="text-lg font-bold text-[#1E293B]">Linked Courses</h2>
+          <h2 className="text-lg font-bold text-[#1E293B]">{tx("Linked Courses")}</h2>
         </div>
 
         <div className="flex flex-col gap-4">

@@ -28,6 +28,7 @@ import { usePlatformFeature } from "@/src/hooks/usePlatformFeature";
 import Logout from "./Logout";
 import type { CurrentUser } from "@/src/interfaces/current-user.interface";
 import { getUserAttributes, getUserInitials } from "@/src/lib/current-user";
+import { useTx } from '@/src/lib/ui-text';
 
 type SidebarItem = {
   key: string;
@@ -140,6 +141,7 @@ export default function Sidebar({
 }: {
   currentUser?: CurrentUser | null;
 }) {
+  const tx = useTx();
   const t = useTranslations("sidebar");
   const common = useTranslations("common");
   const locale = useLocale();
@@ -360,7 +362,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          aria-label="Open menu"
+          aria-label={tx("Open menu")}
           aria-expanded={mobileOpen}
           aria-controls="student-sidebar-drawer"
           className={`fixed end-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] z-[100] flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[#5B73FF] text-white shadow-[0_12px_28px_-10px_rgba(45,70,232,0.7)] ring-4 ring-white transition active:scale-95 ${mobileOpen ? "pointer-events-none opacity-0" : ""
@@ -389,7 +391,7 @@ export default function Sidebar({
           <button
             type="button"
             onClick={closeMobile}
-            aria-label="Close menu"
+            aria-label={tx("Close menu")}
             className="absolute end-3 top-3 z-10 flex size-9 items-center justify-center rounded-lg border border-[var(--border-color)] bg-[var(--card-bg)] text-[var(--text-muted)] transition hover:bg-blue-50 hover:text-[var(--primary)]"
           >
             <X size={18} />
@@ -406,7 +408,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={() => setCollapsed((prev) => !prev)}
-          aria-label="Toggle sidebar"
+          aria-label={tx("Toggle sidebar")}
           className={`absolute -end-3 top-20 z-50 hidden size-7 items-center justify-center rounded-full border shadow-md transition-all duration-300 md:flex ${collapsed
             ? "border-white bg-[var(--primary)] text-white hover:opacity-90"
             : "border-[var(--primary)] bg-[var(--card-bg)] text-[var(--primary)] hover:bg-blue-50"

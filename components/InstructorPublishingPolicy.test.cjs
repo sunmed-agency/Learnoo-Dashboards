@@ -5,6 +5,7 @@ const { resolve } = require('node:path');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
+const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 const root = resolve(__dirname, '..');
 
 function load(file, mocks) {
@@ -12,7 +13,7 @@ function load(file, mocks) {
   const code = ts.transpileModule(readFileSync(resolve(root, file), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
-  new Function('require', 'module', 'exports', code)(id => mocks[id] || require(id), module, module.exports);
+  new Function('require', 'module', 'exports', code)(id => mocks[id] || requireWithUiText(id), module, module.exports);
   return module.exports;
 }
 

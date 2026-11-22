@@ -6,8 +6,10 @@ import SettingsSection from '@/components/settings/SettingsSection';
 import { usePlatformFeature, useUpdatePlatformFeature } from '@/src/hooks';
 import type { PlatformFeature } from '@/src/types';
 import toast, { Toaster } from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function GeneralSettingsPage() {
+  const tx = useTx();
   const { data: features, isLoading } = usePlatformFeature();
   const updateFeature = useUpdatePlatformFeature();
 
@@ -54,13 +56,13 @@ export default function GeneralSettingsPage() {
     }
     
     if (requests.length === 0) {
-      toast.error('Please fill in at least one field');
+      toast.error(tx("Please fill in at least one field"));
       return;
     }
     
     try {
       await Promise.all(requests);
-      toast.success('Settings saved successfully!');
+      toast.success(tx("Settings saved successfully!"));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to save settings');
     }
@@ -80,11 +82,11 @@ export default function GeneralSettingsPage() {
     <div className="flex flex-col h-full">
       <Toaster position="top-right" />
       <SettingsPageHeader 
-        title="General Settings" 
-        description="Platform name, timezone, and basic configuration" 
+        title={tx("General Settings")} 
+        description={tx("Platform name, timezone, and basic configuration")} 
       />
 
-      <SettingsSection title="Platform">
+      <SettingsSection title={tx("Platform")}>
         {isLoading ? (
           <div className="space-y-6">
             <div className="animate-pulse">
@@ -103,7 +105,7 @@ export default function GeneralSettingsPage() {
         ) : (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-1.5">
-              <label className="text-[13px] font-medium text-[#4B5563]">Platform Name</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Platform Name")}</label>
               <input 
                 type="text" 
                 name="platformName"
@@ -113,7 +115,7 @@ export default function GeneralSettingsPage() {
               />
             </div>
             <div className="grid grid-cols-1 gap-1.5">
-              <label className="text-[13px] font-medium text-[#4B5563]">Tagline</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Tagline")}</label>
               <input 
                 type="text" 
                 name="tagline"
@@ -123,7 +125,7 @@ export default function GeneralSettingsPage() {
               />
             </div>
             <div className="grid grid-cols-1 gap-1.5">
-              <label className="text-[13px] font-medium text-[#4B5563]">Support Email</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Support Email")}</label>
               <input 
                 type="email" 
                 name="supportEmail"
@@ -142,7 +144,7 @@ export default function GeneralSettingsPage() {
           disabled={isLoading || updateFeature.isPending}
           className="px-5 py-2.5 text-[14px] font-semibold text-[#4B5563] bg-white border border-[#EEEEEE] hover:bg-[#F9FAFB] rounded-xl transition-colors hover:border-[#D1D5DB] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Cancel
+          {tx("Cancel")}
         </button>
         <button 
           onClick={handleSave}

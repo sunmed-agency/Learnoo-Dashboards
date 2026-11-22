@@ -7,8 +7,10 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { api, getApiErrorMessage } from '@/src/lib/api';
 import type { StudentQuestion } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function LectureQuestionsPage() {
+  const tx = useTx();
   const params = useParams();
   const lectureId = params.id as string;
 
@@ -50,7 +52,7 @@ export default function LectureQuestionsPage() {
     setSavingReply(questionId);
     try {
       await api.lectureQuestions.reply(parseInt(questionId), text);
-      toast.success('Reply sent successfully');
+      toast.success(tx("Reply sent successfully"));
       setReplyText((prev) => ({ ...prev, [questionId]: '' }));
       loadQuestions();
     } catch (err) {
@@ -64,7 +66,7 @@ export default function LectureQuestionsPage() {
     if (!confirm('Delete this question?')) return;
     try {
       await api.lectureQuestions.delete(parseInt(questionId));
-      toast.success('Question deleted');
+      toast.success(tx("Question deleted"));
       setQuestions((prev) => prev.filter((q) => q.id !== questionId));
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Failed to delete question'));
@@ -87,7 +89,7 @@ export default function LectureQuestionsPage() {
           onClick={loadQuestions}
           className="px-4 py-2 bg-[#2137D6] text-white rounded-xl text-sm font-bold"
         >
-          Retry
+          {tx("Retry")}
         </button>
       </div>
     );
@@ -103,7 +105,7 @@ export default function LectureQuestionsPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1E293B]">Student Questions</h1>
+          <h1 className="text-2xl font-bold text-[#1E293B]">{tx("Student Questions")}</h1>
           <p className="text-sm text-[#64748B] mt-0.5">
             {questions.length} question{questions.length !== 1 ? 's' : ''}
           </p>
@@ -113,8 +115,8 @@ export default function LectureQuestionsPage() {
       {questions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-[#F1F5F9]">
           <MessageSquare className="w-12 h-12 text-[#94A3B8] mb-4" />
-          <p className="text-sm font-bold text-[#1E293B]">No questions yet</p>
-          <p className="text-xs text-[#64748B] mt-1">Student questions will appear here</p>
+          <p className="text-sm font-bold text-[#1E293B]">{tx("No questions yet")}</p>
+          <p className="text-xs text-[#64748B] mt-1">{tx("Student questions will appear here")}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
@@ -154,7 +156,7 @@ export default function LectureQuestionsPage() {
                 {q.reply && editingReply !== q.id ? (
                   <div className="mt-4 p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-[#64748B] uppercase">Your Reply</span>
+                      <span className="text-xs font-bold text-[#64748B] uppercase">{tx("Your Reply")}</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -197,7 +199,7 @@ export default function LectureQuestionsPage() {
                         onClick={() => setEditingReply(null)}
                         className="p-2.5 text-[#64748B] hover:bg-[#F8FAFC] rounded-xl transition-all"
                       >
-                        Cancel
+                        {tx("Cancel")}
                       </button>
                     )}
                   </div>

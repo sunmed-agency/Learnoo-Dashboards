@@ -7,8 +7,10 @@ import { SearchFilter } from '@/src/components/admin/SearchFilter';
 import { DataTable, Column } from '@/src/components/ui/DataTable';
 import { DeleteModal } from '@/src/components/ui/DeleteModal';
 import type { Level } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function LevelsPage() {
+  const tx = useTx();
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
@@ -67,8 +69,8 @@ export default function LevelsPage() {
     return (
       <div className="flex flex-col gap-8">
         <AdminPageHeader
-          title="Levels Management"
-          description="Manage student levels and grades"
+          title={tx("Levels Management")}
+          description={tx("Manage student levels and grades")}
           actionLabel="Add Level"
           actionHref="/levels/add"
         />
@@ -78,7 +80,7 @@ export default function LevelsPage() {
             onClick={refetch}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
-            Retry
+            {tx("Retry")}
           </button>
         </div>
       </div>
@@ -88,8 +90,8 @@ export default function LevelsPage() {
   return (
     <div className="flex flex-col gap-8 pb-12">
       <AdminPageHeader
-        title="Levels Management"
-        description="Manage student levels and grades"
+        title={tx("Levels Management")}
+        description={tx("Manage student levels and grades")}
         actionLabel="Add Level"
         actionHref="/levels/add"
       />
@@ -107,7 +109,7 @@ export default function LevelsPage() {
         keyExtractor={(item) => item.id}
         onDelete={handleDelete}
         editHref={(item) => `/levels/${item.id}/edit`}
-        emptyMessage="No levels found. Create your first level!"
+        emptyMessage={tx("No levels found. Create your first level!")}
       />
 
       <DeleteModal
@@ -117,7 +119,7 @@ export default function LevelsPage() {
           setSelectedLevel(null);
         }}
         onConfirm={handleConfirmDelete}
-        title="Delete Level"
+        title={tx("Delete Level")}
         itemName={selectedLevel?.attributes.name || ''}
         isLoading={isDeleting}
       />

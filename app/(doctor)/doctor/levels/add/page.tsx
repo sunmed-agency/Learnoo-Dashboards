@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Layers } from 'lucide-react';
 import { useCreateLevel } from '@/src/hooks/useLevels';
 import { EntityForm, FormSection, FormInput, FormTextarea } from '@/src/components/admin/EntityForm';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AddLevelPage() {
+  const tx = useTx();
   const router = useRouter();
   const { mutate: createLevel, isLoading, error } = useCreateLevel();
   
@@ -31,27 +33,27 @@ export default function AddLevelPage() {
 
   return (
     <EntityForm
-      title="Add New Level"
-      description="Create a new student level or grade"
+      title={tx("Add New Level")}
+      description={tx("Create a new student level or grade")}
       backHref="/doctor/levels"
       onSubmit={handleSubmit}
       isLoading={isLoading}
       error={error}
     >
-      <FormSection title="Level Information" icon={<Layers className="w-4 h-4" />}>
+      <FormSection title={tx("Level Information")} icon={<Layers className="w-4 h-4" />}>
         <FormInput
-          label="Level Name"
+          label={tx("Level Name")}
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="e.g., First Year"
         />
         <FormTextarea
-          label="Description"
+          label={tx("Description")}
           required
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Describe this level..."
+          placeholder={tx("Describe this level...")}
           rows={3}
         />
       </FormSection>

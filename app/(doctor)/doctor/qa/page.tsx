@@ -18,6 +18,7 @@ import {
   Filter
 } from 'lucide-react';
 import { useCurrentUser } from '@/src/hooks/useAuth';
+import { useTx } from '@/src/lib/ui-text';
 
 interface Question {
   id: number;
@@ -137,6 +138,7 @@ const tabs = [
 ];
 
 export default function QAPage() {
+  const tx = useTx();
   const [activeTab, setActiveTab] = useState('latest');
   const [searchQuery, setSearchQuery] = useState('');
   const { user, fullName } = useCurrentUser();
@@ -169,12 +171,12 @@ export default function QAPage() {
             </span>
           </div>
           <p className="text-sm text-[#64748B]">
-            Ask questions, share knowledge, and learn together.
+            {tx("Ask questions, share knowledge, and learn together.")}
           </p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 bg-[#4F46E5] text-white text-sm font-medium rounded-lg hover:bg-[#4338CA] transition-colors">
           <Plus className="w-4 h-4" />
-          Ask New Question
+          {tx("Ask New Question")}
         </button>
       </div>
 
@@ -203,18 +205,18 @@ export default function QAPage() {
 
           {/* Stats Card */}
           <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 mt-4">
-            <h3 className="text-sm font-semibold text-[#1E293B] mb-4">Your Stats</h3>
+            <h3 className="text-sm font-semibold text-[#1E293B] mb-4">{tx("Your Stats")}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#64748B]">Questions Asked</span>
+                <span className="text-sm text-[#64748B]">{tx("Questions Asked")}</span>
                 <span className="text-sm font-semibold text-[#1E293B]">24</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#64748B]">Answers Given</span>
+                <span className="text-sm text-[#64748B]">{tx("Answers Given")}</span>
                 <span className="text-sm font-semibold text-[#1E293B]">156</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#64748B]">Reputation</span>
+                <span className="text-sm text-[#64748B]">{tx("Reputation")}</span>
                 <span className="text-sm font-semibold text-[#1E293B]">2,840</span>
               </div>
             </div>
@@ -230,7 +232,7 @@ export default function QAPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
                 <input
                   type="text"
-                  placeholder="Search questions..."
+                  placeholder={tx("Search questions...")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-4 py-2 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:ring-opacity-20 placeholder:text-[#9CA3AF]"
@@ -238,7 +240,7 @@ export default function QAPage() {
               </div>
               <button className="flex items-center gap-2 px-3 py-2 text-[#64748B] hover:bg-[#F8FAFC] rounded-lg transition-colors">
                 <Filter className="w-4 h-4" />
-                <span className="text-sm">Filter</span>
+                <span className="text-sm">{tx("Filter")}</span>
               </button>
             </div>
           </div>
@@ -324,7 +326,7 @@ export default function QAPage() {
           <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 mb-4">
             <div className="flex items-center gap-2 mb-4">
               <Trophy className="w-5 h-5 text-[#F59E0B]" />
-              <h3 className="text-sm font-semibold text-[#1E293B]">Top Contributors</h3>
+              <h3 className="text-sm font-semibold text-[#1E293B]">{tx("Top Contributors")}</h3>
             </div>
             <div className="space-y-3">
               {dynamicContributors.map((contributor) => (
@@ -344,7 +346,7 @@ export default function QAPage() {
 
           {/* Popular Tags */}
           <div className="bg-white rounded-xl border border-[#E5E7EB] p-4">
-            <h3 className="text-sm font-semibold text-[#1E293B] mb-4">Popular Tags</h3>
+            <h3 className="text-sm font-semibold text-[#1E293B] mb-4">{tx("Popular Tags")}</h3>
             <div className="flex flex-wrap gap-2">
               {['Cardiology', 'Pharmacology', 'Anatomy', 'Biochemistry', 'Endocrinology', 'Neurology', 'Pathology', 'Clinical Medicine'].map((tag) => (
                 <span

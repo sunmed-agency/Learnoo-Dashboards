@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { ArrowLeft, X, FileText, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AddNotePage() {
+  const tx = useTx();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -24,7 +26,7 @@ export default function AddNotePage() {
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">Add New Note</span>
+          <span className="font-medium">{tx("Add New Note")}</span>
         </button>
       </div>
 
@@ -32,19 +34,19 @@ export default function AddNotePage() {
         <div className="space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Title")}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter note title"
+              placeholder={tx("Enter note title")}
               className="w-full px-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Note Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Note Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">{tx("Note Type")}</label>
             <div className="flex gap-4">
               <button
                 onClick={() => setNoteType('summary')}
@@ -59,7 +61,7 @@ export default function AddNotePage() {
                 }`}>
                   {noteType === 'summary' && <div className="w-2 h-2 bg-blue-600 rounded-full" />}
                 </div>
-                Summary
+                {tx("Summary")}
               </button>
               <button
                 onClick={() => setNoteType('keypoints')}
@@ -74,18 +76,18 @@ export default function AddNotePage() {
                 }`}>
                   {noteType === 'keypoints' && <div className="w-2 h-2 bg-blue-600 rounded-full" />}
                 </div>
-                Keypoints
+                {tx("Keypoints")}
               </button>
             </div>
           </div>
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Content")}</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Enter note content..."
+              placeholder={tx("Enter note content...")}
               rows={8}
               className="w-full px-4 py-2.5 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
@@ -93,7 +95,7 @@ export default function AddNotePage() {
 
           {/* Attachments */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{tx("Attachments")}</label>
             <div className="space-y-2">
               {attachments.map((file, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -116,7 +118,7 @@ export default function AddNotePage() {
               ))}
               <button className="flex items-center gap-2 px-4 py-2.5 border border-dashed border-[#E5E7EB] rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors">
                 <Plus className="w-4 h-4" />
-                Add Attachment
+                {tx("Add Attachment")}
               </button>
             </div>
           </div>
@@ -127,10 +129,10 @@ export default function AddNotePage() {
               onClick={() => router.back()}
               className="px-6 py-2.5 text-gray-700 font-medium hover:bg-gray-50 rounded-lg transition-colors"
             >
-              Cancel
+              {tx("Cancel")}
             </button>
             <button className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-              Create Note
+              {tx("Create Note")}
             </button>
           </div>
         </div>

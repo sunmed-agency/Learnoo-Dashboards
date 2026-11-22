@@ -1,8 +1,10 @@
 import { Globe, MessageCircle, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ProfileLinkRow from "./ProfileLinkRow";
+import { useTx } from '@/src/lib/ui-text';
 
 export default function ProfileLinksCard() {
+  const tx = useTx();
   const t = useTranslations("studentProfile");
 
   return (
@@ -28,7 +30,7 @@ export default function ProfileLinksCard() {
 
         <ProfileLinkRow
           icon={<Globe size={18} />}
-          title="Website"
+          title={tx("Website")}
           status={t("connected")}
         />
       </div>

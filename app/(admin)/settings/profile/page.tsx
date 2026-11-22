@@ -8,8 +8,10 @@ import { useCurrentUser } from '@/src/hooks/useAuth';
 import { useAuthStore } from '@/src/stores/authStore';
 import { api } from '@/src/lib/api';
 import toast, { Toaster } from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function ProfileSettingsPage() {
+  const tx = useTx();
   const { user } = useCurrentUser();
   const { updateUser } = useAuthStore();
 
@@ -56,7 +58,7 @@ export default function ProfileSettingsPage() {
 
   const handleSave = async () => {
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      toast.error('First name and last name are required');
+      toast.error(tx("First name and last name are required"));
       return;
     }
 
@@ -88,7 +90,7 @@ export default function ProfileSettingsPage() {
 
       if (response.data) {
         updateUser(response.data);
-        toast.success('Profile updated successfully!');
+        toast.success(tx("Profile updated successfully!"));
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to update profile');
@@ -112,11 +114,11 @@ export default function ProfileSettingsPage() {
     <div className="flex flex-col h-full">
       <Toaster position="top-right" />
       <SettingsPageHeader
-        title="Profile Settings"
-        description="Update your personal information"
+        title={tx("Profile Settings")}
+        description={tx("Update your personal information")}
       />
 
-      <SettingsSection title="Personal Information">
+      <SettingsSection title={tx("Personal Information")}>
         <div className="space-y-6">
           {/* Profile Image */}
           <div className="flex items-center gap-6">
@@ -139,10 +141,10 @@ export default function ProfileSettingsPage() {
               )}
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[13px] font-medium text-[#4B5563]">Profile Photo</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Profile Photo")}</label>
               <div className="flex gap-2">
                 <label className="px-4 py-2 text-[14px] font-semibold text-white bg-[#2137D6] hover:bg-[#1C2EB8] rounded-xl transition-colors cursor-pointer">
-                  Change Photo
+                  {tx("Change Photo")}
                   <input
                     type="file"
                     accept="image/*"
@@ -158,7 +160,7 @@ export default function ProfileSettingsPage() {
                     }}
                     className="px-4 py-2 text-[14px] font-semibold text-[#4B5563] bg-white border border-[#EEEEEE] hover:bg-[#F9FAFB] rounded-xl transition-colors"
                   >
-                    Remove
+                    {tx("Remove")}
                   </button>
                 )}
               </div>
@@ -168,7 +170,7 @@ export default function ProfileSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid grid-cols-1 gap-1.5">
-              <label className="text-[13px] font-medium text-[#4B5563]">First Name</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("First Name")}</label>
               <input
                 type="text"
                 name="firstName"
@@ -178,7 +180,7 @@ export default function ProfileSettingsPage() {
               />
             </div>
             <div className="grid grid-cols-1 gap-1.5">
-              <label className="text-[13px] font-medium text-[#4B5563]">Last Name</label>
+              <label className="text-[13px] font-medium text-[#4B5563]">{tx("Last Name")}</label>
               <input
                 type="text"
                 name="lastName"
@@ -189,7 +191,7 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 gap-1.5">
-            <label className="text-[13px] font-medium text-[#4B5563]">Email</label>
+            <label className="text-[13px] font-medium text-[#4B5563]">{tx("Email")}</label>
             <input
               type="email"
               name="email"
@@ -199,7 +201,7 @@ export default function ProfileSettingsPage() {
             />
           </div>
           <div className="grid grid-cols-1 gap-1.5">
-            <label className="text-[13px] font-medium text-[#4B5563]">Phone</label>
+            <label className="text-[13px] font-medium text-[#4B5563]">{tx("Phone")}</label>
             <input
               type="tel"
               name="phone"
@@ -217,7 +219,7 @@ export default function ProfileSettingsPage() {
           disabled={isLoading}
           className="px-5 py-2.5 text-[14px] font-semibold text-[#4B5563] bg-white border border-[#EEEEEE] hover:bg-[#F9FAFB] rounded-xl transition-colors hover:border-[#D1D5DB] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Cancel
+          {tx("Cancel")}
         </button>
         <button
           onClick={handleSave}

@@ -11,6 +11,7 @@ import { resolveEnabledWatermarkBucket } from '@/src/lib/watermark-from-features
 import { getStudentPlatformFeatures } from '@/src/services/student/platform-feature.service';
 import type { Attachment } from '@/src/types';
 import PdfPreviewModal from '../PdfPreviewModal';
+import { useTx } from '@/src/lib/ui-text';
 
 function extOf(att: Attachment): string {
   return (att.attributes?.extension ?? '').trim().toLowerCase();
@@ -21,6 +22,7 @@ function isPdfPath(att: Attachment): boolean {
 }
 
 export default function StudentLibraryMaterialDetail({ materialId }: { materialId: string }) {
+  const tx = useTx();
   const locale = useLocale();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const t = useTranslations('courses.studentLibrary');
@@ -222,7 +224,7 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
               disabled={!showPdfFrame || currentPage <= 1 || numPages === 0}
               className="flex size-7 items-center justify-center rounded-lg text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-30"
               title={dir === 'rtl' ? 'الصفحة السابقة' : 'Previous page'}
-              aria-label="Previous page"
+              aria-label={tx("Previous page")}
             >
               <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
             </button>
@@ -238,7 +240,7 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
                 onKeyDown={handlePageInputKeyDown}
                 disabled={!showPdfFrame}
                 className="h-7 w-12 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-center text-xs font-bold text-[#0F172A] outline-none transition focus:border-[#2137D6] focus:bg-white focus:ring-1 focus:ring-[#2137D6] disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Current page number"
+                aria-label={tx("Current page number")}
               />
               <span className="text-xs font-semibold text-[#64748B]">
                 / {numPages > 0 ? numPages : '—'}
@@ -251,7 +253,7 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
               disabled={!showPdfFrame || (numPages > 0 && currentPage >= numPages) || numPages === 0}
               className="flex size-7 items-center justify-center rounded-lg text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-30"
               title={dir === 'rtl' ? 'الصفحة التالية' : 'Next page'}
-              aria-label="Next page"
+              aria-label={tx("Next page")}
             >
               <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />
             </button>
@@ -264,8 +266,8 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
               onClick={handleZoomOut}
               disabled={!showPdfFrame || scale <= 0.5}
               className="rounded-lg p-1.5 text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-30"
-              title="Zoom Out"
-              aria-label="Zoom out"
+              title={tx("Zoom Out")}
+              aria-label={tx("Zoom out")}
             >
               <Minus className="size-4" />
             </button>
@@ -274,7 +276,7 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
               onClick={handleResetZoom}
               disabled={!showPdfFrame}
               className="min-w-[3rem] text-center text-xs font-bold text-[#0F172A] transition hover:text-[#2137D6] disabled:cursor-not-allowed disabled:opacity-40"
-              title="Reset Zoom (100%)"
+              title={tx("Reset Zoom (100%)")}
             >
               {Math.round(scale * 100)}%
             </button>
@@ -283,8 +285,8 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
               onClick={handleZoomIn}
               disabled={!showPdfFrame || scale >= 2.5}
               className="rounded-lg p-1.5 text-[#64748B] transition hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-30"
-              title="Zoom In"
-              aria-label="Zoom in"
+              title={tx("Zoom In")}
+              aria-label={tx("Zoom in")}
             >
               <Plus className="size-4" />
             </button>
@@ -428,7 +430,7 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
               {watermarkEnabled ? (
                 <div className="sticky top-2 end-2 z-20 float-end mb-2 flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 shadow-sm">
                   <Droplets className="size-4 text-blue-600" aria-hidden />
-                  <span className="text-xs font-semibold text-blue-700">Watermarked</span>
+                  <span className="text-xs font-semibold text-blue-700">{tx("Watermarked")}</span>
                 </div>
               ) : null}
 

@@ -16,6 +16,7 @@ import { useLocale, useTranslations } from "next-intl";
 import InfoRow from "./ProfileInfoRow";
 import Link from "next/link";
 import Image from "next/image";
+import { useTx } from '@/src/lib/ui-text';
 
 type Props = {
   initials: string;
@@ -46,6 +47,7 @@ export default function ProfileInfoCard({
   image,
   studentCode,
 }: Props) {
+  const tx = useTx();
   const t = useTranslations("studentProfile");
 const locale = useLocale();
 
@@ -113,7 +115,7 @@ const locale = useLocale();
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-blue-900 mb-1">
-                  Student Code
+                  {tx("Student Code")}
                 </p>
                 <div className="flex items-center gap-2 mb-2">
                   <code className="px-3 py-1.5 bg-white border border-blue-300 rounded-lg text-sm font-mono font-bold text-blue-700 select-all">
@@ -121,7 +123,7 @@ const locale = useLocale();
                   </code>
                 </div>
                 <p className="text-xs text-blue-700">
-                  Use this code to link your parent account by entering it in the <span className="font-semibold">student_code</span> field.
+                  {tx("Use this code to link your parent account by entering it in the")} <span className="font-semibold">student_code</span> field.
                 </p>
               </div>
             </div>

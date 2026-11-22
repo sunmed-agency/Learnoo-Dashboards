@@ -1,5 +1,6 @@
 import React from 'react';
 import type { RecentActivityItem } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 const defaultActivities = [
   {
@@ -57,6 +58,8 @@ interface RecentActivityProps {
 }
 
 export default function RecentActivity({ activities: propActivities }: RecentActivityProps) {
+  const uiTx = useTx();
+  const tx = useTx();
   const getColorClasses = (color?: string) => {
     switch (color) {
       case 'red': return { color: '#EF4444', bg: 'bg-[#FEF1F1]' };
@@ -74,8 +77,8 @@ export default function RecentActivity({ activities: propActivities }: RecentAct
       return {
         id: i + 1,
         type: item.icon || 'registration',
-        content: item.title || 'New activity',
-        time: item.time || 'Just now',
+        content: item.title || uiTx("New activity"),
+        time: item.time || uiTx("Just now"),
         iconColor: colors.color,
         iconBg: colors.bg,
       };
@@ -85,8 +88,8 @@ export default function RecentActivity({ activities: propActivities }: RecentAct
   return (
     <div className="bg-white border border-[#EEEEEE] rounded-xl p-6 shadow-sm flex flex-col gap-6 min-h-[586px]">
       <div className="flex items-center justify-between">
-        <h4 className="text-[15.3px] font-medium text-[#111827]">Recent Activity</h4>
-        {/* <button className="text-[11.9px] font-medium text-[#374151] hover:text-[#2137D6] transition-colors">View All</button> */}
+        <h4 className="text-[15.3px] font-medium text-[#111827]">{tx("Recent Activity")}</h4>
+        {/* <button className="text-[11.9px] font-medium text-[#374151] hover:text-[#2137D6] transition-colors">{tx("View All")}</button> */}
       </div>
 
       <div className="flex-1 flex flex-col pt-4">

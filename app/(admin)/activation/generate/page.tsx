@@ -17,6 +17,7 @@ import { useDepartments } from '@/src/hooks/useDepartments';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 
 import toast from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 function SearchableItemSelect({
   items,
@@ -28,6 +29,7 @@ function SearchableItemSelect({
   label,
   isLoading
 }: any) {
+  const tx = useTx();
   return (
     <div className="flex flex-col gap-2">
       <label className="text-[13px] font-bold text-[#475569]">{label} <span className="text-red-500">*</span></label>
@@ -67,7 +69,7 @@ function SearchableItemSelect({
               })}
             </div>
           ) : (
-            <div className="py-8 text-center text-sm text-[#64748B]">No items found</div>
+            <div className="py-8 text-center text-sm text-[#64748B]">{tx("No items found")}</div>
           )}
         </div>
       </div>

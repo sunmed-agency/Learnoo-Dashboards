@@ -5,6 +5,7 @@ import SettingsPageHeader from '@/components/settings/SettingsPageHeader';
 import SettingsSection from '@/components/settings/SettingsSection';
 import { usePlatformFeature, useUpdatePlatformFeature } from '@/src/hooks';
 import toast, { Toaster } from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 const DEFAULT_TERMS = `Welcome to Learnoo. By using our platform, you agree to these Terms of Service.
 
@@ -25,6 +26,7 @@ We collect and process your data to provide educational services.
 3. Data Sharing We do not sell your personal data to third parties.`;
 
 export default function TermsSettingsPage() {
+  const tx = useTx();
   const { data: features, isLoading } = usePlatformFeature();
   const updateFeature = useUpdatePlatformFeature();
 
@@ -57,7 +59,7 @@ export default function TermsSettingsPage() {
 
     try {
       await Promise.all(requests);
-      toast.success('Terms & Privacy settings saved successfully!');
+      toast.success(tx("Terms & Privacy settings saved successfully!"));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to save settings');
     }
@@ -74,11 +76,11 @@ export default function TermsSettingsPage() {
     <div className="flex flex-col h-full">
       <Toaster position="top-right" />
       <SettingsPageHeader
-        title="Terms & Privacy"
-        description="Manage terms of service and privacy policy"
+        title={tx("Terms & Privacy")}
+        description={tx("Manage terms of service and privacy policy")}
       />
 
-      <SettingsSection title="Terms of Service">
+      <SettingsSection title={tx("Terms of Service")}>
         {isLoading ? (
           <div className="animate-pulse">
             <div className="h-[220px] w-full bg-gray-200 rounded-[16px]"></div>
@@ -88,12 +90,12 @@ export default function TermsSettingsPage() {
             className="w-full px-5 py-5 bg-white border border-[#EEEEEE] rounded-[16px] text-[14px] text-[#4B5563] leading-relaxed min-h-[220px] focus:outline-none focus:ring-2 focus:ring-[#2137D6]/20 focus:border-[#2137D6] transition-all hover:border-[#D1D5DB] resize-y"
             value={termsOfService}
             onChange={(e) => setTermsOfService(e.target.value)}
-            placeholder="Enter your Terms of Service content..."
+            placeholder={tx("Enter your Terms of Service content...")}
           />
         )}
       </SettingsSection>
 
-      <SettingsSection title="Privacy Policy">
+      <SettingsSection title={tx("Privacy Policy")}>
         {isLoading ? (
           <div className="animate-pulse">
             <div className="h-[220px] w-full bg-gray-200 rounded-[16px]"></div>
@@ -103,7 +105,7 @@ export default function TermsSettingsPage() {
             className="w-full px-5 py-5 bg-white border border-[#EEEEEE] rounded-[16px] text-[14px] text-[#4B5563] leading-relaxed min-h-[220px] focus:outline-none focus:ring-2 focus:ring-[#2137D6]/20 focus:border-[#2137D6] transition-all hover:border-[#D1D5DB] resize-y"
             value={privacyPolicy}
             onChange={(e) => setPrivacyPolicy(e.target.value)}
-            placeholder="Enter your Privacy Policy content..."
+            placeholder={tx("Enter your Privacy Policy content...")}
           />
         )}
       </SettingsSection>
@@ -114,7 +116,7 @@ export default function TermsSettingsPage() {
           disabled={isLoading || updateFeature.isPending}
           className="px-5 py-2.5 text-[14px] font-semibold text-[#4B5563] bg-white border border-[#EEEEEE] hover:bg-[#F9FAFB] rounded-xl transition-colors hover:border-[#D1D5DB] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Cancel
+          {tx("Cancel")}
         </button>
         <button
           onClick={handleSave}

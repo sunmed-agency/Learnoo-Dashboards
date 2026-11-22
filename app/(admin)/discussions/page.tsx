@@ -30,6 +30,7 @@ import { API_BASE_URL } from '@/src/lib/api';
 
 import { buildDiscussionTree } from '@/components/student/watch/watchChapterDiscussionUtils';
 import { discussionRoleBadgeKey } from '@/src/lib/discussion-role-badge';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AdminDiscussionsPage() {
   const t = useTranslations('discussions');
@@ -239,6 +240,7 @@ const DiscussionNode = ({
   setPlayingAudioId,
   setVideoModalData
 }: any) => {
+  const tx = useTx();
   const [showReplies, setShowReplies] = useState(false);
   const hasReplies = discussion.replies?.length > 0;
   const isReplyComposerOpen = replyingTo === discussion.id;
@@ -385,7 +387,7 @@ const DiscussionNode = ({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <Mic className="h-4 w-4 text-[#64748B]" />
-                <span className="text-xs font-medium text-[#475569]">Voice Note</span>
+                <span className="text-xs font-medium text-[#475569]">{tx("Voice Note")}</span>
                 {discussion.attributes.duration && (
                   <span className="text-[11px] text-[#94A3B8]">
                     {formatDuration(discussion.attributes.duration)}
@@ -462,6 +464,7 @@ const DiscussionNode = ({
 };
 
 const AdminReplyComposer = ({ parentId, chapterId, moment, onCancel, onSuccess, t }: any) => {
+  const tx = useTx();
   const { mutateAsync: createReply, isLoading: isReplying } = useCreateDiscussion();
   const [mode, setMode] = useState<'text' | 'voice'>('text');
   const [text, setText] = useState('');
@@ -575,13 +578,13 @@ const AdminReplyComposer = ({ parentId, chapterId, moment, onCancel, onSuccess, 
           onClick={() => { setMode('text'); clearRecording(); }}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${mode === 'text' ? 'bg-[#2137D6] text-white' : 'border border-gray-200 text-gray-500 hover:border-gray-300'}`}
         >
-          <MessageCircle className="h-3.5 w-3.5" /> Text
+          <MessageCircle className="h-3.5 w-3.5" /> {tx("Text")}
         </button>
         <button
           onClick={() => setMode('voice')}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${mode === 'voice' ? 'bg-[#2137D6] text-white' : 'border border-gray-200 text-gray-500 hover:border-gray-300'}`}
         >
-          <Mic className="h-3.5 w-3.5" /> Voice
+          <Mic className="h-3.5 w-3.5" /> {tx("Voice")}
         </button>
       </div>
 
@@ -621,7 +624,7 @@ const AdminReplyComposer = ({ parentId, chapterId, moment, onCancel, onSuccess, 
                   </div>
                   <span className="text-lg font-bold tabular-nums text-red-500">{formatRecordingTime(recordingSeconds)}</span>
                   <button onClick={stopRecording} className="flex items-center gap-1.5 rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white hover:bg-red-600">
-                    <Square className="h-4 w-4" /> Stop
+                    <Square className="h-4 w-4" /> {tx("Stop")}
                   </button>
                 </>
               ) : (
@@ -629,9 +632,9 @@ const AdminReplyComposer = ({ parentId, chapterId, moment, onCancel, onSuccess, 
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E0E7FF] ring-4 ring-indigo-50">
                     <Mic className="h-6 w-6 text-[#2137D6]" />
                   </div>
-                  <span className="text-sm text-gray-500">Record a voice note</span>
+                  <span className="text-sm text-gray-500">{tx("Record a voice note")}</span>
                   <button onClick={startRecording} className="flex items-center gap-1.5 rounded-lg bg-[#2137D6] px-4 py-2 text-sm font-bold text-white hover:bg-[#1a2bb3]">
-                    <Mic className="h-4 w-4" /> Start
+                    <Mic className="h-4 w-4" /> {tx("Start")}
                   </button>
                 </>
               )}
@@ -643,7 +646,7 @@ const AdminReplyComposer = ({ parentId, chapterId, moment, onCancel, onSuccess, 
               </div>
               {audioUrl && <audio controls src={audioUrl} className="w-full h-10 rounded-lg" />}
               <button onClick={clearRecording} className="flex items-center justify-center gap-1.5 text-xs text-gray-500 hover:text-red-500 w-full mt-2">
-                <Trash2 className="h-3.5 w-3.5" /> Discard
+                <Trash2 className="h-3.5 w-3.5" /> {tx("Discard")}
               </button>
             </div>
           )}

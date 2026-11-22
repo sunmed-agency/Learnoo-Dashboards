@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useInstructors } from "@/src/hooks/useInstructors";
 import { ChevronDown, Search, X, Loader2 } from "lucide-react";
 import { useDebounce } from "use-debounce";
+import { useTx } from '@/src/lib/ui-text';
 
 interface InstructorSelectProps {
     value: string | number;
@@ -16,6 +17,7 @@ export function InstructorSelect({
     onChange,
     disabled,
 }: InstructorSelectProps) {
+  const tx = useTx();
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedSearch] = useDebounce(searchQuery, 400);
@@ -130,7 +132,7 @@ export function InstructorSelect({
                         <Search className="w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search instructors..."
+                            placeholder={tx("Search instructors...")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-transparent text-sm focus:outline-none placeholder:text-gray-400"
@@ -149,7 +151,7 @@ export function InstructorSelect({
                     <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
                         {instructorsList.length === 0 && !isLoading ? (
                             <div className="p-3 text-center text-sm text-gray-500">
-                                No instructors found
+                                {tx("No instructors found")}
                             </div>
                         ) : (
                             instructorsList.map((inst: any) => {

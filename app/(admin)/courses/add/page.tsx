@@ -22,8 +22,10 @@ import { useCreateCourse } from '@/src/hooks/useCourses';
 import { useDepartments } from '@/src/hooks/useDepartments';
 
 import type { CourseVisibility, CourseStatus, Department } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function AddCoursePage() {
+  const tx = useTx();
   const t = useTranslations();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -238,10 +240,10 @@ export default function AddCoursePage() {
               <ChevronDown className="absolute right-4 top-[38px] w-4 h-4 text-[#94A3B8] pointer-events-none" />
             </div>
             {/* <div className="flex flex-col gap-2">
-              <label className="text-[13px] font-bold text-[#475569]">Instructor Name</label>
+              <label className="text-[13px] font-bold text-[#475569]">{tx("Instructor Name")}</label>
               <input
                 type="text"
-                placeholder="Dr. Ahmed Hassan"
+                placeholder={tx("Dr. Ahmed Hassan")}
                 className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6] focus:ring-opacity-10 transition-all placeholder:text-[#94A3B8]"
                 value={formData.instructorName}
                 onChange={(e) => setFormData({ ...formData, instructorName: e.target.value })}

@@ -19,8 +19,10 @@ import { TableSkeleton } from '@/src/components/ui/Skeleton';
 import type { Student } from '@/src/types';
 import { StudentStatusLabels } from '@/src/types';
 import { useCurrentUser } from '@/src/hooks/useAuth';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function InstructorsPage() {
+  const tx = useTx();
   const t = useTranslations('instructors');
   const tc = useTranslations('common');
   const { role } = useCurrentUser();
@@ -164,7 +166,7 @@ export default function InstructorsPage() {
                     {t('status')}
                   </th>
                   <th className="text-center px-6 py-4 text-xs font-semibold text-[#64748B] uppercase tracking-wider">
-                    Can Use Activations
+                    {tx("Can Use Activations")}
                   </th>
                   <th className="text-right px-6 py-4 text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                     {tc('actions')}
@@ -243,7 +245,7 @@ export default function InstructorsPage() {
                           onClick={() => handleResetPassword(instructor)}
                           disabled={isResetting}
                           className="p-2 hover:bg-[#FEF3C7] rounded-lg transition-colors text-[#64748B] hover:text-[#F59E0B] disabled:opacity-50"
-                          title="Reset Password"
+                          title={tx("Reset Password")}
                         >
                           {isResetting ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

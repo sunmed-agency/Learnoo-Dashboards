@@ -20,6 +20,7 @@ import { useFaculties } from '@/src/hooks/useFaculties';
 import { useDepartments } from '@/src/hooks/useDepartments';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 import type { Post, SocialLink, CreatePostRequest, University, Faculty, Center, Department, Course } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 type NodeType = 'university' | 'faculty' | 'center' | 'department' | 'course';
 
@@ -419,6 +420,7 @@ function getTypeColor(type: string): string {
 }
 
 export default function CommunityModerationPage() {
+  const tx = useTx();
   const t = useTranslations();
   const { user } = useCurrentUser();
   const doctorId = user?.id ? parseInt(user.id) : null;
@@ -1177,7 +1179,7 @@ export default function CommunityModerationPage() {
                     <Search className="w-4 h-4 text-[#94A3B8] flex-shrink-0" />
                     <input
                       type="text"
-                      placeholder="Search courses..."
+                      placeholder={tx("Search courses...")}
                       value={socialTreeSearch}
                       onChange={(e) => setSocialTreeSearch(e.target.value)}
                       className="w-full bg-transparent text-sm text-[#1E293B] focus:outline-none placeholder:text-[#94A3B8]"
@@ -1311,7 +1313,7 @@ export default function CommunityModerationPage() {
                   className="w-full px-4 py-2 border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6]"
                 >
                   <option value="true">{t('community.socialLinks.modal.isPaid')}</option>
-                  <option value="false">Free</option>
+                  <option value="false">{tx("Free")}</option>
                 </select>
               </div>
             </div>

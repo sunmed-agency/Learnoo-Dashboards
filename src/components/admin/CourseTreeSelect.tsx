@@ -21,6 +21,7 @@ import { useFaculties } from '@/src/hooks/useFaculties';
 import { useDepartments } from '@/src/hooks/useDepartments';
 import { useCourses } from '@/src/hooks/useCourses';
 import { useChapters } from '@/src/hooks/useChapters';
+import { useTx } from '@/src/lib/ui-text';
 
 interface CourseTreeSelectProps {
   value: string | number | string[];
@@ -72,6 +73,7 @@ export function CourseTreeSelect({
   chaptersData: outerChaptersData,
   excludeIds = [],
 }: CourseTreeSelectProps & { coursesData?: any[]; lecturesData?: any[]; chaptersData?: any[] }) {
+  const tx = useTx();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
@@ -666,7 +668,7 @@ export function CourseTreeSelect({
             {isLoading ? (
               <div className="py-8 text-center text-sm text-[#64748B] flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-[#2137D6]" />
-                Loading structure...
+                {tx("Loading structure...")}
               </div>
             ) : (
               treeContent
@@ -720,7 +722,7 @@ export function CourseTreeSelect({
         <div className="flex flex-col gap-0.5 whitespace-normal break-words flex-1 pr-4">
           {isLoading ? (
             <span className="text-slate-400 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-[#2137D6]" /> Loading structure...
+              <Loader2 className="w-4 h-4 animate-spin text-[#2137D6]" /> {tx("Loading structure...")}
             </span>
           ) : multiple ? (
             selectedValues.length > 0 ? (
@@ -733,7 +735,7 @@ export function CourseTreeSelect({
                 </span>
               </>
             ) : (
-              <span className="text-[#94A3B8]">Select courses</span>
+              <span className="text-[#94A3B8]">{tx("Select courses")}</span>
             )
           ) : selectedCourse ? (
             <>
@@ -773,7 +775,7 @@ export function CourseTreeSelect({
             {isLoading ? (
               <div className="py-8 text-center text-sm text-[#64748B] flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-[#2137D6]" />
-                Loading structure...
+                {tx("Loading structure...")}
               </div>
             ) : (
               treeContent

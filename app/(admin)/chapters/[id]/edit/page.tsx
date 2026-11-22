@@ -15,10 +15,12 @@ import { useLectures } from '@/src/hooks/useLectures';
 import { EntityForm, FormSection, FormInput, FormSelect, FormTextarea } from '@/src/components/admin/EntityForm';
 
 import toast from 'react-hot-toast';
+import { useTx } from '@/src/lib/ui-text';
 
 
 
 export default function EditChapterPage() {
+  const tx = useTx();
 
   const router = useRouter();
 
@@ -92,7 +94,7 @@ export default function EditChapterPage() {
 
     if (formData.type === 'note' && !formData.note_type) {
 
-      toast.error('Note type is required when type is set to note');
+      toast.error(tx("Note type is required when type is set to note"));
 
       return;
 
@@ -140,7 +142,7 @@ export default function EditChapterPage() {
 
         <Loader2 className="w-8 h-8 animate-spin text-[#2137D6]" />
 
-        <p className="mt-4 text-[#64748B]">Loading chapter...</p>
+        <p className="mt-4 text-[#64748B]">{tx("Loading chapter...")}</p>
 
       </div>
 
@@ -156,7 +158,7 @@ export default function EditChapterPage() {
 
       <div className="flex flex-col items-center justify-center min-h-[400px]">
 
-        <p className="text-[#64748B]">Chapter not found</p>
+        <p className="text-[#64748B]">{tx("Chapter not found")}</p>
 
       </div>
 
@@ -180,9 +182,9 @@ export default function EditChapterPage() {
 
     <EntityForm
 
-      title="Edit Chapter"
+      title={tx("Edit Chapter")}
 
-      description="Update chapter information"
+      description={tx("Update chapter information")}
 
       backHref="/chapters"
 
@@ -194,11 +196,11 @@ export default function EditChapterPage() {
 
     >
 
-      <FormSection title="Chapter Information" icon={<FileVideo className="w-4 h-4" />}>
+      <FormSection title={tx("Chapter Information")} icon={<FileVideo className="w-4 h-4" />}>
 
         <FormSelect
 
-          label="Lecture"
+          label={tx("Lecture")}
 
           required
 
@@ -214,7 +216,7 @@ export default function EditChapterPage() {
 
         <FormInput
 
-          label="Chapter Title"
+          label={tx("Chapter Title")}
 
           required
 
@@ -228,7 +230,7 @@ export default function EditChapterPage() {
 
         <FormInput
 
-          label="Duration"
+          label={tx("Duration")}
 
           required
 
@@ -242,7 +244,7 @@ export default function EditChapterPage() {
 
         <FormSelect
 
-          label="Type"
+          label={tx("Type")}
 
           required
 
@@ -278,7 +280,7 @@ export default function EditChapterPage() {
 
           <FormSelect
 
-            label="Note Type"
+            label={tx("Note Type")}
 
             required
 
@@ -308,9 +310,9 @@ export default function EditChapterPage() {
 
           <FormTextarea
 
-            label="Content / Text"
+            label={tx("Content / Text")}
 
-            placeholder="Enter note content..."
+            placeholder={tx("Enter note content...")}
 
             value={formData.content}
 
@@ -340,7 +342,7 @@ export default function EditChapterPage() {
 
           <label htmlFor="is_free_preview" className="text-sm text-[#475569]">
 
-            Free Preview (available without purchase)
+            {tx("Free Preview (available without purchase)")}
 
           </label>
 

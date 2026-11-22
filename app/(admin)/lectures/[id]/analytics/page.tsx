@@ -6,8 +6,10 @@ import { ArrowLeft, Download, Search, Loader2, Eye, Clock, FileText } from 'luci
 import Link from 'next/link';
 import { api, getApiErrorMessage } from '@/src/lib/api';
 import type { StudentViewData } from '@/src/types';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function LectureAnalyticsPage() {
+  const tx = useTx();
   const params = useParams();
   const lectureId = params.id as string;
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,7 +67,7 @@ export default function LectureAnalyticsPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-[#1E293B]">Student Analytics</h1>
+            <h1 className="text-2xl font-bold text-[#1E293B]">{tx("Student Analytics")}</h1>
             <p className="text-sm text-[#64748B] mt-0.5">Per-student view tracking for this lecture</p>
           </div>
         </div>
@@ -76,7 +78,7 @@ export default function LectureAnalyticsPage() {
           className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-xl text-sm font-bold text-[#1E293B] hover:bg-[#F8FAFC] transition-all disabled:opacity-50"
         >
           <Download className="w-4 h-4" />
-          Export CSV
+          {tx("Export CSV")}
         </button>
       </div>
 
@@ -84,7 +86,7 @@ export default function LectureAnalyticsPage() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
         <input
           type="text"
-          placeholder="Search students..."
+          placeholder={tx("Search students...")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-11 pr-4 py-3 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6] transition-all"
@@ -102,14 +104,14 @@ export default function LectureAnalyticsPage() {
             onClick={loadAnalytics}
             className="px-4 py-2 bg-[#2137D6] text-white rounded-xl text-sm font-bold"
           >
-            Retry
+            {tx("Retry")}
           </button>
         </div>
       ) : filteredData.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-[#F1F5F9]">
           <Eye className="w-12 h-12 text-[#94A3B8] mb-4" />
-          <p className="text-sm font-bold text-[#1E293B]">No analytics data yet</p>
-          <p className="text-xs text-[#64748B] mt-1">Student activity will appear once they start viewing this lecture</p>
+          <p className="text-sm font-bold text-[#1E293B]">{tx("No analytics data yet")}</p>
+          <p className="text-xs text-[#64748B] mt-1">{tx("Student activity will appear once they start viewing this lecture")}</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
@@ -117,17 +119,17 @@ export default function LectureAnalyticsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#F1F5F9] bg-[#F8FAFC]/50">
-                  <th className="text-left px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Student</th>
+                  <th className="text-left px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">{tx("Student")}</th>
                   <th className="text-center px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
-                    <div className="flex items-center justify-center gap-1"><Eye className="w-3.5 h-3.5" /> Views</div>
+                    <div className="flex items-center justify-center gap-1"><Eye className="w-3.5 h-3.5" /> {tx("Views")}</div>
                   </th>
                   <th className="text-center px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
-                    <div className="flex items-center justify-center gap-1"><Clock className="w-3.5 h-3.5" /> Watch Time</div>
+                    <div className="flex items-center justify-center gap-1"><Clock className="w-3.5 h-3.5" /> {tx("Watch Time")}</div>
                   </th>
                   <th className="text-center px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
-                    <div className="flex items-center justify-center gap-1"><FileText className="w-3.5 h-3.5" /> PDF Opens</div>
+                    <div className="flex items-center justify-center gap-1"><FileText className="w-3.5 h-3.5" /> {tx("PDF Opens")}</div>
                   </th>
-                  <th className="text-right px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Last Accessed</th>
+                  <th className="text-right px-6 py-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">{tx("Last Accessed")}</th>
                 </tr>
               </thead>
               <tbody>

@@ -6,9 +6,10 @@ import {
   getStudentFacultyId,
   getStudentUniversityId,
 } from "@/src/lib/student-profile-completeness";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { translateUiText } from "@/src/lib/ui-text";
 
 type ProfileAttributes = {
   first_name?: string | null;
@@ -54,7 +55,7 @@ export default async function Page({ params }: PageProps) {
     return (
       <main className="min-h-screen bg-[#FAFAF8] p-6">
         <div className="rounded-2xl border border-red-100 bg-red-50 p-5 text-sm font-medium text-red-600">
-          {response?.message || "Failed to load profile data"}
+          {response?.message || translateUiText("Failed to load profile data", await getLocale())}
         </div>
       </main>
     );

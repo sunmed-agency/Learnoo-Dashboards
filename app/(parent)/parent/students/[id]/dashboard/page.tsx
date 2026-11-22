@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Clock, BookOpen, Award, TrendingUp } from 'lucide-react';
 import { useStudentActivity, useStudentAlerts, useStudentDashboard } from '@/src/hooks';
+import { useTx } from '@/src/lib/ui-text';
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 type JsonObject = { [key: string]: JsonValue };
@@ -35,6 +36,7 @@ function isObject(value: JsonValue | undefined): value is JsonObject {
 }
 
 export default function ParentStudentOverviewPage() {
+  const uiTx = useTx();
   const t = useTranslations('parentStudentOverview');
   const params = useParams();
   const studentId = params?.id as string | undefined;
@@ -159,7 +161,7 @@ export default function ParentStudentOverviewPage() {
                   key={index}
                   title={str(read(item, 'title') ?? (read(item, 'subject') || 'Activity'))}
                   time={str(read(item, 'time') ?? (read(item, 'date') || '—'))}
-                  description={str(read(item, 'description') ?? (read(item, 'summary') || 'No details available.'))}
+                  description={str(read(item, 'description') ?? (read(item, 'summary') || uiTx("No details available.")))}
                 />
               ))}
             </div>
@@ -208,7 +210,7 @@ export default function ParentStudentOverviewPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{str(read(item, 'title') ?? (read(item, 'subject') || 'Alert'))}</p>
-                      <p className="text-sm text-slate-600 mt-1">{str(read(item, 'message') ?? (read(item, 'description') || 'No additional details.'))}</p>
+                      <p className="text-sm text-slate-600 mt-1">{str(read(item, 'message') ?? (read(item, 'description') || uiTx("No additional details.")))}</p>
                     </div>
                     <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">{str(read(item, 'priority') ?? (read(item, 'level') || 'Info'))}</span>
                   </div>
@@ -275,12 +277,13 @@ function PlaceholderRow() {
 }
 
 function ErrorBlock({ message, onRetry }: { message: string; onRetry: () => void }) {
+  const tx = useTx();
   return (
     <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-rose-700">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p>{message}</p>
         <button onClick={onRetry} className="inline-flex h-11 items-center justify-center rounded-2xl bg-white px-5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
-          Retry
+          {tx("Retry")}
         </button>
       </div>
     </div>

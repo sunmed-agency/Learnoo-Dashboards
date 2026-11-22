@@ -6,8 +6,10 @@ import { Video, Loader2 } from 'lucide-react';
 import { useLecture, useUpdateLecture } from '@/src/hooks/useLectures';
 import { useCourses } from '@/src/hooks/useCourses';
 import { EntityForm, FormSection, FormInput, FormTextarea, FormSelect } from '@/src/components/admin/EntityForm';
+import { useTx } from '@/src/lib/ui-text';
 
 export default function EditLecturePage() {
+  const tx = useTx();
   const router = useRouter();
   const params = useParams();
   const lectureId = parseInt(params.id as string);
@@ -51,7 +53,7 @@ export default function EditLecturePage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <Loader2 className="w-8 h-8 animate-spin text-[#2137D6]" />
-        <p className="mt-4 text-[#64748B]">Loading lecture...</p>
+        <p className="mt-4 text-[#64748B]">{tx("Loading lecture...")}</p>
       </div>
     );
   }
@@ -59,7 +61,7 @@ export default function EditLecturePage() {
   if (!lecture) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-[#64748B]">Lecture not found</p>
+        <p className="text-[#64748B]">{tx("Lecture not found")}</p>
       </div>
     );
   }
@@ -71,16 +73,16 @@ export default function EditLecturePage() {
 
   return (
     <EntityForm
-      title="Edit Lecture"
-      description="Update lecture information"
+      title={tx("Edit Lecture")}
+      description={tx("Update lecture information")}
       backHref="/lectures"
       onSubmit={handleSubmit}
       isLoading={isUpdating}
       error={error}
     >
-      <FormSection title="Lecture Information" icon={<Video className="w-4 h-4" />}>
+      <FormSection title={tx("Lecture Information")} icon={<Video className="w-4 h-4" />}>
         <FormSelect
-          label="Course"
+          label={tx("Course")}
           required
           value={formData.course_id}
           onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
@@ -88,18 +90,18 @@ export default function EditLecturePage() {
           className="md:col-span-2"
         />
         <FormInput
-          label="Lecture Title"
+          label={tx("Lecture Title")}
           required
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           placeholder="e.g., Introduction to Physics"
         />
         <FormTextarea
-          label="Description"
+          label={tx("Description")}
           required
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Enter lecture description..."
+          placeholder={tx("Enter lecture description...")}
           rows={4}
         />
       </FormSection>

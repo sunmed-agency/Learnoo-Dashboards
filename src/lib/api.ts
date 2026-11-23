@@ -1610,13 +1610,23 @@ export interface GoogleStatus {
   email: string | null;
   connected_at: string | null;
   picker: { api_key: string | null; app_id: string | null } | null;
+  /** False for connections made before the site listed forms itself (one reconnect fixes it). */
+  can_list_forms?: boolean;
   last_backup: { ok: boolean; at: string; detail: string } | null;
 }
+export interface GoogleFormFile { id: string; name: string; modified_at: string | null; owned_by_me: boolean; owner: string | null }
 export const googleApi = {
   status: (purpose: GooglePurpose) => get<GoogleStatus>(`/v1/google/status?purpose=${purpose}`),
   connect: (purpose: GooglePurpose) => post<{ url: string }>('/v1/google/connect', { purpose }),
   disconnect: (purpose: GooglePurpose) => del<{ connected: false }>(`/v1/google/connection?purpose=${purpose}`),
   pickerToken: () => post<{ access_token: string; expires_in: number }>('/v1/google/picker-token', {}),
+  listForms: (search = '', pageToken = '') => {
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (pageToken) params.set('page_token', pageToken);
+    const query = params.toString();
+    return get<{ forms: GoogleFormFile[]; next_page_token: string | null }>(`/v1/google-forms/forms${query ? `?${query}` : ''}`);
+  },
   previewForm: (formId: string) => post<import('@/src/lib/google-forms-import').GoogleFormPreview>('/v1/google-forms/import/preview', { form_id: formId }),
 };
 

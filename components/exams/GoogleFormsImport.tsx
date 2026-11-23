@@ -2,13 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
-import { AlertTriangle, CheckCircle2, FileSpreadsheet, Link2Off, Loader2, X } from "lucide-react";
-import { API_BASE_URL, ApiError, googleApi, type GoogleStatus } from "@/src/lib/api";
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, FileSpreadsheet, Link2Off, Loader2, RefreshCw, Search, X } from "lucide-react";
+import { API_BASE_URL, ApiError, googleApi, type GoogleFormFile, type GoogleStatus } from "@/src/lib/api";
 import type { ExamFormQuestion, ExamFormSection } from "@/src/lib/exam-form";
 import {
   mapGoogleFormToExam,
   openGoogleConsent,
-  pickGoogleForm,
   questionProblem,
   skipReasonText,
   warningText,
@@ -23,7 +22,8 @@ type Props = {
 
 const ERRORS: Record<string, { ar: string; en: string }> = {
   reconnect: { ar: "انتهى ربط حساب Google. اربطه مرة أخرى.", en: "Your Google connection expired. Reconnect your Google account." },
-  forbidden: { ar: "ليس لديك صلاحية تعديل هذا النموذج، أو لم يتم منح الوصول. اختره مرة أخرى من نافذة Google.", en: "You don’t have edit access to this form, or access wasn’t granted. Re-select it from the picker." },
+  forbidden: { ar: "ليس لديك صلاحية تعديل هذا النموذج. اطلب من صاحبه إضافتك كمحرّر ثم حاول مرة أخرى.", en: "You don’t have edit access to this form. Ask its owner to add you as an editor, then try again." },
+  needs_scope: { ar: "أعد ربط حساب Google مرة واحدة حتى تظهر نماذجك هنا مباشرة.", en: "Reconnect your Google account once so your forms show up here directly." },
   not_found: { ar: "النموذج غير موجود أو تم حذفه.", en: "Form not found or deleted." },
   unavailable: { ar: "خدمة Google غير متاحة مؤقتًا. حاول مرة أخرى.", en: "Google is temporarily unavailable, try again." },
   not_configured: { ar: "الربط مع Google غير مُفعّل على المنصة بعد.", en: "Google integration isn’t configured yet." },
@@ -38,6 +38,7 @@ const ERRORS: Record<string, { ar: string; en: string }> = {
 
 function reasonFrom(error: unknown): string {
   if (error instanceof ApiError) {
+    if (error.status === 409 && /list your forms/i.test(error.message)) return "needs_scope";
     return ({ 409: "reconnect", 403: "forbidden", 404: "not_found", 503: "not_configured", 422: "invalid_form", 502: "unavailable" } as Record<number, string>)[error.status] ?? "generic";
   }
   if (error instanceof Error && ERRORS[error.message]) return error.message;
@@ -50,13 +51,21 @@ export function GoogleFormsImport({ onApply }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<GoogleStatus | null>(null);
-  const [busy, setBusy] = useState<"" | "status" | "connect" | "pick" | "preview" | "disconnect">("");
+  const [busy, setBusy] = useState<"" | "status" | "connect" | "preview" | "disconnect">("");
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<GoogleFormPreview | null>(null);
   const [questions, setQuestions] = useState<GoogleFormQuestion[]>([]);
   const [included, setIncluded] = useState<boolean[]>([]);
+  // The connected account's forms, listed by the site (no Google sign-in needed in the browser).
+  const [forms, setForms] = useState<GoogleFormFile[] | null>(null);
+  const [nextPage, setNextPage] = useState<string | null>(null);
+  const [formsLoading, setFormsLoading] = useState<"" | "list" | "more">("");
+  const [search, setSearch] = useState("");
+  const [openingId, setOpeningId] = useState("");
+  const listRequest = useRef(0);
 
   const say = (code: string) => setError(ar ? (ERRORS[code] ?? ERRORS.generic).ar : (ERRORS[code] ?? ERRORS.generic).en);
+  const canList = Boolean(status?.connected && status.can_list_forms);
 
   useEffect(() => {
     if (open) dialog.current?.showModal(); else dialog.current?.close();
@@ -67,8 +76,35 @@ export function GoogleFormsImport({ onApply }: Props) {
     try { setStatus(await googleApi.status("forms")); } catch (e) { say(reasonFrom(e)); } finally { setBusy(""); }
   }
 
+  async function loadForms(query: string, pageToken = "") {
+    const request = ++listRequest.current;
+    setFormsLoading(pageToken ? "more" : "list");
+    try {
+      const data = await googleApi.listForms(query.trim(), pageToken);
+      if (request !== listRequest.current) return;
+      setForms((current) => pageToken && current ? [...current, ...data.forms] : data.forms);
+      setNextPage(data.next_page_token);
+    } catch (e) {
+      if (request !== listRequest.current) return;
+      const reason = reasonFrom(e);
+      say(reason);
+      if (reason === "reconnect" || reason === "needs_scope") void loadStatus();
+    } finally {
+      if (request === listRequest.current) setFormsLoading("");
+    }
+  }
+
+  // List on open and while typing (short pause so each key isn't a Google call).
+  useEffect(() => {
+    if (!open || !canList || preview) return;
+    const timer = window.setTimeout(() => { void loadForms(search); }, search ? 400 : 0);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadForms only reads state set here
+  }, [open, canList, preview, search]);
+
   function start() {
     setError(""); setPreview(null); setQuestions([]); setIncluded([]);
+    setForms(null); setNextPage(null); setSearch("");
     setOpen(true);
     void loadStatus();
   }
@@ -87,26 +123,8 @@ export function GoogleFormsImport({ onApply }: Props) {
     try { await googleApi.disconnect("forms"); setPreview(null); await loadStatus(); } catch (e) { say(reasonFrom(e)); } finally { setBusy(""); }
   }
 
-  async function pick() {
-    if (!status?.picker?.api_key || !status.picker.app_id) { say("not_configured"); return; }
-    setError(""); setBusy("pick");
-    let formId: string | null = null;
-    try {
-      const { access_token } = await googleApi.pickerToken();
-      // The picker is drawn on the page; a modal dialog would sit above it, so step aside meanwhile.
-      dialog.current?.close();
-      formId = await pickGoogleForm({ token: access_token, apiKey: status.picker.api_key, appId: status.picker.app_id, locale: ar ? "ar" : "en" });
-    } catch (e) {
-      say(reasonFrom(e));
-    } finally {
-      dialog.current?.showModal();
-      setBusy("");
-    }
-    if (formId) await loadPreview(formId);
-  }
-
   async function loadPreview(formId: string) {
-    setBusy("preview");
+    setError(""); setBusy("preview"); setOpeningId(formId);
     try {
       const data = await googleApi.previewForm(formId);
       setPreview(data);
@@ -116,7 +134,7 @@ export function GoogleFormsImport({ onApply }: Props) {
       const reason = reasonFrom(e);
       say(reason);
       if (reason === "reconnect") void loadStatus();
-    } finally { setBusy(""); }
+    } finally { setBusy(""); setOpeningId(""); }
   }
 
   function setCorrect(questionIndex: number, answerIndex: number) {
@@ -160,8 +178,8 @@ export function GoogleFormsImport({ onApply }: Props) {
 
       {status?.configured && !status.connected && <div className="space-y-3">
         <p className="text-sm leading-6 text-slate-600">{ar
-          ? "اربط حساب Google مرة واحدة لتختار أي اختبار من Google Forms وتستورد أسئلته بالإجابات الصحيحة والدرجات والملاحظات والصور. نطلب فقط قراءة النماذج التي تختارها بنفسك، ولا نصل لباقي ملفاتك."
-          : "Connect your Google account once to pick any Google Forms quiz and import its questions with correct answers, points, feedback and images. We only read the forms you pick, nothing else in your Drive."}</p>
+          ? "اربط حساب Google مرة واحدة، وبعدها نماذج Google Forms بتاعتك هتظهر هنا مباشرة وتستورد أسئلتها بالإجابات الصحيحة والدرجات والملاحظات والصور. بنقرأ محتوى النماذج اللي تختارها بس، ومن باقي ملفاتك بنشوف أسماء النماذج فقط."
+          : "Connect your Google account once, and your Google Forms show up here so you can import their questions with correct answers, points, feedback and images. We only read the content of forms you choose; for the rest we only see form names."}</p>
         {status.needs_reconnect && <p className="text-sm text-amber-700">{ar ? ERRORS.reconnect.ar : ERRORS.reconnect.en}</p>}
         <button type="button" disabled={Boolean(busy)} onClick={connect} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
           {busy === "connect" && <Loader2 size={16} className="animate-spin" />}{ar ? "ربط حساب Google" : "Connect Google account"}
@@ -170,15 +188,57 @@ export function GoogleFormsImport({ onApply }: Props) {
 
       {status?.connected && !preview && <div className="space-y-4">
         <p className="text-sm text-slate-600">{ar ? "الحساب المربوط:" : "Connected account:"} <bdi className="font-semibold text-slate-900">{status.email ?? "Google"}</bdi></p>
-        <div className="flex flex-wrap gap-3">
-          <button type="button" disabled={Boolean(busy)} onClick={pick} className="flex items-center gap-2 rounded-xl bg-[#673AB7] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#5E35B1] disabled:opacity-60">
-            {(busy === "pick" || busy === "preview") && <Loader2 size={16} className="animate-spin" />}{ar ? "اختيار نموذج من Google Forms" : "Choose a Google Form"}
+
+        {!status.can_list_forms && <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="text-sm leading-6 text-amber-800">{ar ? ERRORS.needs_scope.ar : ERRORS.needs_scope.en}</p>
+          <button type="button" disabled={Boolean(busy)} onClick={connect} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
+            {busy === "connect" && <Loader2 size={16} className="animate-spin" />}{ar ? "إعادة ربط حساب Google" : "Reconnect Google account"}
           </button>
-          <button type="button" disabled={Boolean(busy)} onClick={disconnect} className="flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
-            <Link2Off size={16} />{ar ? "فصل حساب Google" : "Disconnect Google"}
-          </button>
-        </div>
-        {busy === "preview" && <p role="status" className="text-sm text-slate-600">{ar ? "جارٍ قراءة النموذج وتحميل الصور..." : "Reading the form and downloading images..."}</p>}
+        </div>}
+
+        {status.can_list_forms && <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <label className="relative min-w-0 flex-1">
+              <span className="sr-only">{ar ? "ابحث باسم النموذج" : "Search by form name"}</span>
+              <Search size={16} className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} disabled={busy === "preview"} placeholder={ar ? "ابحث باسم النموذج..." : "Search by form name..."} className="w-full rounded-xl border border-slate-300 py-2.5 pe-3 ps-9 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+            </label>
+            <button type="button" onClick={() => void loadForms(search)} disabled={Boolean(formsLoading) || busy === "preview"} aria-label={ar ? "تحديث القائمة" : "Refresh list"} title={ar ? "تحديث القائمة" : "Refresh list"} className="rounded-xl border border-slate-300 p-2.5 text-slate-600 hover:bg-slate-50 disabled:opacity-60">
+              <RefreshCw size={16} className={formsLoading === "list" ? "animate-spin" : ""} />
+            </button>
+          </div>
+
+          {formsLoading === "list" && !forms && <p role="status" className="flex items-center gap-2 text-sm text-slate-600"><Loader2 size={16} className="animate-spin" />{ar ? "جارٍ تحميل نماذجك..." : "Loading your forms..."}</p>}
+          {forms && forms.length === 0 && !formsLoading && <p className="rounded-xl bg-slate-50 p-4 text-center text-sm text-slate-600">{search.trim()
+            ? (ar ? "لا توجد نماذج بهذا الاسم." : "No forms match this name.")
+            : (ar ? "لا توجد نماذج Google Forms في هذا الحساب." : "There are no Google Forms in this account.")}</p>}
+
+          {forms && forms.length > 0 && <ul className={`max-h-[50dvh] divide-y overflow-auto rounded-xl border ${formsLoading === "list" ? "opacity-60" : ""}`}>
+            {forms.map((form) => <li key={form.id}>
+              <button type="button" disabled={busy === "preview"} onClick={() => void loadPreview(form.id)} className="flex w-full items-center gap-3 px-4 py-3 text-start hover:bg-violet-50 disabled:cursor-wait">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#673AB7]/10 text-[#673AB7]"><FileSpreadsheet size={18} /></span>
+                <span className="min-w-0 flex-1">
+                  <bdi className="block truncate font-semibold text-slate-900">{form.name || (ar ? "بدون عنوان" : "Untitled")}</bdi>
+                  <span className="block truncate text-xs text-slate-500">
+                    {form.modified_at && `${ar ? "آخر تعديل" : "Modified"} ${new Date(form.modified_at).toLocaleDateString(locale)}`}
+                    {!form.owned_by_me && form.owner && <> · {ar ? "مشارك من" : "Shared by"} <bdi>{form.owner}</bdi></>}
+                  </span>
+                </span>
+                {openingId === form.id ? <Loader2 size={16} className="shrink-0 animate-spin text-[#673AB7]" /> : (ar ? <ChevronLeft size={16} className="shrink-0 text-slate-400" /> : <ChevronRight size={16} className="shrink-0 text-slate-400" />)}
+              </button>
+            </li>)}
+          </ul>}
+
+          {nextPage && <button type="button" disabled={Boolean(formsLoading) || busy === "preview"} onClick={() => void loadForms(search, nextPage)} className="flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline disabled:opacity-60">
+            {formsLoading === "more" && <Loader2 size={14} className="animate-spin" />}{ar ? "عرض المزيد" : "Show more"}
+          </button>}
+        </div>}
+
+        {busy === "preview" && <p role="status" className="flex items-center gap-2 text-sm text-slate-600"><Loader2 size={16} className="animate-spin" />{ar ? "جارٍ قراءة النموذج وتحميل الصور..." : "Reading the form and downloading images..."}</p>}
+
+        <button type="button" disabled={Boolean(busy)} onClick={disconnect} className="flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+          <Link2Off size={16} />{ar ? "فصل حساب Google" : "Disconnect Google"}
+        </button>
       </div>}
 
       {preview && <div className="space-y-4">

@@ -23,7 +23,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LifeBuoy,
-  CalendarDays
+  CalendarDays,
+  Database,
 } from 'lucide-react';
 
 import Image from 'next/image';
@@ -65,6 +66,7 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
     items.push({ name: t('schedules'), icon: CalendarDays, path: '/doctor/schedules' });
     items.push({ name: t('liveSessions'), icon: Video, path: '/doctor/live-sessions' });
     items.push({ name: t('examsAndQA'), icon: ClipboardList, path: '/doctor/exams' });
+    items.push({ name: t('questionBank'), icon: Database, path: '/doctor/question-bank' });
     items.push({ name: t('notesSummaries'), icon: StickyNote, path: '/doctor/notes-summaries' });
     items.push({ name: t('electronicLibrary'), icon: Library, path: '/doctor/electronic-library' });
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import SettingsPageHeader from '@/components/settings/SettingsPageHeader';
 import SettingsSection from '@/components/settings/SettingsSection';
+import ChangePasswordSection from '@/components/settings/ChangePasswordSection';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import { useAuthStore } from '@/src/stores/authStore';
 import { api } from '@/src/lib/api';
@@ -76,17 +77,16 @@ export default function ProfileSettingsPage() {
         formDataToSend.append('phone', formData.phone.replace(/\D/g, ''));
       }
 
-      // Handle centers as JSON string
-      if (existingAttrs?.centers) {
-        formDataToSend.append('centers', JSON.stringify(existingAttrs.centers));
-      }
+      // Centers are left as they are (not sent).
+      void existingAttrs;
 
       // Add image file if selected
       if (selectedImageFile) {
         formDataToSend.append('image', selectedImageFile);
       }
 
-      const response = await api.auth.update(formDataToSend as any);
+      // Multipart (the photo) goes as POST + _method=PUT; a JSON PUT of FormData sent nothing before.
+      const response = await api.auth.updateProfile(formDataToSend);
 
       if (response.data) {
         updateUser(response.data);
@@ -226,9 +226,12 @@ export default function ProfileSettingsPage() {
           disabled={isLoading}
           className="px-5 py-2.5 text-[14px] font-semibold text-white bg-[#2137D6] hover:bg-[#1C2EB8] rounded-xl transition-colors shadow-md shadow-[#2137D6]/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Saving...' : 'Save Changes'}
+          {isLoading ? tx('Saving...') : tx('Save Changes')}
         </button>
       </div>
+
+      <ChangePasswordSection />
+      <div className="pb-8" />
     </div>
   );
 }

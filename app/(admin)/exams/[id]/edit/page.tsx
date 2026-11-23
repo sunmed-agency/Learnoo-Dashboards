@@ -29,6 +29,8 @@ import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 import { ExamFileImport } from '@/components/exams/ExamFileImport';
 import { GoogleFormsImport } from '@/components/exams/GoogleFormsImport';
 import { mergeGoogleFormImport } from '@/src/lib/google-forms-import';
+import { QuestionBankImport } from '@/components/exams/QuestionBankImport';
+import { mergeBankImport } from '@/src/lib/question-bank';
 import { AiExamUsageNotice } from '@/src/components/ai-exam/AiExamUsageNotice';
 import { parseGeneratedExamQuestions, requestExamExtraction } from '@/src/lib/exam-ai';
 import {
@@ -595,6 +597,12 @@ export default function EditExamPage() {
             setQuestions(merged.questions);
             setSections(merged.sections);
             setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(merged.questions.reduce((sum, question) => sum + question.score, 0)) }));
+          }} />
+          <QuestionBankImport excludeQuizId={examId} onApply={(imported) => {
+            const merged = mergeBankImport(questionsRef.current, imported);
+            revokeQuestionsObjectUrls(merged.removed);
+            setQuestions(merged.questions);
+            setExamDetails(current => ({ ...current, totalMarks: String(merged.questions.reduce((sum, question) => sum + question.score, 0)) }));
           }} />
           <button
             type="button"

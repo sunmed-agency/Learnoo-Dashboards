@@ -17,6 +17,8 @@ export interface ExamFormAnswer {
   imagePreview?: string;
   reason_image?: File | null;
   reasonImagePreview?: string;
+  /** The question-bank option this one was copied from (its images are copied by the server). */
+  bankAnswerId?: number;
 }
 
 export interface ExamFormQuestion {
@@ -33,6 +35,8 @@ export interface ExamFormQuestion {
   sectionKey?: string;
   /** Where an imported question came from (JSON, e.g. Google Forms ids); saved once with a new question. */
   source?: string;
+  /** The question-bank question this new question was copied from (the server copies its images). */
+  bankQuestionId?: number;
 }
 
 /** An exam section ("قسم"): questions that share one image shown above each of them. */
@@ -260,11 +264,13 @@ export function buildExamFormData(
     formData.append(`${questionKey}[auto_correct]`, question.autoCorrect ? '1' : '0');
     formData.append(`${questionKey}[order]`, String(questionIndex + 1));
     if (question.source && isNewQuestionId(question.id)) formData.append(`${questionKey}[source]`, question.source);
+    const fromBank = Boolean(question.bankQuestionId) && isNewQuestionId(question.id);
+    if (fromBank) formData.append(`${questionKey}[bank_question_id]`, String(question.bankQuestionId));
     if (question.sectionKey && sectionKeys.has(question.sectionKey)) {
       formData.append(`${questionKey}[section_key]`, question.sectionKey);
     }
     if (question.image instanceof File) formData.append(`${questionKey}[image]`, question.image);
-    if (mode === 'edit' && question.image === null && !question.imagePreview) {
+    if ((mode === 'edit' || fromBank) && !(question.image instanceof File) && !question.imagePreview) {
       formData.append(`${questionKey}[remove_image]`, '1');
     }
 
@@ -276,14 +282,16 @@ export function buildExamFormData(
       formData.append(`${answerKey}[text]`, answer.text);
       formData.append(`${answerKey}[is_correct]`, answer.isCorrect ? '1' : '0');
       if (answer.reason) formData.append(`${answerKey}[reason]`, answer.reason);
+      const answerFromBank = fromBank && Boolean(answer.bankAnswerId) && isNewAnswerId(answer.id);
+      if (answerFromBank) formData.append(`${answerKey}[bank_answer_id]`, String(answer.bankAnswerId));
       if (answer.image instanceof File) formData.append(`${answerKey}[image]`, answer.image);
-      if (mode === 'edit' && answer.image === null && !answer.imagePreview) {
+      if ((mode === 'edit' || answerFromBank) && !(answer.image instanceof File) && !answer.imagePreview) {
         formData.append(`${answerKey}[remove_image]`, '1');
       }
       if (answer.reason_image instanceof File) {
         formData.append(`${answerKey}[reason_image]`, answer.reason_image);
       }
-      if (mode === 'edit' && answer.reason_image === null && !answer.reasonImagePreview) {
+      if ((mode === 'edit' || answerFromBank) && !(answer.reason_image instanceof File) && !answer.reasonImagePreview) {
         formData.append(`${answerKey}[remove_reason_image]`, '1');
       }
     });

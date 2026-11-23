@@ -573,7 +573,8 @@
     },
     "deviceApprovals": "طلبات الأجهزة",
     "guardians": "أولياء الأمور",
-    "examsAndResults": "الامتحانات والنتائج"
+    "examsAndResults": "الامتحانات والنتائج",
+    "questionBank": "بنك الأسئلة"
   },
   "issues": {
     "title": "الدعم الفني",
@@ -3036,6 +3037,10 @@
     "profile": {
       "title": "الملف الشخصي",
       "description": "اسمك وصورتك وبيانات حسابك."
+    },
+    "permissionProfiles": {
+      "title": "ملفات الصلاحيات",
+      "description": "مجموعات صلاحيات جاهزة بتختار منها لما تضيف حساب في المشرفين."
     }
   },
   "electronicLibrary": {

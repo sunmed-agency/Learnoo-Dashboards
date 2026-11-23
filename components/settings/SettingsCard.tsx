@@ -13,6 +13,7 @@ import {
   Smartphone,
   CreditCard,
   HardDrive,
+  ShieldCheck,
   ChevronRight
 } from 'lucide-react';
 
@@ -27,6 +28,7 @@ const iconMap = {
   Smartphone,
   CreditCard,
   HardDrive,
+  ShieldCheck,
 };
 
 type IconName = keyof typeof iconMap;

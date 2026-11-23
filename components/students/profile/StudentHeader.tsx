@@ -9,8 +9,9 @@ import { api, getApiErrorMessage } from '@/src/lib/api';
 import NotifyStudentModal from './NotifyStudentModal';
 import { type ProfileStudent, useTr } from './shared';
 
-export default function StudentHeader({ student, canEdit, canNotify, canResetDevice, onDeviceChanged }: {
+export default function StudentHeader({ student, canEdit, canNotify, canResetDevice, onDeviceChanged, backHref = '/students' }: {
   student: ProfileStudent;
+  backHref?: string;
   canEdit: boolean;
   canNotify: boolean;
   /** Admin / Super Admin with devices.manage (same rule as StudentDeviceReset). */
@@ -43,7 +44,7 @@ export default function StudentHeader({ student, canEdit, canNotify, canResetDev
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex min-w-0 items-start gap-3">
-        <Link href="/students" aria-label={tr('رجوع للطلاب', 'Back to students')} className="mt-0.5 shrink-0 rounded-xl border border-[#EEEEEE] bg-white p-2 text-[#6B7280] transition hover:text-[#111827]">
+        <Link href={backHref} aria-label={tr('رجوع للطلاب', 'Back to students')} className="mt-0.5 shrink-0 rounded-xl border border-[#EEEEEE] bg-white p-2 text-[#6B7280] transition hover:text-[#111827]">
           <Back className="h-5 w-5" />
         </Link>
         {student.image ? (

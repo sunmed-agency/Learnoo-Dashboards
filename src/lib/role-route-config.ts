@@ -64,6 +64,7 @@ export const ADMIN_ROUTE_PREFIXES = [
   '/downloads',
   '/electronic-library',
   '/exams',
+  '/question-bank',
   '/faculties',
   '/feature-control',
   '/instructors',

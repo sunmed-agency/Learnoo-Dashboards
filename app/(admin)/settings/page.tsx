@@ -63,6 +63,13 @@ export default function PlatformSettingsPage() {
       href: '/settings/backups',
       adminOnly: true,
       ownerOnly: true
+    },
+    {
+      icon: 'ShieldCheck' as const,
+      titleKey: 'permissionProfiles',
+      href: '/settings/permission-profiles',
+      adminOnly: true,
+      ownerOnly: true
     }
   ];
 

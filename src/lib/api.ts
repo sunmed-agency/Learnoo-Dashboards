@@ -499,6 +499,15 @@ export const authApi = {
   update: (data: UpdateUserRequest) =>
     put<ApiResponse<User>>('/v1/auth/update', data),
 
+  /** Profile with a photo: multipart needs POST + _method=PUT (PHP does not parse multipart PUT bodies). */
+  updateProfile: (formData: FormData) => {
+    formData.set('_method', 'PUT');
+    return postMultipart<ApiResponse<User>>('/v1/auth/update', formData);
+  },
+
+  changePassword: (data: { current_password: string; password: string; password_confirmation: string }) =>
+    post<{ message: string }>('/v1/auth/change-password', data),
+
   forgotPassword: (data: ForgotPasswordRequest) =>
     post<ApiResponse<{ message: string }>>('/v1/auth/password/forgot', data, false),
 
@@ -1615,6 +1624,32 @@ export interface GoogleStatus {
   last_backup: { ok: boolean; at: string; detail: string } | null;
 }
 export interface GoogleFormFile { id: string; name: string; modified_at: string | null; owned_by_me: boolean; owner: string | null }
+/** Question bank: every question of the exams the user can see (instructors: their own). */
+export interface BankAnswer { id: number; text: string; is_correct: boolean; reason: string | null; image: string | null; reason_image: string | null }
+export interface BankQuestion {
+  id: number;
+  text: string;
+  type: 'single_choice' | 'multiple_choice' | 'true_false' | 'short_answer';
+  score: number;
+  auto_correct: boolean;
+  image: string | null;
+  section: { title: string | null; image: string | null } | null;
+  quiz: { id: number; title: string } | null;
+  courses: { id: number; title: string }[];
+  answers: BankAnswer[];
+  created_at: string | null;
+}
+export interface BankFilters { courses: { id: number; title: string }[]; quizzes: { id: number; title: string; course_ids: number[] }[] }
+export interface BankQuery { search?: string; course_id?: number | ''; quiz_id?: number | ''; type?: string; exclude_quiz_id?: number | string; page?: number; per_page?: number }
+export const questionBankApi = {
+  list: (query: BankQuery) => {
+    const params = new URLSearchParams();
+    Object.entries(query).forEach(([key, value]) => { if (value !== undefined && value !== null && value !== '') params.set(key, String(value)); });
+    return get<{ data: BankQuestion[]; meta: { current_page: number; last_page: number; total: number; per_page: number } }>(`/v1/question-bank?${params.toString()}`);
+  },
+  filters: () => get<BankFilters>('/v1/question-bank/filters'),
+};
+
 export const googleApi = {
   status: (purpose: GooglePurpose) => get<GoogleStatus>(`/v1/google/status?purpose=${purpose}`),
   connect: (purpose: GooglePurpose) => post<{ url: string }>('/v1/google/connect', { purpose }),
@@ -1715,12 +1750,25 @@ export interface PermissionCatalog {
   groups: { key: string; label: LocalizedLabel }[];
   permissions: { key: string; group: string; label: LocalizedLabel; requires: string[] }[];
   presets: { key: string; label: LocalizedLabel; permissions: string[] }[];
+  profiles?: PermissionProfile[];
 }
+/** A named permission set ("ملف صلاحيات"): full access, or chosen permissions. */
+export interface PermissionProfile { id: number; name: string; full_access: boolean; permissions: string[]; users_count: number; updated_at: string | null }
+export interface PermissionProfileInput { name: string; full_access: boolean; permissions: string[] }
+export const permissionProfilesApi = {
+  list: () => get<{ data: PermissionProfile[] }>('/v1/owner/permission-profiles'),
+  create: (data: PermissionProfileInput) => post<{ data: PermissionProfile }>('/v1/owner/permission-profiles', data),
+  update: (id: number, data: PermissionProfileInput) => put<{ data: PermissionProfile }>(`/v1/owner/permission-profiles/${id}`, data),
+  remove: (id: number) => del<unknown>(`/v1/owner/permission-profiles/${id}`),
+};
 export interface Supervisor {
   id: string; first_name: string; last_name: string; email: string; phone: string | null; active: boolean; permissions: string[]; created_at: string | null;
+  /** True for a full admin (every permission). */
+  full_access?: boolean;
+  permission_profile?: { id: number; name: string } | null;
   actions_30_days?: number; last_action_at?: string | null; last_seen_at?: string | null;
 }
-export interface SupervisorInput { first_name?: string; last_name?: string; email?: string; phone?: string | null; password?: string; active?: boolean; permissions?: string[] }
+export interface SupervisorInput { first_name?: string; last_name?: string; email?: string; phone?: string | null; password?: string; active?: boolean; permissions?: string[]; full_access?: boolean; permission_profile_id?: number | null }
 export const supervisorsApi = {
   catalog: () => get<{ data: PermissionCatalog }>('/v1/owner/supervisor-permissions'),
   list: (search?: string) => get<{ data: Supervisor[] }>('/v1/owner/supervisors', { search: search || undefined }),

@@ -513,10 +513,13 @@ function StudentsNeedingAttention({ data: students, t }: { data: any; t: ReturnT
         {students?.map((student: any) => (
           <div key={student.id} className="bg-[#FEF2F2] rounded-xl p-4">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-[#EF4444] rounded-full flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-8 h-8 shrink-0 bg-[#EF4444] rounded-full flex items-center justify-center text-white text-xs font-bold">
                 {getInitials(student.full_name)}
               </div>
-              <p className="text-sm font-semibold text-[#1E293B]">{student.full_name}</p>
+              <div className="min-w-0">
+                <Link href={`/doctor/students/${student.id}`} className="block truncate text-sm font-semibold text-[#1E293B] hover:text-[#2137D6] hover:underline">{student.full_name}</Link>
+                {student.phone && <a href={`tel:${student.phone}`} dir="ltr" className="block truncate text-xs text-[#64748B] hover:text-[#2137D6]">{student.phone}</a>}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between gap-2 text-xs text-[#64748B]">

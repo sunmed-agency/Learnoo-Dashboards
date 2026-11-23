@@ -37,6 +37,7 @@ export const PAGE_PERMISSIONS: [prefix: string, permission: string][] = [
   ['/universities', 'structure.view'], ['/faculties', 'structure.view'], ['/centers', 'structure.view'], ['/levels', 'structure.view'],
   ['/courses', 'structure.view'], ['/lectures', 'structure.view'], ['/chapters', 'structure.view'], ['/content-manager', 'structure.view'],
   ['/exams', 'exams.manage'],
+  ['/question-bank', 'exams.manage'],
   ['/live-sessions', 'live.manage'],
   ['/notes-summaries', 'notes.manage'],
   ['/electronic-library', 'library.manage'],

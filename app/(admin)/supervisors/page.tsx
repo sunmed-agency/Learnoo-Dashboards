@@ -74,6 +74,8 @@ export default function SupervisorsPage() {
   const formatDate = (iso?: string | null) => (iso ? new Intl.DateTimeFormat(ar ? 'ar-EG' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)) : null);
 
   const summary = (s: Supervisor, c?: PermissionCatalog) => {
+    if (s.permission_profile) return { text: s.permission_profile.name, preset: true };
+    if (s.full_access) return { text: ar ? 'كل الصلاحيات (أدمن)' : 'Full access (admin)', preset: true };
     const preset = c ? matchingPreset(s.permissions, c) : undefined;
     if (preset) return { text: ar ? preset.label.ar : preset.label.en || preset.label.ar, preset: true };
     const n = s.permissions.length;
@@ -140,7 +142,7 @@ export default function SupervisorsPage() {
         <div className="min-w-0 sm:flex-1">
           <h1 className="text-[22px] font-bold text-[#111827]">{ar ? 'المشرفين' : 'Supervisors'}</h1>
           <p className="mt-1 max-w-2xl text-[14px] text-[#6B7280]">
-            {ar ? 'حسابات بتشتغل نيابة عنك بصلاحيات إنت بتحددها، وكل حاجة بيعملوها بتتسجل عشان تعرف مين عمل إيه.' : 'Accounts that work on your behalf with permissions you choose; everything they do is logged so you know who did what.'}
+            {ar ? 'كل حسابات الإدارة: بكل الصلاحيات أو بصلاحيات إنت بتحددها (أو بملف صلاحيات من الإعدادات)، وكل حاجة بيعملوها بتتسجل عشان تعرف مين عمل إيه.' : 'Every staff account: full access or the permissions you choose (or a permission profile from Settings); everything they do is logged so you know who did what.'}
           </p>
         </div>
         <button type="button" onClick={() => openEditor('new')} className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-[#2137D6] px-4 py-2.5 text-[14px] font-semibold text-white shadow-md shadow-[#2137D6]/20 transition hover:bg-[#1C2EB8]">

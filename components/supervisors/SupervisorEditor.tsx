@@ -84,13 +84,19 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
   const [active, setActive] = useState(supervisor?.active ?? true);
   const [permissions, setPermissions] = useState<Set<string>>(() => new Set(supervisor?.permissions ?? []));
   const [custom, setCustom] = useState(() => (supervisor ? !matchingPreset(supervisor.permissions, catalog) : false));
+  // A permission profile (from Settings → permission profiles), or full access (a full admin), or the switches below.
+  const profiles = catalog.profiles ?? [];
+  const [profileId, setProfileId] = useState<number | null>(supervisor?.permission_profile?.id ?? null);
+  const [fullAccess, setFullAccess] = useState(Boolean(supervisor?.full_access) && !supervisor?.permission_profile);
+  const profile = profiles.find((p) => p.id === profileId) ?? null;
   const [note, setNote] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
   const byKey = useMemo(() => new Map(catalog.permissions.map((p) => [p.key, p])), [catalog]);
   const names = (keys: Iterable<string>) => [...keys].map((k) => (byKey.get(k) ? label(byKey.get(k)!.label) : k)).join(ar ? '، ' : ', ');
-  const activePreset = custom ? undefined : matchingPreset([...permissions], catalog);
+  const activePreset = custom || profileId !== null || fullAccess ? undefined : matchingPreset([...permissions], catalog);
+  const allAccess = fullAccess || Boolean(profile?.full_access);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !saving) onClose(); };
@@ -123,17 +129,30 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
   };
 
   const togglePermission = (permission: Permission, on: boolean) => {
-    setCustom(true);
+    setCustom(true); setProfileId(null); setFullAccess(false);
     if (on) turnOn([permission.key]); else turnOff([permission.key]);
   };
 
   const choosePreset = (key: string | null) => {
-    setNote(null);
+    setNote(null); setProfileId(null); setFullAccess(false);
     if (key === null) { setCustom(true); return; }
     const preset = catalog.presets.find((p) => p.key === key);
     if (!preset) return;
     setCustom(false);
     setPermissions(withRequirements(preset.permissions, catalog));
+    clearError('permissions');
+  };
+
+  const chooseProfile = (id: number) => {
+    const chosen = profiles.find((p) => p.id === id);
+    if (!chosen) return;
+    setNote(null); setCustom(false); setFullAccess(false); setProfileId(id);
+    setPermissions(new Set(chosen.permissions));
+    clearError('permissions');
+  };
+
+  const chooseFullAccess = () => {
+    setNote(null); setCustom(false); setProfileId(null); setFullAccess(true);
     clearError('permissions');
   };
 
@@ -145,7 +164,7 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
     else if (!/^\S+@\S+\.\S+$/.test(email.trim())) next.email = ar ? 'الإيميل مش مكتوب صح' : 'Email is not valid';
     if (!isEdit && !password) next.password = ar ? 'اكتب كلمة سر للمشرف' : 'Password is required';
     else if (password && password.length < 8) next.password = ar ? 'كلمة السر لازم تكون 8 حروف على الأقل' : 'Password must be at least 8 characters';
-    if (permissions.size === 0) next.permissions = ar ? 'اختار صلاحية واحدة على الأقل' : 'Choose at least one permission';
+    if (!fullAccess && profileId === null && permissions.size === 0) next.permissions = ar ? 'اختار صلاحية واحدة على الأقل' : 'Choose at least one permission';
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -159,7 +178,11 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
       email: email.trim(),
       phone: phone.trim() || null,
       active,
-      permissions: [...permissions],
+      ...(profileId !== null
+        ? { permission_profile_id: profileId }
+        : fullAccess
+          ? { full_access: true, permission_profile_id: null }
+          : { permissions: [...permissions], full_access: false, permission_profile_id: null }),
     };
     if (password) data.password = password;
     setSaving(true);
@@ -254,21 +277,48 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
 
           <section className="space-y-3">
             <h3 className="text-[15px] font-bold text-[#111827]">{ar ? 'نوع المشرف' : 'Supervisor type'}</h3>
+            {profiles.length > 0 && (
+              <div className="space-y-2 rounded-2xl bg-[#F4F5FD] p-3">
+                <p className="text-[12px] font-semibold text-[#2137D6]">{ar ? 'ملفات الصلاحيات' : 'Permission profiles'}</p>
+                <div className="flex flex-wrap gap-2">
+                  {profiles.map((p) => (
+                    <button key={p.id} type="button" onClick={() => chooseProfile(p.id)} className={chip(profileId === p.id)} aria-pressed={profileId === p.id}>
+                      {p.name}{p.full_access ? (ar ? ' (كل الصلاحيات)' : ' (full access)') : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={chooseFullAccess} className={chip(fullAccess)} aria-pressed={fullAccess}>
+                {ar ? 'كل الصلاحيات (أدمن)' : 'Full access (admin)'}
+              </button>
               {catalog.presets.map((preset) => (
                 <button key={preset.key} type="button" onClick={() => choosePreset(preset.key)} className={chip(activePreset?.key === preset.key)} aria-pressed={activePreset?.key === preset.key}>
                   {label(preset.label)}
                 </button>
               ))}
-              <button type="button" onClick={() => choosePreset(null)} className={chip(!activePreset)} aria-pressed={!activePreset}>
+              <button type="button" onClick={() => choosePreset(null)} className={chip(!activePreset && !fullAccess && profileId === null)} aria-pressed={!activePreset && !fullAccess && profileId === null}>
                 {ar ? 'مخصص' : 'Custom'}
               </button>
             </div>
             <p className="text-[12px] text-[#6B7280]">
               {ar ? 'اختار نوع جاهز يملالك الصلاحيات، وبعدها تقدر تعدّل فيها براحتك تحت.' : 'Pick a ready type to fill the permissions, then adjust them below as you like.'}
             </p>
+            {profile && (
+              <p className="flex items-start gap-2 rounded-xl bg-[#F4F5FD] px-3 py-2 text-[13px] text-[#1F33C4]" role="status">
+                <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                {ar ? `الحساب ماشي على ملف «${profile.name}»: أي تعديل في الملف من الإعدادات بيتطبّق عليه على طول. لو غيّرت صلاحية هنا، الحساب هيبقى مخصص ومش مربوط بالملف.` : `This account follows the “${profile.name}” profile: editing the profile in Settings updates it at once. Changing a permission here makes it custom and unlinks it.`}
+              </p>
+            )}
           </section>
 
+          {allAccess ? (
+            <p className="flex items-start gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800" role="status">
+              <Info className="mt-0.5 h-4 w-4 shrink-0" />
+              {ar ? 'الحساب ده هيقدر يعمل كل حاجة الأدمن بيعملها. صفحات المالك بس (المشرفين، ملفات الصلاحيات، النسخ الاحتياطي) بتفضل ليك إنت.' : 'This account can do everything an admin can. Owner-only pages (supervisors, permission profiles, backups) stay yours.'}
+            </p>
+          ) : (
           <section className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-[15px] font-bold text-[#111827]">{ar ? 'الصلاحيات' : 'Permissions'}</h3>
@@ -323,6 +373,7 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
               })}
             </div>
           </section>
+          )}
         </div>
 
         <div className="flex flex-col-reverse gap-2 border-t border-[#F3F4F6] px-5 py-4 sm:flex-row sm:justify-end sm:px-6">

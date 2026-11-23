@@ -555,7 +555,8 @@
     },
     "deviceApprovals": "Device requests",
     "guardians": "Guardians",
-    "examsAndResults": "Exams and results"
+    "examsAndResults": "Exams and results",
+    "questionBank": "Question bank"
   },
   "issues": {
     "title": "Technical Support",
@@ -3036,6 +3037,10 @@
     "profile": {
       "title": "Profile",
       "description": "Your name, photo and account details."
+    },
+    "permissionProfiles": {
+      "title": "Permission profiles",
+      "description": "Ready permission sets you pick from when adding an account on the Supervisors page."
     }
   },
   "electronicLibrary": {

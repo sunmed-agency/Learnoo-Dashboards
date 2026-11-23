@@ -66,8 +66,8 @@ import {
 
   UserCog,
 
-  KeyRound
-
+  KeyRound,
+  Database,
 } from 'lucide-react';
 
 
@@ -158,6 +158,7 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
   items.push({ name: t('sidebar.schedules'), icon: CalendarDays, path: '/schedules', permission: 'schedules.manage' });
   items.push({ name: t('sidebar.liveSessions'), icon: Video, path: '/live-sessions', permission: 'live.manage' });
   items.push({ name: t('sidebar.examsAndQA'), icon: ClipboardList, path: '/exams', permission: 'exams.manage' });
+  items.push({ name: t('sidebar.questionBank'), icon: Database, path: '/question-bank', permission: 'exams.manage' });
   items.push({ name: t('sidebar.notesSummaries'), icon: StickyNote, path: '/notes-summaries', permission: 'notes.manage' });
   items.push({ name: t('sidebar.electronicLibrary'), icon: BookOpen, path: '/electronic-library', permission: 'library.manage' });
 

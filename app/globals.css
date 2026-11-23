@@ -159,6 +159,12 @@ html[data-platform-branding="true"] :is([class~="via-[#6366F1]"], [class~="to-[#
 /* Cards in the content area: brand-tinted soft shadow */
 .staff-theme main :is(.rounded-2xl, .rounded-xl).bg-white.border { border-color: var(--lr-line); box-shadow: var(--lr-shadow); }
 .staff-theme :is(input, select, textarea):focus-visible { outline: none; border-color: var(--lr-royal-light); box-shadow: 0 0 0 3px rgba(45,70,232,.15); }
+/* Menus that scroll without showing a bar (the sidebars use it; it was never defined). */
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+/* The dashboards' content area: one thin bar, space kept so pages don't shift when it appears. */
+.staff-scroll { scrollbar-width: thin; scrollbar-color: #CBD3F2 transparent; scrollbar-gutter: stable; overscroll-behavior: contain; }
+.staff-theme ::-webkit-scrollbar-track { background: transparent; }
 .staff-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
 .staff-theme ::-webkit-scrollbar-thumb { background: #CBD3F2; border-radius: 99px; }
 

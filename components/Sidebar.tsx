@@ -532,7 +532,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
     <aside
 
-      className={`bg-white/85 backdrop-blur-xl flex flex-col min-h-full border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
+      className={`bg-white/85 backdrop-blur-xl flex flex-col h-full border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
         }`}
 
     >

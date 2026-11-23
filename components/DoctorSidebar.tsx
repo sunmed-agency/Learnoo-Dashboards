@@ -25,6 +25,7 @@ import {
   LifeBuoy,
   CalendarDays,
   Database,
+  GraduationCap,
 } from 'lucide-react';
 
 import Image from 'next/image';
@@ -71,6 +72,7 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
     items.push({ name: t('electronicLibrary'), icon: Library, path: '/doctor/electronic-library' });
 
     section('students');
+    items.push({ name: t('students'), icon: GraduationCap, path: '/doctor/students' });
     items.push({ name: t('guardians'), icon: Users, path: '/doctor/guardians' });
     if (isMounted && canUseActivations) {
       items.push({ name: t('activation'), icon: Power, path: '/doctor/activation' });

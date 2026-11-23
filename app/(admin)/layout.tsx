@@ -28,7 +28,7 @@ export default function AdminLayout({
       {/* Soft Royal / Coral glow behind the dashboard */}
       <div className="student-bg-art" aria-hidden />
       {/* Sidebar - Fixed, scrollable independently */}
-      <div className={`relative z-[2] flex-shrink-0 h-screen overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <div className={`relative z-[2] flex-shrink-0 h-screen overflow-hidden transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -39,7 +39,7 @@ export default function AdminLayout({
       {/* No z-index here: popups (fixed, z-50) inside a page must rise above the sidebar (z-[2]). */}
       <div className="relative flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+        <main className="staff-scroll flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
           <div className="w-full mx-auto">
             {blocked ? null : children}
           </div>

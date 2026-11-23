@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import { useLocale } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react';
+import { KeyRound, Loader2 } from 'lucide-react';
 import { ApiError, api } from '@/src/lib/api';
+import PasswordInput from '@/components/ui/PasswordInput';
 import SettingsSection from '@/components/settings/SettingsSection';
 
 /** Change your own password (owner, admins, supervisors, instructors). The current password is required. */
@@ -14,7 +15,6 @@ export default function ChangePasswordSection() {
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [show, setShow] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -53,10 +53,20 @@ export default function ChangePasswordSection() {
     }
   }
 
-  const input = (id: string, label: string, value: string, set: (value: string) => void, autoComplete: string) => (
+  const input = (id: string, label: string, value: string, set: (value: string) => void, autoComplete: string, generator = false) => (
     <div className="grid grid-cols-1 gap-1.5">
       <label htmlFor={id} className="text-[13px] font-medium text-[#4B5563]">{label}</label>
-      <input id={id} type={show ? 'text' : 'password'} dir="ltr" autoComplete={autoComplete} value={value} onChange={(event) => set(event.target.value)} aria-invalid={Boolean(errors[id])} aria-describedby={errors[id] ? `${id}-error` : undefined} className={`${field} ${errors[id] ? 'border-red-400' : ''}`} />
+      <PasswordInput
+        id={id}
+        autoComplete={autoComplete}
+        value={value}
+        onValueChange={set}
+        generator={generator}
+        onGenerated={generator ? setConfirm : undefined}
+        aria-invalid={Boolean(errors[id])}
+        aria-describedby={errors[id] ? `${id}-error` : undefined}
+        className={`${field} ${errors[id] ? 'border-red-400' : ''}`}
+      />
       {errors[id] && <p id={`${id}-error`} className="text-[12px] text-red-600">{errors[id]}</p>}
     </div>
   );
@@ -66,13 +76,10 @@ export default function ChangePasswordSection() {
       <form onSubmit={save} className="space-y-4" noValidate>
         {input('current_password', tr('كلمة المرور الحالية', 'Current password'), current, setCurrent, 'current-password')}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {input('password', tr('كلمة المرور الجديدة', 'New password'), next, setNext, 'new-password')}
+          {input('password', tr('كلمة المرور الجديدة', 'New password'), next, setNext, 'new-password', true)}
           {input('password_confirmation', tr('تأكيد كلمة المرور الجديدة', 'Confirm new password'), confirm, setConfirm, 'new-password')}
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" onClick={() => setShow((value) => !value)} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#4B5563] hover:text-[#111827]">
-            {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}{show ? tr('إخفاء', 'Hide') : tr('إظهار', 'Show')}
-          </button>
+        <div className="flex flex-wrap items-center justify-end gap-3">
           <button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-[#2137D6] px-5 py-2.5 text-[14px] font-semibold text-white shadow-md shadow-[#2137D6]/20 transition-colors hover:bg-[#1C2EB8] disabled:cursor-not-allowed disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}{tr('تغيير كلمة المرور', 'Change password')}
           </button>

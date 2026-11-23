@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocale } from 'next-intl';
 import toast from 'react-hot-toast';
 import { Info, Link2, Loader2, X } from 'lucide-react';
+import PasswordInput from '@/components/ui/PasswordInput';
 import api, { ApiError, getApiErrorMessage, type PermissionCatalog, type Supervisor, type SupervisorInput } from '@/src/lib/api';
 
 type Permission = PermissionCatalog['permissions'][number];
@@ -264,7 +265,7 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
             </div>
             <div className="grid gap-1.5">
               <label htmlFor="sup-password" className={labelClass}>{ar ? 'كلمة السر' : 'Password'}</label>
-              <input id="sup-password" type="password" dir="ltr" autoComplete="new-password" value={password} onChange={(e) => { setPassword(e.target.value); clearError('password'); }} placeholder={isEdit ? (ar ? 'سيبها فاضية لو مش عايز تغيّرها' : 'Leave empty to keep the current one') : ''} className={fieldClass('password')} />
+              <PasswordInput id="sup-password" generator autoComplete="new-password" value={password} onValueChange={(value) => { setPassword(value); clearError('password'); }} placeholder={isEdit ? (ar ? 'سيبها فاضية لو مش عايز تغيّرها' : 'Leave empty to keep the current one') : ''} className={fieldClass('password')} />
               {fieldError('password')}
             </div>
             <div className="flex items-center gap-3 self-end rounded-xl bg-[#F9FAFB] px-3 py-2.5">

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Eye, History, Loader2, Search, SlidersHorizontal } from 'lucide-react';
+import { Clock3, Eye, History, Loader2, Search, SlidersHorizontal } from 'lucide-react';
+import { formatClock, formatWatchTime, toMinutes } from '@/src/lib/watch-time';
 import type { StudentChapterViews, StudentViews } from '@/src/lib/api';
 import AdjustViewsModal from './AdjustViewsModal';
 import { Card, EmptyState, formatDate, inputClass, tdClass, thClass, useTr } from './shared';
@@ -36,7 +37,7 @@ export default function ViewsTab({ studentId, views, isLoading, isError, canMana
   return (
     <div className="flex flex-col gap-5">
       <Card
-        title={<>{tr('المشاهدات', 'Views')} <span className="rounded-full bg-[#F4F6FD] px-2 py-0.5 text-[12px] font-bold text-[#2137D6]">{tr(`الإجمالي ${views.total_views}`, `Total ${views.total_views}`)}</span></>}
+        title={<>{tr('المشاهدات', 'Views')} <span className="rounded-full bg-[#F4F6FD] px-2 py-0.5 text-[12px] font-bold text-[#2137D6]">{tr(`الإجمالي ${views.total_views}`, `Total ${views.total_views}`)}</span>{(views.total_watched_seconds ?? 0) > 0 && <span className="ms-1 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[12px] font-bold text-emerald-700"><Clock3 className="h-3 w-3" />{tr(`وقت المشاهدة ${formatWatchTime(views.total_watched_seconds, true)}`, `Watched ${formatWatchTime(views.total_watched_seconds, false)}`)}</span>}</>}
         icon={Eye}
         bodyClassName="p-0"
       >
@@ -55,7 +56,7 @@ export default function ViewsTab({ studentId, views, isLoading, isError, canMana
           <div className="p-5"><EmptyState>{chapters.length === 0 ? tr('مفيش دروس عند الطالب ده لسه', 'This student has no lessons yet') : tr('مفيش نتايج للبحث ده', 'No results for this search')}</EmptyState></div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] border-collapse">
+            <table className="w-full min-w-[1120px] border-collapse">
               <thead className="bg-[#F9FAFB]">
                 <tr>
                   <th className={thClass}>{tr('الدرس', 'Lesson')}</th>
@@ -63,6 +64,9 @@ export default function ViewsTab({ studentId, views, isLoading, isError, canMana
                   <th className={thClass}>{tr('شاف', 'Views')}</th>
                   <th className={thClass}>{tr('الحد', 'Limit')}</th>
                   <th className={thClass}>{tr('المتبقي', 'Remaining')}</th>
+                  <th className={thClass}>{tr('آخر دقيقة وصلها', 'Last position')}</th>
+                  <th className={thClass}>{tr('إجمالي المشاهدة', 'Total watched')}</th>
+                  <th className={thClass}>{tr('الرصيد للمشاهدة الجاية', 'Toward next view')}</th>
                   <th className={thClass}>{tr('آخر مشاهدة', 'Last viewed')}</th>
                   {canManage && <th className={thClass}><span className="sr-only">{tr('إجراءات', 'Actions')}</span></th>}
                 </tr>
@@ -96,6 +100,16 @@ export default function ViewsTab({ studentId, views, isLoading, isError, canMana
                       <td className={tdClass}>
                         {unlimited || c.remaining_views === null ? '—' : <span className={`font-semibold ${exhausted ? 'text-red-600' : ''}`}>{c.remaining_views}</span>}
                       </td>
+                      <td className={`${tdClass} font-semibold tabular-nums`} dir="ltr" style={{ textAlign: 'start' }}>{formatClock(c.last_position_seconds)}</td>
+                      <td className={`${tdClass} text-[13px]`}>{formatWatchTime(c.watched_seconds, ar)}</td>
+                      <td className={tdClass}>
+                        {c.threshold_seconds && c.threshold_seconds > 60 ? (
+                          <div className="min-w-[110px]">
+                            <span className="text-[13px] font-semibold">{tr(`${toMinutes(c.balance_seconds)} من ${toMinutes(c.threshold_seconds)} دقيقة`, `${toMinutes(c.balance_seconds)} of ${toMinutes(c.threshold_seconds)} min`)}</span>
+                            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#EEF0FB]"><div className="h-full rounded-full bg-[#2137D6]" style={{ width: `${Math.min(100, Math.round(((c.balance_seconds ?? 0) / c.threshold_seconds) * 100))}%` }} /></div>
+                          </div>
+                        ) : '—'}
+                      </td>
                       <td className={`${tdClass} text-[13px] text-[#6B7280]`}>{formatDate(c.last_viewed_at, ar)}</td>
                       {canManage && (
                         <td className={tdClass}>
@@ -113,6 +127,7 @@ export default function ViewsTab({ studentId, views, isLoading, isError, canMana
             </table>
           </div>
         )}
+        <p className="border-t border-[#F3F4F6] px-4 py-2.5 text-[12px] text-[#6B7280]">{tr('المشاهدة بتتحسب لما الطالب يتفرج على مدة الدرس من الفيديو نفسه (التقديم مش بيتحسب، والسرعة مش بتفرق)، حتى لو على كذا مرة. وقت المشاهدة وآخر دقيقة بيتسجّلوا من 23 نوفمبر 2026.', 'A view counts once the student has played the lesson minutes of the video itself (skipping does not count, speed does not matter), across openings. Watch time and last position are recorded from 23 Nov 2026.')}</p>
       </Card>
 
       <Card title={tr('سجل الزيادة والتقليل', 'Adjustments log')} icon={History}>

@@ -630,6 +630,12 @@ export const chaptersApi = {
   /** Registers one chapter view against the student's limit (POST /v1/chapter/:id/view). */
   recordView: (id: number) =>
     post<ApiResponse<Chapter>>(`/v1/chapter/${id}/view`, {}, true, true),
+  /**
+   * Watch-time heartbeat (POST /v1/chapter/:id/watch): video seconds played since the last one
+   * (seeks excluded) + where the player is. The server counts the view from these.
+   */
+  watchHeartbeat: (id: number, body: { session_id: string; watched: number; position: number }, keepalive = false) =>
+    post<WatchHeartbeatResult>(`/v1/chapter/${id}/watch`, body, true, true, { keepalive }),
 
   create: (data: CreateChapterRequest, onProgress?: (progress: number) => void) => {
     const formData = buildFormData(data as unknown as Record<string, unknown>);
@@ -1733,9 +1739,22 @@ export interface StudentDevices {
 export interface StudentChapterViews {
   chapter_id: number; chapter: string; lecture: string | null; course_id: number | null; course: string | null;
   count: number; extra_views: number; base_limit: number; max_views: number; remaining_views: number | null; last_viewed_at: string | null;
+  /** Watch time from the players' heartbeats (recorded from 23 Nov 2026 on). */
+  watched_seconds?: number; last_position_seconds?: number | null; balance_seconds?: number; threshold_seconds?: number; duration?: string | null;
+}
+/** Reply to a watch-time heartbeat: whether this one counted a view, and the balance toward the next. */
+export interface WatchHeartbeatResult {
+  tracked: boolean;
+  counted?: boolean;
+  views?: { count: number; limit: number; remaining: number | null };
+  balance_seconds?: number;
+  threshold_seconds?: number;
+  session_counted?: boolean;
+  watched_seconds?: number;
 }
 export interface StudentViews {
   total_views: number;
+  total_watched_seconds?: number;
   chapters: StudentChapterViews[];
   adjustments: { id: number; chapter_id: number; chapter: string | null; delta: number; note: string | null; actor: string; created_at: string }[];
 }

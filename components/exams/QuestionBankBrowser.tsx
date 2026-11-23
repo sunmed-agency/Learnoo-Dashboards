@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
 import { questionBankApi, type BankQuestion } from "@/src/lib/api";
 import { BANK_TYPE_LABELS } from "@/src/lib/question-bank";
+import SearchableSelect from "@/components/ui/SearchableSelect";
 
 type Props = {
   /** Import mode: a checkbox on each question. */
@@ -66,14 +67,23 @@ export function QuestionBankBrowser({ selectable = false, selected, onToggle, ex
           <Search size={16} className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={ar ? "ابحث في نص السؤال أو الإجابات..." : "Search question or answer text..."} className={`${field} ps-9`} />
         </label>
-        <select aria-label={ar ? "المادة" : "Subject"} value={courseId} onChange={(event) => { setCourseId(event.target.value ? Number(event.target.value) : ""); setQuizId(""); setPage(1); }} className={field}>
-          <option value="">{ar ? "كل المواد" : "All subjects"}</option>
-          {(filters.data?.courses ?? []).map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
-        </select>
-        <select aria-label={ar ? "الامتحان" : "Exam"} value={quizId} onChange={(event) => { setQuizId(event.target.value ? Number(event.target.value) : ""); setPage(1); }} className={field}>
-          <option value="">{ar ? "كل الامتحانات" : "All exams"}</option>
-          {quizzes.map((quiz) => <option key={quiz.id} value={quiz.id}>{quiz.title}</option>)}
-        </select>
+        {/* Long lists: a dropdown with its own search box. */}
+        <SearchableSelect<number>
+          ariaLabel={ar ? "المادة" : "Subject"}
+          allLabel={ar ? "كل المواد" : "All subjects"}
+          value={courseId}
+          options={(filters.data?.courses ?? []).map((course) => ({ value: course.id, label: course.title }))}
+          onChange={(value) => { setCourseId(value); setQuizId(""); setPage(1); }}
+          className={field}
+        />
+        <SearchableSelect<number>
+          ariaLabel={ar ? "الامتحان" : "Exam"}
+          allLabel={ar ? "كل الامتحانات" : "All exams"}
+          value={quizId}
+          options={quizzes.map((quiz) => ({ value: quiz.id, label: quiz.title }))}
+          onChange={(value) => { setQuizId(value); setPage(1); }}
+          className={field}
+        />
         <select aria-label={ar ? "نوع السؤال" : "Question type"} value={type} onChange={(event) => { setType(event.target.value); setPage(1); }} className={field}>
           <option value="">{ar ? "كل الأنواع" : "All types"}</option>
           {Object.entries(BANK_TYPE_LABELS).map(([key, label]) => <option key={key} value={key}>{ar ? label.ar : label.en}</option>)}

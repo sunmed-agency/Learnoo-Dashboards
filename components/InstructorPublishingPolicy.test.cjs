@@ -78,6 +78,7 @@ for (const role of ['Admin', 'Super Admin']) for (const automatic of [false, tru
       '@/src/hooks': { useCreateInstructor: () => mutation, useUpdateInstructor: () => mutation,
         useInstructor: () => ({ data: { data: teacher }, isLoading: false }) },
       '@/components/FileUpload': { FileUpload: () => null },
+      '@/components/ui/PasswordInput': { __esModule: true, default: () => null },
       '@/components/InstructorPublishingPolicy': { __esModule: true, default: Policy },
       '@/src/types': { StudentStatusLabels: { 1: 'Active' } },
       '@/src/components/ui/Skeleton': { TableSkeleton: () => null },

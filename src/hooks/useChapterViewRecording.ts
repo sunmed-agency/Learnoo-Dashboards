@@ -9,43 +9,57 @@ export type UseChapterViewRecordingArgs = {
   chapterId: number;
   videoRef: RefObject<HTMLVideoElement | null>;
   videoSrc: string;
-  /** From chapter `view_by_minute` — minutes of playback before POST /view (0 = on first play). */
-  viewByMinute: number;
+  /** Kept for the callers; the server now decides when a view counts (chapter `view_by_minute`). */
+  viewByMinute?: number;
   /** When false, listeners are not attached (e.g. access denied or no video). */
   enabled: boolean;
-  /** Called when POST /view fails (e.g. max views). */
+  /** Called when the server refuses the watching (e.g. the views are used up for a new opening). */
   onViewRecordError: (message: string) => void;
 };
 
+/** How often the played seconds are sent. */
+export const HEARTBEAT_MS = 15_000;
+/** A jump in the video bigger than this between two time updates is a seek, not watching (2x speed ≈ 0.5 s). */
+export const MAX_PLAY_STEP_SECONDS = 4;
+
+/** Seconds of video played between two time updates: 0 for a seek, a pause or going back. */
+export function playedStep(previous: number | null, current: number): number {
+  if (previous === null) return 0;
+  const delta = current - previous;
+  return delta > 0 && delta <= MAX_PLAY_STEP_SECONDS ? delta : 0;
+}
+
+function newSessionId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `s${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
+}
+
 /**
- * Registers a chapter view (POST /v1/chapter/:id/view) after playback rules:
- * - `view_by_minute <= 0`: one POST on first `playing` event.
- * - `view_by_minute > 0`: one POST after that many minutes of watch time (small `timeupdate` deltas only; large seeks ignored).
+ * Watch-time heartbeats (POST /v1/chapter/:id/watch). Every opening of the lesson is one session.
+ * The player adds up the seconds of VIDEO actually played (seeks skipped, so playback speed
+ * changes nothing) and sends them, with the position, every 15 s and on pause, end, hide and
+ * close. The server keeps the balance across openings and counts the view when it reaches the
+ * lesson's minutes; the session that used it plays on to the end.
  */
 export function useChapterViewRecording({
   chapterId,
   videoRef,
   videoSrc,
-  viewByMinute,
   enabled,
   onViewRecordError,
 }: UseChapterViewRecordingArgs) {
   const router = useRouter();
-  const recordedRef = useRef(false);
-  const accumulatedSecRef = useRef(0);
-  const lastVideoTimeRef = useRef<number | null>(null);
-  const onViewRecordErrorRef = useRef(onViewRecordError);
-  onViewRecordErrorRef.current = onViewRecordError;
+  const onErrorRef = useRef(onViewRecordError);
+  onErrorRef.current = onViewRecordError;
 
   useEffect(() => {
-    recordedRef.current = false;
-    accumulatedSecRef.current = 0;
-    lastVideoTimeRef.current = null;
-  }, [chapterId, videoSrc]);
+    if (!enabled || !videoSrc || !Number.isFinite(chapterId)) return;
 
-  useEffect(() => {
-    if (!enabled || !videoSrc) return;
-
+    const sessionId = newSessionId();
+    let pending = 0;
+    let lastTime: number | null = null;
+    let inFlight = false;
+    let stopped = false;
     let cancelled = false;
     let detach: (() => void) | undefined;
 
@@ -53,97 +67,77 @@ export function useChapterViewRecording({
       if (cancelled) return;
       const el = videoRef.current;
 
-      const minutesRequired = Math.max(0, Number(viewByMinute) || 0);
-
-      const recordViewOnce = async () => {
-        if (recordedRef.current) return;
-        recordedRef.current = true;
+      const send = async (keepalive = false) => {
+        if (stopped || (inFlight && !keepalive)) return;
+        // Without a <video> (embedded player) the visible time stands in for the played time.
+        const watched = el ? Math.floor(pending) : HEARTBEAT_MS / 1000;
+        if (el && watched < 1) return;
+        if (el) pending -= watched;
+        const position = Math.max(0, Math.floor(el?.currentTime ?? 0));
+        inFlight = true;
         try {
-          await api.chapters.recordView(chapterId);
-          router.refresh();
+          const result = await api.chapters.watchHeartbeat(chapterId, { session_id: sessionId, watched, position }, keepalive);
+          if (result?.counted && !keepalive) router.refresh();
         } catch (err) {
-          // Do NOT pause the video here. If the failure is because the student
-          // just used their last allowed view (or any other reason), the user
-          // is still in the middle of watching — closing the player on them is
-          // jarring. The server-side `can_watch` gate blocks re-entry on the
-          // next attempt, so the limit is still enforced once they finish or
-          // reload. We surface the error as a toast and keep `recordedRef`
-          // truthy so we don't spam retries on every play event.
-          recordedRef.current = true;
-          const msg =
-            err instanceof ApiError ? err.message : 'Could not record chapter view.';
-          onViewRecordErrorRef.current(msg);
-        }
-      };
-
-      const onPlaying = () => {
-        if (!el) return;
-        lastVideoTimeRef.current = el.currentTime;
-        if (minutesRequired <= 0) {
-          void recordViewOnce();
+          if (err instanceof ApiError && err.status === 403) {
+            // A new opening after the views were used up (or access lost): stop playing.
+            stopped = true;
+            el?.pause();
+            onErrorRef.current(err.message || 'You cannot watch this lesson.');
+          } else if (el) {
+            // Network or server trouble: keep the seconds for the next heartbeat.
+            pending += watched;
+          }
+        } finally {
+          inFlight = false;
         }
       };
 
       const onTimeUpdate = () => {
-        if (!el || el.paused || minutesRequired <= 0) return;
-        const t = el.currentTime;
-        const last = lastVideoTimeRef.current;
-        lastVideoTimeRef.current = t;
-        if (last == null) return;
-        const delta = t - last;
-        if (delta <= 0 || delta > 3) return;
-        accumulatedSecRef.current += delta;
-        if (!recordedRef.current && accumulatedSecRef.current >= minutesRequired * 60) {
-          void recordViewOnce();
-        }
+        if (!el) return;
+        const now = el.currentTime;
+        if (!el.paused && !el.seeking) pending += playedStep(lastTime, now);
+        lastTime = now;
       };
-
-      const onSeeking = () => {
-        if (el) lastVideoTimeRef.current = el.currentTime;
-      };
-
-
-      const onPause = () => {
-        lastVideoTimeRef.current = el ? el.currentTime : null;
-      };
+      const resetClock = () => { lastTime = el ? el.currentTime : null; };
+      const onPauseOrEnd = () => { void send(); };
+      const onHide = () => { if (document.visibilityState === 'hidden') void send(true); };
+      const onPageHide = () => { void send(true); };
 
       if (el) {
-        el.addEventListener('playing', onPlaying);
         el.addEventListener('timeupdate', onTimeUpdate);
-        el.addEventListener('seeking', onSeeking);
-        el.addEventListener('pause', onPause);
+        el.addEventListener('seeking', resetClock);
+        el.addEventListener('playing', resetClock);
+        el.addEventListener('pause', onPauseOrEnd);
+        el.addEventListener('ended', onPauseOrEnd);
       }
-
-      // If no video element (iframe case): use wall-clock timers.
-      // view_by_minute <= 0 → record immediately on page open (once).
-      // view_by_minute >  0 → fire exactly once after (minutesRequired * 60) seconds.
-      let timeoutId: number | undefined;
-      if (!el) {
-        if (minutesRequired <= 0) {
-          void recordViewOnce();
-        } else {
-          timeoutId = window.setTimeout(() => {
-            if (!cancelled) void recordViewOnce();
-          }, minutesRequired * 60 * 1000);
-        }
-      }
+      document.addEventListener('visibilitychange', onHide);
+      window.addEventListener('pagehide', onPageHide);
+      const interval = window.setInterval(() => {
+        if (!el && document.visibilityState !== 'visible') return;
+        void send();
+      }, HEARTBEAT_MS);
 
       detach = () => {
+        window.clearInterval(interval);
         if (el) {
-          el.removeEventListener('playing', onPlaying);
           el.removeEventListener('timeupdate', onTimeUpdate);
-          el.removeEventListener('seeking', onSeeking);
-          el.removeEventListener('pause', onPause);
+          el.removeEventListener('seeking', resetClock);
+          el.removeEventListener('playing', resetClock);
+          el.removeEventListener('pause', onPauseOrEnd);
+          el.removeEventListener('ended', onPauseOrEnd);
         }
-        if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+        document.removeEventListener('visibilitychange', onHide);
+        window.removeEventListener('pagehide', onPageHide);
+        // Leaving the lesson inside the site: send what is left.
+        if (el) void send(true);
       };
     });
-
 
     return () => {
       cancelled = true;
       window.cancelAnimationFrame(raf);
       detach?.();
     };
-  }, [chapterId, enabled, router, videoRef, videoSrc, viewByMinute]);
+  }, [chapterId, enabled, router, videoRef, videoSrc]);
 }

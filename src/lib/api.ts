@@ -1744,6 +1744,20 @@ export const studentInsightsApi = {
   views: (studentId: string) => get<{ data: StudentViews }>(`/v1/student/${studentId}/views`),
 };
 
+/** Notes on a student ("ملاحظات وتوجيهات"): staff and the student's teachers; newest first. */
+export interface StudentNote {
+  id: number;
+  body: string;
+  created_at: string | null;
+  author: { id: string; name: string; role: 'owner' | 'admin' | 'supervisor' | 'instructor' } | null;
+  can_delete: boolean;
+}
+export const studentNotesApi = {
+  list: (studentId: string) => get<{ data: StudentNote[] }>(`/v1/student/${studentId}/notes`),
+  add: (studentId: string, body: string) => post<{ data: StudentNote }>(`/v1/student/${studentId}/notes`, { body }),
+  remove: (studentId: string, noteId: number) => del<unknown>(`/v1/student/${studentId}/notes/${noteId}`),
+};
+
 // ---- Supervisors (owner only) ----
 export type LocalizedLabel = { ar: string; en: string };
 export interface PermissionCatalog {

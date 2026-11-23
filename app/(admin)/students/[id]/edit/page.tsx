@@ -14,6 +14,7 @@ import {
   Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { StudentNotesPanel } from '@/components/students/profile/NotesTab';
 import { useRouter, useParams } from 'next/navigation';
 import { FileUpload } from '@/components/FileUpload';
 import StudentDeviceReset from '@/components/dashboard/StudentDeviceReset';
@@ -394,15 +395,10 @@ export default function EditStudentPage() {
               <ChevronDown className="absolute right-4 top-[38px] w-4 h-4 text-[#94A3B8] pointer-events-none" />
             </div>
 
+            {/* Notes are a log now (author + time each), saved on their own, not with this form. */}
             <div className="flex flex-col gap-2">
               <label className="text-[13px] font-bold text-[#475569]">{t('students.form.fields.feedback')}</label>
-              <textarea
-                placeholder={t('students.form.fields.placeholders.feedback')}
-                rows={3}
-                className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2137D6] focus:ring-opacity-10 transition-all placeholder:text-[#94A3B8] resize-none"
-                value={formData.feedback}
-                onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
-              />
+              <StudentNotesPanel studentId={studentId} />
             </div>
             {studentResponse?.data.attributes.role === 'Student' && <StudentDeviceReset studentId={studentId} />}
           </div>

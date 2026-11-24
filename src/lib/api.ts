@@ -1715,6 +1715,12 @@ export interface StaffActivity {
     target_user?: { id: string; name: string; phone: string | null; email: string | null; student_code: string | null; role: number; status: number; university: string | null; faculty: string | null; centers: string | null };
     target_changes?: { field: string; from: string | number | null; to: string | number | null }[];
     views_adjust?: { delta: number; note: string | null };
+    /** Any other item the action was about (social link, post, center...) and what changed in it. */
+    subject?: { type: string; id: string | number; name: string | null };
+    subject_changes?: { field: string; from: unknown; to: unknown }[];
+    /** For something added: the fields that were entered (no secrets). */
+    input?: Record<string, unknown>;
+    created_id?: string | number;
     student_note?: string;
     notification?: NotificationActivity;
     exam?: EditedSnapshot<ExamActivitySnapshot>;

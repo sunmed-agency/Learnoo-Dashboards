@@ -45,7 +45,39 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
     return String(value);
   };
   const profileHref = person ? (person.role === 0 ? `/students/${person.id}` : person.role === 1 ? `/instructors/${person.id}/edit` : null) : null;
+  // Generic items (social link, post, center, code...): readable names for their type and columns.
+  const typeNames: Record<string, [string, string]> = {
+    SocialLink: ['رابط تواصل', 'Social link'], Post: ['منشور', 'Post'], Discussion: ['نقاش', 'Discussion'], Category: ['تصنيف', 'Category'],
+    University: ['جامعة', 'University'], Faculty: ['كلية', 'Faculty'], Center: ['سنتر', 'Center'], Department: ['قسم', 'Department'],
+    Code: ['كود تفعيل', 'Activation code'], Library: ['مكتبة', 'Library'], Note: ['ملاحظة', 'Note'], Feature: ['إعداد', 'Setting'],
+    Issue: ['شكوى / دعم', 'Support issue'], StudentNote: ['ملاحظة على طالب', 'Student note'], PermissionProfile: ['ملف صلاحيات', 'Permission profile'],
+    SubscriptionRequest: ['طلب اشتراك', 'Subscription request'], QuizQuestion: ['سؤال امتحان', 'Exam question'], Attachment: ['ملف', 'File'],
+  };
+  const columnNames: Record<string, [string, string]> = {
+    name: ['الاسم', 'Name'], title: ['العنوان', 'Title'], url: ['الرابط', 'Link'], link: ['الرابط', 'Link'], platform: ['المنصة', 'Platform'],
+    icon: ['الأيقونة', 'Icon'], status: ['الحالة', 'Status'], description: ['الوصف', 'Description'], content: ['المحتوى', 'Content'], body: ['النص', 'Text'],
+    order: ['الترتيب', 'Order'], type: ['النوع', 'Type'], value: ['القيمة', 'Value'], key: ['المفتاح', 'Key'], phone: ['التليفون', 'Phone'],
+    image: ['الصورة', 'Image'], thumbnail: ['الصورة', 'Image'], course_id: ['المادة', 'Subject'], parent_id: ['يتبع', 'Parent'], is_used: ['مستخدم', 'Used'],
+  };
+  const showAny = (value: unknown) => value === null || value === undefined || value === '' ? '—' : typeof value === 'object' ? JSON.stringify(value) : String(value);
+  const column = (field: string) => (columnNames[field] ?? [field, field])[ar ? 0 : 1];
+  const subject = details.subject;
+  const inputEntries = Object.entries(details.input ?? {});
   return <>
+    {subject && <div className="mt-2 break-words rounded-lg border border-[#2137D6]/15 bg-[#F4F5FD] p-3 text-sm">
+      <p><span className="font-semibold">{(typeNames[subject.type] ?? [subject.type, subject.type])[ar ? 0 : 1]}:</span> {subject.name || '—'} <bdi className="text-gray-500">#{subject.id}</bdi></p>
+      {details.subject_changes?.length ? <table className="mt-2 w-full text-start text-[13px]">
+        <thead><tr className="text-gray-600"><th className="p-1 text-start">{ar ? 'اللي اتغيّر' : 'Changed'}</th><th className="p-1 text-start">{ar ? 'قبل' : 'Before'}</th><th className="p-1 text-start">{ar ? 'بعد' : 'After'}</th></tr></thead>
+        <tbody>{details.subject_changes.map((change) => <tr key={change.field} className="border-t border-white">
+          <th className="p-1 text-start font-semibold">{column(change.field)}</th>
+          <td className="break-all p-1 text-gray-600">{showAny(change.from)}</td><td className="break-all p-1">{showAny(change.to)}</td>
+        </tr>)}</tbody>
+      </table> : <p className="mt-1 text-gray-600">{ar ? 'مفيش تغيير في البيانات (اتحفظ زي ما هو).' : 'No data changed (saved as is).'}</p>}
+    </div>}
+    {!subject && inputEntries.length > 0 && <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
+      <p className="font-semibold">{ar ? 'البيانات اللي اتدخلت' : 'Data entered'}{details.created_id !== undefined && <> · <bdi className="text-gray-500">#{String(details.created_id)}</bdi></>}</p>
+      <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">{inputEntries.map(([field, value]) => <div key={field} className="contents"><dt className="text-gray-600">{column(field)}</dt><dd className="break-all">{showAny(value)}</dd></div>)}</dl>
+    </div>}
     {person && <div className="mt-2 break-words rounded-lg border border-[#2137D6]/15 bg-[#F4F5FD] p-3 text-sm">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="font-semibold">{ar ? 'الحساب' : 'Account'}:</span>

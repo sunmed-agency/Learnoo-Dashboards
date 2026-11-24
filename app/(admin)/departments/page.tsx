@@ -4033,6 +4033,43 @@ function EditModal({
 
           {node.type === "lecture" && (
             <>
+              {/* The lecture's picture (students see it above its lessons): same field as when adding. */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {tx("Thumbnail")}
+                </label>
+                <input
+                  ref={thumbnailInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailChange}
+                  className="hidden"
+                />
+                {thumbnailPreview ? (
+                  <div
+                    onClick={handleThumbnailClick}
+                    className="mt-1 flex justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={thumbnailPreview}
+                      alt="Preview"
+                      className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    onClick={handleThumbnailClick}
+                    className="mt-1 w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center mx-auto cursor-pointer hover:bg-gray-200 hover:border-gray-400 transition-colors"
+                  >
+                    <Upload className="w-6 h-6 text-gray-400 mb-1" />
+                    <span className="text-gray-400 text-xs">
+                      {tx("Click to upload")}
+                    </span>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {tx("Title")}

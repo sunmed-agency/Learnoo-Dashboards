@@ -29,19 +29,29 @@ export default function OwnerActivityPage() {
     return () => window.clearTimeout(timer);
   }, [search]);
   const [activityType, setActivityType] = useState<NonNullable<Parameters<typeof api.ownerOperations.activity>[1]>['type'] | ''>('');
+  // "Who": a person among those of the chosen group (instructors, admins, supervisors).
+  const [personId, setPersonId] = useState('');
+  const [people, setPeople] = useState<Awaited<ReturnType<typeof api.ownerOperations.activityPeople>>['data']>([]);
+  useEffect(() => {
+    if (role !== 'Super Admin') return;
+    let active = true;
+    api.ownerOperations.activityPeople().then(result => { if (active) setPeople(result.data); }).catch(() => {});
+    return () => { active = false; };
+  }, [role]);
+  const peopleOfGroup = people.filter(person => !activityRole || person.group === activityRole);
   useEffect(() => {
     if (role !== 'Super Admin') return;
     let active = true;
     setActivityLoading(true);
     setActivity([]);
     setError(false);
-    api.ownerOperations.activity(page, { from: from || undefined, to: to || undefined, role: activityRole || undefined, type: activityType || undefined, search: query || undefined }).then(history => {
+    api.ownerOperations.activity(page, { from: from || undefined, to: to || undefined, role: activityRole || undefined, type: activityType || undefined, search: query || undefined, user_id: personId || undefined }).then(history => {
       if (!active) return;
       setActivity(history.data); setLastPage(history.last_page); setError(false);
     }).catch(() => { if (active) setError(true); })
       .finally(() => { if (active) setActivityLoading(false); });
     return () => { active = false; };
-  }, [role, page, from, to, activityRole, activityType, query]);
+  }, [role, page, from, to, activityRole, activityType, query, personId]);
   useEffect(() => {
     if (role !== 'Super Admin' && role !== 'Admin') return;
     let active = true;
@@ -82,7 +92,7 @@ export default function OwnerActivityPage() {
     </div></article>)}
     {role === 'Super Admin' && <>
     {/* Filters and search stay at the top while the activity scrolls under them. */}
-    <div className="sticky top-0 z-20 -mx-4 space-y-3 border-b border-[#E6EAF6] bg-[#F7F8FD]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-12 lg:px-12">
+    <div className="sticky -top-4 z-20 -mx-4 space-y-3 border-b border-[#E6EAF6] bg-[#F7F8FD] px-4 py-3 shadow-[0_6px_12px_-10px_rgba(15,23,42,0.25)] md:-top-8 md:-mx-8 md:px-8 lg:-top-12 lg:-mx-12 lg:px-12">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-bold text-[#0A1033]">{ar ? 'نشاط آخر ٩٠ يومًا' : 'Activity over the past 90 days'}</h2>
         {activityLoading && <span role="status" className="text-xs text-[#64748B]">{ar ? 'جارٍ التحميل…' : 'Loading…'}</span>}
@@ -93,11 +103,15 @@ export default function OwnerActivityPage() {
         <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={ar ? 'ابحث باسم اللي عمل العملية، أو اسم أو تليفون الطالب، أو اسم المادة أو الرابط…' : 'Search by who did it, a student name or phone, a course or link…'} className="w-full ps-9 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15" />
       </label>
       <div className="flex flex-wrap items-end gap-2">
-        <select aria-label={ar ? 'منفّذ العملية' : 'Performed by'} value={activityRole} onChange={event => { setActivityRole(event.target.value as typeof activityRole); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15">
+        <select aria-label={ar ? 'منفّذ العملية' : 'Performed by'} value={activityRole} onChange={event => { setActivityRole(event.target.value as typeof activityRole); setPersonId(''); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15">
           <option value="">{ar ? 'كل المنفّذين' : 'Everyone'}</option>
           <option value="Instructor">{ar ? 'المدرسون' : 'Instructors'}</option>
           <option value="Admin">{ar ? 'الأدمن' : 'Admins'}</option>
           <option value="Supervisor">{ar ? 'المشرفين' : 'Supervisors'}</option>
+        </select>
+        <select aria-label={ar ? 'الشخص' : 'Person'} value={personId} onChange={event => { setPersonId(event.target.value); setPage(1); }} className="max-w-[16rem] rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15">
+          <option value="">{activityRole === 'Instructor' ? (ar ? 'كل المدرسين' : 'All instructors') : activityRole === 'Supervisor' ? (ar ? 'كل المشرفين' : 'All supervisors') : activityRole === 'Admin' ? (ar ? 'كل الأدمن' : 'All admins') : (ar ? 'كل الأشخاص' : 'Everyone')}</option>
+          {peopleOfGroup.map(person => <option key={person.id} value={person.id}>{person.name || '—'} ({person.actions})</option>)}
         </select>
         <select aria-label={ar ? 'نوع العملية' : 'Activity type'} value={activityType} onChange={event => { setActivityType(event.target.value as typeof activityType); setPage(1); }} className="max-w-full rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15">
           <option value="">{ar ? 'كل الأنواع' : 'All types'}</option>
@@ -107,13 +121,22 @@ export default function OwnerActivityPage() {
           <option value="lessons">{ar ? 'المحاضرات والدروس' : 'Lectures and lessons'}</option>
           <option value="accounts">{ar ? 'حسابات المستخدمين' : 'User accounts'}</option>
           <option value="activations">{ar ? 'التفعيلات' : 'Activations'}</option>
+          <option value="exams">{ar ? 'الامتحانات وبنك الأسئلة' : 'Exams and question bank'}</option>
+          <option value="live">{ar ? 'البث المباشر' : 'Live sessions'}</option>
+          <option value="notes-library">{ar ? 'الملاحظات والمكتبة' : 'Notes and library'}</option>
+          <option value="community">{ar ? 'المجتمع والنقاشات وروابط التواصل' : 'Community, discussions and links'}</option>
+          <option value="notifications">{ar ? 'الإشعارات' : 'Notifications'}</option>
+          <option value="structure">{ar ? 'المخطط الأكاديمي والجداول' : 'Academic plan and schedules'}</option>
+          <option value="staff">{ar ? 'المشرفين وملفات الصلاحيات وملاحظات الطلاب' : 'Supervisors, permission profiles, student notes'}</option>
+          <option value="settings">{ar ? 'الإعدادات' : 'Settings'}</option>
+          <option value="logins">{ar ? 'تسجيل الدخول' : 'Sign-ins'}</option>
         </select>
         <button type="button" className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${from === new Date().toLocaleDateString('en-CA') && to === from ? 'border-[#2137D6] bg-[#2137D6] text-white' : 'border-[#E5E7EB] bg-white text-[#334155] hover:border-[#2137D6]/40'}`} onClick={() => { const today = new Date().toLocaleDateString('en-CA'); setFrom(today); setTo(today); setPage(1); }}>{ar ? 'اليوم' : 'Today'}</button>
         <button type="button" className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${Boolean(from) && from !== to ? 'border-[#2137D6] bg-[#2137D6] text-white' : 'border-[#E5E7EB] bg-white text-[#334155] hover:border-[#2137D6]/40'}`} onClick={() => { const today = new Date(); const start = new Date(); start.setDate(start.getDate() - 6); setFrom(start.toLocaleDateString('en-CA')); setTo(today.toLocaleDateString('en-CA')); setPage(1); }}>{ar ? 'آخر ٧ أيام' : 'Last 7 days'}</button>
         <button type="button" className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${!from && !to ? 'border-[#2137D6] bg-[#2137D6] text-white' : 'border-[#E5E7EB] bg-white text-[#334155] hover:border-[#2137D6]/40'}`} onClick={() => { setFrom(''); setTo(''); setPage(1); }}>{ar ? 'آخر ٩٠ يومًا' : 'Last 90 days'}</button>
         <label className="flex items-center gap-1.5 text-sm text-[#475569]">{ar ? 'من' : 'From'}<input type="date" value={from} max={to || undefined} onChange={event => { setFrom(event.target.value); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15" /></label>
         <label className="flex items-center gap-1.5 text-sm text-[#475569]">{ar ? 'إلى' : 'To'}<input type="date" value={to} min={from || undefined} onChange={event => { setTo(event.target.value); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15" /></label>
-        {(search || activityRole || activityType || from || to) && <button type="button" onClick={() => { setSearch(''); setActivityRole(''); setActivityType(''); setFrom(''); setTo(''); setPage(1); }} className="px-2 py-2.5 text-sm font-semibold text-[#2137D6] hover:underline">{ar ? 'مسح الفلاتر' : 'Clear filters'}</button>}
+        {(search || activityRole || personId || activityType || from || to) && <button type="button" onClick={() => { setSearch(''); setActivityRole(''); setPersonId(''); setActivityType(''); setFrom(''); setTo(''); setPage(1); }} className="px-2 py-2.5 text-sm font-semibold text-[#2137D6] hover:underline">{ar ? 'مسح الفلاتر' : 'Clear filters'}</button>}
       </div>
     </div>
     {!activityLoading && !error && !activity.length && <p className="rounded-2xl border border-dashed border-[#D1D5DB] bg-white p-8 text-center text-sm text-[#64748B]">{ar ? 'لا توجد أنشطة تطابق البحث أو الفلاتر' : 'No activity matches the search or filters'}</p>}

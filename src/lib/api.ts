@@ -1827,9 +1827,14 @@ export const supervisorsApi = {
 };
 export interface PendingActivationFilters { phone?: string; item_type?: string; course_id?: number }
 export interface PendingActivationPage { data: { id: number; phone: string; item_type: string; title: string | null; category_path: string[]; created_at: string | null }[]; total: number; last_page: number }
+/** Kinds of activity the owner's activity page filters by. */
+export type ActivityType = 'device-requests' | 'device-decisions' | 'courses' | 'lessons' | 'accounts' | 'activations'
+  | 'exams' | 'live' | 'notes-library' | 'community' | 'notifications' | 'structure' | 'staff' | 'settings' | 'logins';
 export const ownerOperationsApi = {
   pendingActivations: (page = 1, filters: PendingActivationFilters = {}) => get<PendingActivationPage>('/v1/owner/pre-activations', { page, ...filters }),
-  activity: (page = 1, filters?: { from?: string; to?: string; role?: 'Instructor' | 'Admin' | 'Supervisor'; user_id?: string; search?: string; type?: 'device-requests' | 'device-decisions' | 'courses' | 'lessons' | 'accounts' | 'activations' }) => get<{ data: StaffActivity[]; last_page: number }>('/v1/owner/activity', { page, ...filters }),
+  activity: (page = 1, filters?: { from?: string; to?: string; role?: 'Instructor' | 'Admin' | 'Supervisor'; user_id?: string; search?: string; type?: ActivityType }) => get<{ data: StaffActivity[]; last_page: number }>('/v1/owner/activity', { page, ...filters }),
+  /** Everyone who did something in the last 90 days (for the "who" filter). */
+  activityPeople: () => get<{ data: { id: string; name: string; group: 'Instructor' | 'Admin' | 'Supervisor' | 'Owner' | 'Other'; actions: number }[] }>('/v1/owner/activity/people'),
   devices: () => get<{ data: DeviceTransfer[] }>('/v1/owner/device-transfers'),
   approve: (id: string) => post(`/v1/owner/device-transfers/${id}/approve`),
   cancel: (id: string) => post(`/v1/owner/device-transfers/${id}/cancel`),

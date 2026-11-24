@@ -67,6 +67,7 @@ import {
 
   KeyRound,
   Database,
+  Wallet,
 } from 'lucide-react';
 
 
@@ -147,8 +148,11 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
 
   if (owner) {
     items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard' });
+    items.push({ name: t('sidebar.financeReports'), icon: Wallet, path: '/reports/finance' });
   } else {
     items.push({ name: t('sidebar.dashboard'), icon: LayoutDashboard, path: '/dashboard', permission: 'dashboard.view', supervisorsOnly: true });
+    // Owner only, unless the owner gave a supervisor the financial reports.
+    items.push({ name: t('sidebar.financeReports'), icon: Wallet, path: '/reports/finance', permission: 'finance.view', supervisorsOnly: true });
   }
 
   // Same order and names as the EduMedix dashboard.

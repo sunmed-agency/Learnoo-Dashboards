@@ -80,6 +80,7 @@ for (const role of ['Admin', 'Super Admin']) for (const automatic of [false, tru
       '@/components/FileUpload': { FileUpload: () => null },
       '@/components/ui/PasswordInput': { __esModule: true, default: () => null },
       '@/components/InstructorPublishingPolicy': { __esModule: true, default: Policy },
+      '@/components/InstructorRevenueShare': { __esModule: true, default: () => null },
       '@/src/types': { StudentStatusLabels: { 1: 'Active' } },
       '@/src/components/ui/Skeleton': { TableSkeleton: () => null },
       '@/src/hooks/useInstructors': { useInstructors: () => ({ data: { data: [teacher], meta: { current_page: 1, last_page: 1 } } }),

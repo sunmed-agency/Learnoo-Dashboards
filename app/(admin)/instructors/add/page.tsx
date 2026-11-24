@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/FileUpload';
 import InstructorPublishingPolicy from '@/components/InstructorPublishingPolicy';
+import InstructorRevenueShare from '@/components/InstructorRevenueShare';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import { 
   useCreateInstructor
@@ -43,6 +44,7 @@ export default function AddInstructorPage() {
     status: 1 as StudentStatus,
     image: null as File | null,
     can_publish_without_approval: false,
+    revenue_share: '',
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -81,6 +83,7 @@ export default function AddInstructorPage() {
         status: formData.status,
         image: formData.image || undefined,
         can_publish_without_approval: canManagePublishing ? formData.can_publish_without_approval : undefined,
+        revenue_share: canManagePublishing ? formData.revenue_share : undefined,
       };
 
       await createInstructor(payload);
@@ -230,6 +233,12 @@ export default function AddInstructorPage() {
         {canManagePublishing && <InstructorPublishingPolicy
           value={formData.can_publish_without_approval}
           onChange={value => setFormData(prev => ({ ...prev, can_publish_without_approval: value }))}
+          disabled={isCreating}
+        />}
+
+        {canManagePublishing && <InstructorRevenueShare
+          value={formData.revenue_share}
+          onChange={value => setFormData(prev => ({ ...prev, revenue_share: value }))}
           disabled={isCreating}
         />}
 

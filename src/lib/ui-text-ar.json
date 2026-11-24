@@ -400,5 +400,7 @@
  "Attendance Rate": "نسبة الحضور",
  "Course Progress": "تقدّم المواد",
  "Exam Average": "متوسط الامتحانات",
- "Engagement Level": "مستوى التفاعل"
+ "Engagement Level": "مستوى التفاعل",
+ "Lesson price": "سعر الدرس",
+ "Optional: price when this lesson alone is activated": "اختياري: السعر لو الدرس ده اتفعّل لوحده"
 }

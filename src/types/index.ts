@@ -536,6 +536,8 @@ export interface UserAttributes {
   can_use_activations?: boolean;
 
   can_publish_without_approval?: boolean;
+  /** Teacher share (%) of their subjects' revenue; owner only. */
+  revenue_share?: number | string | null;
 
   /** Supervisors (admin accounts limited by the owner): their permission keys; null for everyone else. */
   permissions?: string[] | null;
@@ -870,6 +872,9 @@ export interface ChapterAttributes {
 
   max_views: number;
 
+  /** Lesson price; activating only this lesson counts it in the financial reports. */
+  price?: number | null;
+
 
 
   current_user_views: number;
@@ -1036,6 +1041,8 @@ export interface CreateChapterRequest {
 
   max_views?: number;
 
+  price?: number | string | null;
+
 
 
   type?: 'chapter' | 'note';
@@ -1086,6 +1093,8 @@ export interface UpdateChapterRequest {
   is_free_preview_attachment?: 0 | 1 | boolean;
 
   max_views?: number;
+
+  price?: number | string | null;
 
 
 
@@ -5081,6 +5090,8 @@ export interface StudentAttributes extends Omit<UserAttributes, 'centers'> {
   can_use_activations?: boolean;
 
   can_publish_without_approval?: boolean;
+  /** Teacher share (%) of their subjects' revenue; owner only. */
+  revenue_share?: number | string | null;
 
   feedback?: string;
 
@@ -5160,6 +5171,8 @@ export interface CreateStudentRequest {
   can_use_activations?: boolean;
 
   can_publish_without_approval?: boolean;
+  /** Teacher share (%) of their subjects' revenue; owner only. */
+  revenue_share?: number | string | null;
 
 
 

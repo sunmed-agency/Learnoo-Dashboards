@@ -1841,6 +1841,22 @@ export const ownerOperationsApi = {
   resetDevice: (id: string) => post(`/v1/owner/device-transfers/${id}/reset`),
 };
 
+/** Money figures of one row of the financial reports. */
+export interface FinanceFigures { activations: number; subject_activations: number; lesson_activations: number; paid_activations: number; students: number; revenue: number; teacher_share: number; platform_share: number }
+export interface FinanceRow extends FinanceFigures { id: number | string; name: string; path?: string | null; price?: number | null; teacher?: string | null; share_percent?: number }
+export type FinanceGroup = 'universities' | 'centers' | 'faculties' | 'departments' | 'courses' | 'instructors';
+export interface FinanceReport {
+  period: { from: string | null; to: string | null };
+  currency: string;
+  totals: FinanceFigures;
+  monthly: { month: string; revenue: number; teacher_share: number; platform_share: number; activations: number }[];
+  groups: Record<FinanceGroup, FinanceRow[]>;
+  unpriced_courses: number;
+}
+export const financeApi = {
+  report: (filters: { from?: string; to?: string } = {}) => get<FinanceReport>('/v1/reports/finance', filters),
+};
+
 export interface GuardianStudent { id: string; first_name: string; last_name: string; phone?: string; email?: string; student_code?: string; university?: { name: string } | null; faculty?: { name: string } | null; centers?: { name: string }[]; activated_courses?: { id: string; title: string }[]; parents: { id: string; first_name: string; last_name: string; email: string; phone: string }[] }
 export const guardiansApi = {
   list: (page = 1) => get<{ data: GuardianStudent[]; last_page: number }>('/v1/guardians', { page }),
@@ -1850,6 +1866,7 @@ export const guardiansApi = {
 export const api = {
   guardians: guardiansApi,
   ownerOperations: ownerOperationsApi,
+  finance: financeApi,
   studentInsights: studentInsightsApi,
   supervisors: supervisorsApi,
   downloads: downloadsApi,

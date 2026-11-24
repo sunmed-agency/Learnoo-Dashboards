@@ -2368,6 +2368,8 @@ export default function DepartmentsPage() {
 
             max_views: formData.max_views,
 
+            price: formData.price ?? "",
+
             type: formData.type ?? "chapter",
 
             note_type: formData.type === "note" ? formData.note_type : undefined,
@@ -2545,6 +2547,8 @@ export default function DepartmentsPage() {
               view_by_minute: formData.view_by_minute,
 
               max_views: formData.max_views,
+
+              price: formData.price || undefined,
 
               type: formData.type ?? "chapter",
 
@@ -3330,6 +3334,8 @@ function EditModal({
           is_free_preview_attachment: chapter.attributes.is_free_preview_attachment ?? false,
 
           max_views: chapter.attributes.max_views,
+
+          price: chapter.attributes.price ?? "",
 
           view_by_minute: chapter.attributes.view_by_minute,
 
@@ -4286,6 +4292,22 @@ function EditModal({
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {tx("Lesson price")}
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.price ?? ""}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    placeholder={tx("Optional: price when this lesson alone is activated")}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
@@ -5584,6 +5606,22 @@ function AddModal({
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {tx("Lesson price")}
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.price ?? ""}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    placeholder={tx("Optional: price when this lesson alone is activated")}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 

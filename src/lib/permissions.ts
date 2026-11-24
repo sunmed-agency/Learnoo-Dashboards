@@ -33,6 +33,7 @@ export function can(user: UserLike, key: string): boolean {
 /** Which permission opens each dashboard page (first matching prefix wins). */
 export const PAGE_PERMISSIONS: [prefix: string, permission: string][] = [
   ['/dashboard', 'dashboard.view'],
+  ['/reports/finance', 'finance.view'],
   ['/departments', 'structure.view'],
   ['/universities', 'structure.view'], ['/faculties', 'structure.view'], ['/centers', 'structure.view'], ['/levels', 'structure.view'],
   ['/courses', 'structure.view'], ['/lectures', 'structure.view'], ['/chapters', 'structure.view'], ['/content-manager', 'structure.view'],

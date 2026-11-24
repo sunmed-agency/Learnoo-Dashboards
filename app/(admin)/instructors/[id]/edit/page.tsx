@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { FileUpload } from '@/components/FileUpload';
 import InstructorPublishingPolicy from '@/components/InstructorPublishingPolicy';
+import InstructorRevenueShare from '@/components/InstructorRevenueShare';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import { 
   useInstructor,
@@ -51,6 +52,7 @@ export default function EditInstructorPage() {
     existingImage: null as string | null,
     can_use_activations: false,
     can_publish_without_approval: false,
+    revenue_share: '',
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -91,6 +93,7 @@ export default function EditInstructorPage() {
         existingImage: attrs.image || null,
         can_use_activations: attrs.can_use_activations || false,
         can_publish_without_approval: attrs.can_publish_without_approval ?? false,
+        revenue_share: attrs.revenue_share != null ? String(attrs.revenue_share) : '',
       });
       
       setPreviewUrl(attrs.image || null);
@@ -122,6 +125,7 @@ export default function EditInstructorPage() {
         image: formData.image || undefined,
         can_use_activations: formData.can_use_activations,
         can_publish_without_approval: canManagePublishing ? formData.can_publish_without_approval : undefined,
+        revenue_share: canManagePublishing ? formData.revenue_share : undefined,
       };
 
       await updateInstructor(instructorId, payload);
@@ -279,6 +283,12 @@ export default function EditInstructorPage() {
         {canManagePublishing && <InstructorPublishingPolicy
           value={formData.can_publish_without_approval}
           onChange={value => setFormData(prev => ({ ...prev, can_publish_without_approval: value }))}
+          disabled={isUpdating}
+        />}
+
+        {canManagePublishing && <InstructorRevenueShare
+          value={formData.revenue_share}
+          onChange={value => setFormData(prev => ({ ...prev, revenue_share: value }))}
           disabled={isUpdating}
         />}
 

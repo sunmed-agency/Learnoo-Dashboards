@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import StaffActivityDetails from '@/components/dashboard/StaffActivityDetails';
 import { formatStaffActivity } from '@/src/lib/staff-activity';
@@ -21,6 +22,12 @@ export default function OwnerActivityPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [activityRole, setActivityRole] = useState<'' | 'Instructor' | 'Admin' | 'Supervisor'>('');
   const [activityLoading, setActivityLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+  useEffect(() => {
+    const timer = window.setTimeout(() => { setQuery(search.trim()); setPage(1); }, 400);
+    return () => window.clearTimeout(timer);
+  }, [search]);
   const [activityType, setActivityType] = useState<NonNullable<Parameters<typeof api.ownerOperations.activity>[1]>['type'] | ''>('');
   useEffect(() => {
     if (role !== 'Super Admin') return;
@@ -28,13 +35,13 @@ export default function OwnerActivityPage() {
     setActivityLoading(true);
     setActivity([]);
     setError(false);
-    api.ownerOperations.activity(page, { from: from || undefined, to: to || undefined, role: activityRole || undefined, type: activityType || undefined }).then(history => {
+    api.ownerOperations.activity(page, { from: from || undefined, to: to || undefined, role: activityRole || undefined, type: activityType || undefined, search: query || undefined }).then(history => {
       if (!active) return;
       setActivity(history.data); setLastPage(history.last_page); setError(false);
     }).catch(() => { if (active) setError(true); })
       .finally(() => { if (active) setActivityLoading(false); });
     return () => { active = false; };
-  }, [role, page, from, to, activityRole, activityType]);
+  }, [role, page, from, to, activityRole, activityType, query]);
   useEffect(() => {
     if (role !== 'Super Admin' && role !== 'Admin') return;
     let active = true;
@@ -74,18 +81,25 @@ export default function OwnerActivityPage() {
       <button type="button" disabled={busy === device.id} className="text-red-600 underline disabled:opacity-50" onClick={() => resolveDevice(device.id, 'cancel')}>{ar ? 'إلغاء الطلب' : 'Cancel request'}</button>
     </div></article>)}
     {role === 'Super Admin' && <>
-    <h2 className="text-lg font-bold">{ar ? 'نشاط آخر ٩٠ يومًا' : 'Activity over the past 90 days'}</h2>
-    <div className="flex flex-wrap items-end gap-3">
-      <label className="text-sm">{ar ? 'منفّذ العملية' : 'Performed by'}
-        <select value={activityRole} onChange={event => { setActivityRole(event.target.value as typeof activityRole); setPage(1); }} className="block rounded-xl border bg-white p-3">
-          <option value="">{ar ? 'كل العمليات' : 'All activity'}</option>
+    {/* Filters and search stay at the top while the activity scrolls under them. */}
+    <div className="sticky top-0 z-20 -mx-4 space-y-3 border-b border-[#E6EAF6] bg-[#F7F8FD]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-12 lg:px-12">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-bold text-[#0A1033]">{ar ? 'نشاط آخر ٩٠ يومًا' : 'Activity over the past 90 days'}</h2>
+        {activityLoading && <span role="status" className="text-xs text-[#64748B]">{ar ? 'جارٍ التحميل…' : 'Loading…'}</span>}
+      </div>
+      <label className="relative block">
+        <span className="sr-only">{ar ? 'بحث في النشاط' : 'Search activity'}</span>
+        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+        <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={ar ? 'ابحث باسم اللي عمل العملية، أو اسم أو تليفون الطالب، أو اسم المادة أو الرابط…' : 'Search by who did it, a student name or phone, a course or link…'} className="w-full ps-9 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15" />
+      </label>
+      <div className="flex flex-wrap items-end gap-2">
+        <select aria-label={ar ? 'منفّذ العملية' : 'Performed by'} value={activityRole} onChange={event => { setActivityRole(event.target.value as typeof activityRole); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15">
+          <option value="">{ar ? 'كل المنفّذين' : 'Everyone'}</option>
           <option value="Instructor">{ar ? 'المدرسون' : 'Instructors'}</option>
           <option value="Admin">{ar ? 'الأدمن' : 'Admins'}</option>
           <option value="Supervisor">{ar ? 'المشرفين' : 'Supervisors'}</option>
         </select>
-      </label>
-      <label className="max-w-full text-sm">{ar ? 'نوع العملية' : 'Activity type'}
-        <select value={activityType} onChange={event => { setActivityType(event.target.value as typeof activityType); setPage(1); }} className="block max-w-full rounded-xl border bg-white p-3">
+        <select aria-label={ar ? 'نوع العملية' : 'Activity type'} value={activityType} onChange={event => { setActivityType(event.target.value as typeof activityType); setPage(1); }} className="max-w-full rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15">
           <option value="">{ar ? 'كل الأنواع' : 'All types'}</option>
           <option value="device-requests">{ar ? 'طلبات نقل الأجهزة' : 'Device transfer requests'}</option>
           <option value="device-decisions">{ar ? 'اعتماد الأجهزة وإلغاء الطلبات والسماح بالتغيير' : 'Device approvals, cancellations and resets'}</option>
@@ -94,17 +108,40 @@ export default function OwnerActivityPage() {
           <option value="accounts">{ar ? 'حسابات المستخدمين' : 'User accounts'}</option>
           <option value="activations">{ar ? 'التفعيلات' : 'Activations'}</option>
         </select>
-      </label>
-      <button className="rounded-xl border p-3" onClick={() => { const today = new Date().toLocaleDateString('en-CA'); setFrom(today); setTo(today); setPage(1); }}>{ar ? 'اليوم' : 'Today'}</button>
-      <button className="rounded-xl border p-3" onClick={() => { const today = new Date(); const start = new Date(); start.setDate(start.getDate() - 6); setFrom(start.toLocaleDateString('en-CA')); setTo(today.toLocaleDateString('en-CA')); setPage(1); }}>{ar ? 'آخر ٧ أيام' : 'Last 7 days'}</button>
-      <button className="rounded-xl border p-3" onClick={() => { setFrom(''); setTo(''); setPage(1); }}>{ar ? 'آخر ٩٠ يومًا' : 'Last 90 days'}</button>
-      <label>{ar ? 'من' : 'From'}<input type="date" value={from} max={to || undefined} onChange={event => { setFrom(event.target.value); setPage(1); }} className="block rounded-xl border p-3" /></label>
-      <label>{ar ? 'إلى' : 'To'}<input type="date" value={to} min={from || undefined} onChange={event => { setTo(event.target.value); setPage(1); }} className="block rounded-xl border p-3" /></label>
+        <button type="button" className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${from === new Date().toLocaleDateString('en-CA') && to === from ? 'border-[#2137D6] bg-[#2137D6] text-white' : 'border-[#E5E7EB] bg-white text-[#334155] hover:border-[#2137D6]/40'}`} onClick={() => { const today = new Date().toLocaleDateString('en-CA'); setFrom(today); setTo(today); setPage(1); }}>{ar ? 'اليوم' : 'Today'}</button>
+        <button type="button" className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${Boolean(from) && from !== to ? 'border-[#2137D6] bg-[#2137D6] text-white' : 'border-[#E5E7EB] bg-white text-[#334155] hover:border-[#2137D6]/40'}`} onClick={() => { const today = new Date(); const start = new Date(); start.setDate(start.getDate() - 6); setFrom(start.toLocaleDateString('en-CA')); setTo(today.toLocaleDateString('en-CA')); setPage(1); }}>{ar ? 'آخر ٧ أيام' : 'Last 7 days'}</button>
+        <button type="button" className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${!from && !to ? 'border-[#2137D6] bg-[#2137D6] text-white' : 'border-[#E5E7EB] bg-white text-[#334155] hover:border-[#2137D6]/40'}`} onClick={() => { setFrom(''); setTo(''); setPage(1); }}>{ar ? 'آخر ٩٠ يومًا' : 'Last 90 days'}</button>
+        <label className="flex items-center gap-1.5 text-sm text-[#475569]">{ar ? 'من' : 'From'}<input type="date" value={from} max={to || undefined} onChange={event => { setFrom(event.target.value); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15" /></label>
+        <label className="flex items-center gap-1.5 text-sm text-[#475569]">{ar ? 'إلى' : 'To'}<input type="date" value={to} min={from || undefined} onChange={event => { setTo(event.target.value); setPage(1); }} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#2137D6] focus:ring-2 focus:ring-[#2137D6]/15" /></label>
+        {(search || activityRole || activityType || from || to) && <button type="button" onClick={() => { setSearch(''); setActivityRole(''); setActivityType(''); setFrom(''); setTo(''); setPage(1); }} className="px-2 py-2.5 text-sm font-semibold text-[#2137D6] hover:underline">{ar ? 'مسح الفلاتر' : 'Clear filters'}</button>}
+      </div>
     </div>
-    {activityLoading && <p role="status">{ar ? 'جارٍ تحميل النشاط…' : 'Loading activity…'}</p>}
-    {!activityLoading && !error && !activity.length && <p>{ar ? 'لا توجد أنشطة تطابق عوامل التصفية' : 'No activity matches these filters'}</p>}
-    {activity.map(item => <article key={item.id} className="rounded-xl border bg-white p-4"><p className="flex flex-wrap items-center gap-2">{item.first_name} {item.last_name}{Boolean((item as StaffActivity & { is_supervisor?: unknown }).is_supervisor) &&<span className="rounded-full bg-[#F4F5FD] px-2 py-0.5 text-xs font-semibold text-[#2137D6]">{ar ? 'مشرف' : 'Supervisor'}</span>}</p><p className="text-sm">{formatStaffActivity(item.action, ar ? 'ar' : 'en')}</p><StaffActivityDetails details={item.details} /><time className="text-xs text-gray-500">{new Date(item.created_at).toLocaleString(ar ? 'ar' : 'en')}</time></article>)}
-    <div className="flex gap-4"><button disabled={activityLoading || page <= 1} onClick={() => setPage(page - 1)}>{ar ? 'السابق' : 'Previous'}</button><span>{page} / {lastPage}</span><button disabled={activityLoading || page >= lastPage} onClick={() => setPage(page + 1)}>{ar ? 'التالي' : 'Next'}</button></div>
+    {!activityLoading && !error && !activity.length && <p className="rounded-2xl border border-dashed border-[#D1D5DB] bg-white p-8 text-center text-sm text-[#64748B]">{ar ? 'لا توجد أنشطة تطابق البحث أو الفلاتر' : 'No activity matches the search or filters'}</p>}
+    <ol className={`space-y-3 transition-opacity ${activityLoading ? 'opacity-60' : ''}`}>
+      {activity.map(item => {
+        const name = `${item.first_name ?? ''} ${item.last_name ?? ''}`.trim() || '—';
+        const supervisor = Boolean((item as StaffActivity & { is_supervisor?: unknown }).is_supervisor);
+        return <li key={item.id} className="rounded-2xl border border-[#EEF0F6] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <div className="flex items-start gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F4F6FD] text-sm font-bold text-[#2137D6]">{name.charAt(0)}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="font-semibold text-[#0F172A]">{name}</span>
+                {supervisor && <span className="rounded-full bg-[#F4F5FD] px-2 py-0.5 text-xs font-semibold text-[#2137D6]">{ar ? 'مشرف' : 'Supervisor'}</span>}
+                <time className="ms-auto text-xs text-[#94A3B8]" dateTime={item.created_at}>{new Date(item.created_at).toLocaleString(ar ? 'ar-EG' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' })}</time>
+              </div>
+              <p className="mt-0.5 text-sm font-medium text-[#334155]">{formatStaffActivity(item.action, ar ? 'ar' : 'en')}</p>
+              <StaffActivityDetails details={item.details} />
+            </div>
+          </div>
+        </li>;
+      })}
+    </ol>
+    {lastPage > 1 && <div className="flex items-center justify-center gap-3 pb-4">
+      <button type="button" className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-sm font-semibold disabled:opacity-40" disabled={activityLoading || page <= 1} onClick={() => setPage(page - 1)}>{ar ? 'السابق' : 'Previous'}</button>
+      <span className="text-sm text-[#475569]">{page} / {lastPage}</span>
+      <button type="button" className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-sm font-semibold disabled:opacity-40" disabled={activityLoading || page >= lastPage} onClick={() => setPage(page + 1)}>{ar ? 'التالي' : 'Next'}</button>
+    </div>}
     </>}
   </div>;
 }

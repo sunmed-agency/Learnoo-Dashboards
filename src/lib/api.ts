@@ -1829,7 +1829,7 @@ export interface PendingActivationFilters { phone?: string; item_type?: string; 
 export interface PendingActivationPage { data: { id: number; phone: string; item_type: string; title: string | null; category_path: string[]; created_at: string | null }[]; total: number; last_page: number }
 export const ownerOperationsApi = {
   pendingActivations: (page = 1, filters: PendingActivationFilters = {}) => get<PendingActivationPage>('/v1/owner/pre-activations', { page, ...filters }),
-  activity: (page = 1, filters?: { from?: string; to?: string; role?: 'Instructor' | 'Admin' | 'Supervisor'; user_id?: string; type?: 'device-requests' | 'device-decisions' | 'courses' | 'lessons' | 'accounts' | 'activations' }) => get<{ data: StaffActivity[]; last_page: number }>('/v1/owner/activity', { page, ...filters }),
+  activity: (page = 1, filters?: { from?: string; to?: string; role?: 'Instructor' | 'Admin' | 'Supervisor'; user_id?: string; search?: string; type?: 'device-requests' | 'device-decisions' | 'courses' | 'lessons' | 'accounts' | 'activations' }) => get<{ data: StaffActivity[]; last_page: number }>('/v1/owner/activity', { page, ...filters }),
   devices: () => get<{ data: DeviceTransfer[] }>('/v1/owner/device-transfers'),
   approve: (id: string) => post(`/v1/owner/device-transfers/${id}/approve`),
   cancel: (id: string) => post(`/v1/owner/device-transfers/${id}/cancel`),

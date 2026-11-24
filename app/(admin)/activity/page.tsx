@@ -5,21 +5,18 @@ import { Search } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import StaffActivityDetails from '@/components/dashboard/StaffActivityDetails';
 import { formatStaffActivity } from '@/src/lib/staff-activity';
-import { toast } from 'sonner';
-import api, { type StaffActivity, type DeviceTransfer, type DeviceDetails } from '@/src/lib/api';
+import api, { type StaffActivity } from '@/src/lib/api';
 import { useCurrentUser } from '@/src/hooks/useAuth';
 
 export default function OwnerActivityPage() {
   const ar = useLocale() === 'ar';
   const { role } = useCurrentUser();
   const [activity, setActivity] = useState<StaffActivity[]>([]);
-  const [devices, setDevices] = useState<DeviceTransfer[]>([]);
   const [page, setPage] = useState(1);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [lastPage, setLastPage] = useState(1);
   const [error, setError] = useState(false);
-  const [busy, setBusy] = useState<string | null>(null);
   const [activityRole, setActivityRole] = useState<'' | 'Instructor' | 'Admin' | 'Supervisor'>('');
   const [activityLoading, setActivityLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -52,44 +49,10 @@ export default function OwnerActivityPage() {
       .finally(() => { if (active) setActivityLoading(false); });
     return () => { active = false; };
   }, [role, page, from, to, activityRole, activityType, query, personId]);
-  useEffect(() => {
-    if (role !== 'Super Admin' && role !== 'Admin') return;
-    let active = true;
-    const load = () => api.ownerOperations.devices().then(transfers => { if (active) setDevices(transfers.data); }).catch(() => { if (active) setError(true); });
-    load();
-    const timer = window.setInterval(load, 30000);
-    return () => { active = false; window.clearInterval(timer); };
-  }, [role]);
-  async function resolveDevice(id: string, action: 'approve' | 'cancel') {
-    if (action === 'cancel' && !window.confirm(ar ? 'إلغاء طلب نقل الجهاز؟ سيبقى الجهاز المعتمد والجلسات الحالية كما هما.' : 'Cancel this transfer request? The approved device and current sessions will be kept.')) return;
-    setBusy(id);
-    try {
-      await api.ownerOperations[action](id);
-      setDevices(prev => prev.filter(device => device.id !== id));
-      toast.success(action === 'approve'
-        ? (ar ? 'تم اعتماد الجهاز الجديد وإلغاء الجلسات السابقة' : 'New device approved. Previous sessions revoked.')
-        : (ar ? 'تم إلغاء طلب النقل. الجهاز المعتمد والجلسات الحالية كما هما.' : 'Transfer request cancelled. The approved device and current sessions are unchanged.'));
-    } catch {
-      toast.error(ar ? 'تعذر تحديث طلب نقل الجهاز' : 'Could not update the transfer request');
-    } finally { setBusy(null); }
-  }
-  if (role !== 'Super Admin' && role !== 'Admin') return <p>{ar ? 'هذه الصفحة متاحة للمالك والأدمن فقط' : 'This page is available to the Owner and Admin only'}</p>;
+  if (role && role !== 'Super Admin') return <p className="p-8 text-center text-sm text-[#64748B]">{ar ? 'هذه الصفحة متاحة للمالك فقط. طلبات نقل الأجهزة في صفحتها الخاصة.' : 'This page is for the owner only. Device transfer requests have their own page.'}</p>;
   return <div className="space-y-6 pb-12">
-    <h1 className="text-2xl font-bold">{role === 'Admin' ? (ar ? 'طلبات الأجهزة' : 'Device requests') : (ar ? 'النشاط على المنصة' : 'Platform activity')}</h1>
-    {error && <p role="alert">{ar ? 'تعذر تحميل البيانات' : 'Could not load data'}</p>}
-    <h2 id="devices" className="scroll-mt-24 text-lg font-bold">{ar ? 'طلبات الأجهزة' : 'Device requests'}</h2>
-    {!devices.length && <p>{ar ? 'لا توجد طلبات معلقة' : 'No pending requests'}</p>}
-    {devices.map(device => <article key={device.id} id={`device-${device.id}`} className="flex scroll-mt-24 flex-wrap items-center justify-between gap-3 rounded-xl border bg-white p-4"><div className="space-y-2"><p className="font-bold">{device.first_name} {device.last_name} · {device.phone}</p>
-      {typeof device.remaining_device_transfers === 'number' && <p className="text-sm text-gray-600">{ar ? `مرات تغيير الجهاز المتبقية: ${device.remaining_device_transfers} من 2` : `Device changes remaining: ${device.remaining_device_transfers} of 2`}</p>}
-      {([['current_device', ar ? 'الجهاز الحالي' : 'Current device'], ['requested_device', ar ? 'الجهاز المطلوب' : 'Requested device']] as const).map(([key, label]) => {
-        const info: DeviceDetails | null = device[key];
-        return <div key={key} className="text-sm"><p>{label}: {info ? `${info.device} · ${info.browser} · ${info.identifier}` : (ar ? 'التفاصيل غير متاحة؛ تظهر بعد تسجيل الدخول من الجهاز' : 'Details unavailable; captured on the next sign-in from this device')}</p>
-          {info && <p className="text-xs text-gray-500"><span dir="ltr">IP: {info.ip}</span> · {new Date(info.at).toLocaleString(ar ? 'ar' : 'en')}</p>}</div>;
-      })}
-    </div><div className="flex flex-wrap gap-3">
-      <button type="button" disabled={busy === device.id || device.remaining_device_transfers === 0} className="text-primary underline disabled:opacity-50" onClick={() => resolveDevice(device.id, 'approve')}>{ar ? 'اعتماد الجهاز الجديد' : 'Approve new device'}</button>
-      <button type="button" disabled={busy === device.id} className="text-red-600 underline disabled:opacity-50" onClick={() => resolveDevice(device.id, 'cancel')}>{ar ? 'إلغاء الطلب' : 'Cancel request'}</button>
-    </div></article>)}
+    <h1 className="text-2xl font-bold text-[#0A1033]">{ar ? 'النشاط على المنصة' : 'Platform activity'}</h1>
+    {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{ar ? 'تعذر تحميل البيانات' : 'Could not load data'}</p>}
     {role === 'Super Admin' && <>
     {/* Filters and search stay at the top while the activity scrolls under them. */}
     <div className="sticky -top-4 z-20 -mx-4 space-y-3 border-b border-[#E6EAF6] bg-[#F7F8FD] px-4 py-3 shadow-[0_6px_12px_-10px_rgba(15,23,42,0.25)] md:-top-8 md:-mx-8 md:px-8 lg:-top-12 lg:-mx-12 lg:px-12">

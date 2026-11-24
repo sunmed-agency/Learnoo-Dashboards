@@ -42,7 +42,6 @@ import {
 
   Download,
 
-  ShieldCheck,
 
   School,
 
@@ -170,7 +169,6 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
   items.push({ name: t('sidebar.students'), icon: Users2, path: '/students', permission: 'students.view' });
   items.push({ name: t('sidebar.guardians'), icon: Users2, path: '/guardians', permission: 'students.view' });
   // The owner's device requests sit at the top of the platform activity page.
-  items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: owner ? '/activity#devices' : '/activity', permission: 'devices.manage' });
   items.push({ name: t('sidebar.activation'), icon: Power, path: '/activation', permission: 'activation.codes' }); // sheet activation lives in the academic plan
   // Owner tools a supervisor can be given; plain admins don't see them.
   items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations', ...(owner ? {} : { permission: 'preactivations.manage' }) });
@@ -186,9 +184,10 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
   section('system');
   items.push({ name: t('sidebar.notifications'), icon: Bell, path: '/notifications', permission: 'notifications.send' });
   if (owner) items.push({ name: t('sidebar.activity'), icon: Activity, path: '/activity' });
+  // Device transfer requests: their own page, right under the activity.
+  items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: '/device-requests', permission: 'devices.manage' });
   items.push({ name: t('sidebar.downloads'), icon: Download, path: '/downloads', permission: 'downloads.view' });
   items.push({ name: t('sidebar.profileSettings'), icon: Settings, path: '/settings', permission: '-' });
-  items.push({ name: t('sidebar.featureControl'), icon: ShieldCheck, path: '/feature-control', permission: '-' });
   items.push({ name: t('sidebar.otaUpload'), icon: Smartphone, path: '/ota-upload', permission: '-' });
 
   return items;
@@ -280,7 +279,6 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const primaryColor = getFeatureValue('primary_color', '#4F46E5');
 
 
-  const tagline = getFeatureValue('tagline', '');
 
 
 
@@ -532,14 +530,14 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
     <aside
 
-      className={`bg-white/85 backdrop-blur-xl flex flex-col h-full border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
+      className={`relative bg-white/85 backdrop-blur-xl flex flex-col h-full border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
         }`}
 
     >
 
       {/* Brand Logo and Title */}
 
-      <div className={`h-20 flex items-center px-4 gap-3 border-b border-[#EEF1F8] ${isCollapsed ? 'justify-center px-0' : ''}`}>
+      <div className={`h-20 flex items-center justify-center border-b border-[#EEF1F8] ${isCollapsed ? 'px-0' : 'px-4'}`}>
 
         {/* Always the official Learnoo logo (mark + wordmark) */}
         <Image
@@ -552,12 +550,6 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           className={isCollapsed ? 'h-10 w-auto' : 'h-14 w-auto shrink-0'}
         />
 
-        {!isCollapsed && tagline && (
-          <span className="flex items-center gap-1.5 rounded-full bg-[#FDEEEB] px-2.5 py-1 text-[10px] font-semibold text-[#D2584B]">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#E8766A]"></span>
-            {tagline}
-          </span>
-        )}
 
       </div>
 
@@ -569,7 +561,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
         {!isCollapsed && (
 
-          <p className="flex items-center gap-2 text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4"><span className="size-1.5 rounded-full bg-[#E8766A]" aria-hidden />{t('common.mainMenu')}</p>
+          <p className="flex items-center gap-2 text-[12px] font-bold text-[#94A3B8] px-3 mb-4"><span className="size-1.5 rounded-full bg-[#E8766A]" aria-hidden />{t('common.mainMenu')}</p>
 
         )}
 
@@ -693,13 +685,15 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
         onClick={onToggle}
 
-        className="absolute right-[-14px] top-[100px] w-7 h-7 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all z-[60]"
+        type="button"
+        aria-label={isCollapsed ? 'Open menu' : 'Close menu'}
+        className="absolute -end-4 top-[58px] z-[60] grid h-8 w-8 place-items-center rounded-full border border-[#E6EAF6] bg-white shadow-[0_4px_12px_-4px_rgba(15,23,42,0.25)] transition hover:scale-105 hover:border-[#2137D6]/40 active:scale-95"
 
         style={{ color: primaryColor }}
 
       >
 
-        {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        {isCollapsed ? <ChevronLeft className="w-4 h-4 ltr:rotate-180" /> : <ChevronRight className="w-4 h-4 ltr:rotate-180" />}
 
       </button>
 

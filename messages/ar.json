@@ -571,7 +571,7 @@
       "support": "الدعم",
       "system": "النظام"
     },
-    "deviceApprovals": "طلبات الأجهزة",
+    "deviceApprovals": "طلبات نقل الأجهزة",
     "guardians": "أولياء الأمور",
     "examsAndResults": "الامتحانات والنتائج",
     "questionBank": "بنك الأسئلة"
@@ -3041,6 +3041,10 @@
     "permissionProfiles": {
       "title": "ملفات الصلاحيات",
       "description": "مجموعات صلاحيات جاهزة بتختار منها لما تضيف حساب في المشرفين."
+    },
+    "featureControl": {
+      "title": "التحكم في الميزات",
+      "description": "تشغيل وإيقاف ميزات المنصة: الحماية، والمكتبة، وجهاز واحد للطالب، وغيرها."
     }
   },
   "electronicLibrary": {

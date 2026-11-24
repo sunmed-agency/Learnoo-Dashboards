@@ -249,10 +249,12 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
       {/* Sidebar toggle button */}
       <button
         onClick={onToggle}
-        className="absolute right-[-14px] top-[100px] w-7 h-7 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all z-[60]"
+        type="button"
+        aria-label={isCollapsed ? 'Open menu' : 'Close menu'}
+        className="absolute -end-4 top-[58px] z-[60] grid h-8 w-8 place-items-center rounded-full border border-[#E6EAF6] bg-white shadow-[0_4px_12px_-4px_rgba(15,23,42,0.25)] transition hover:scale-105 hover:border-[#2137D6]/40 active:scale-95"
         style={{ color: primaryColor }}
       >
-        {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        {isCollapsed ? <ChevronLeft className="w-4 h-4 ltr:rotate-180" /> : <ChevronRight className="w-4 h-4 ltr:rotate-180" />}
       </button>
     </aside>
   );

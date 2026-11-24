@@ -52,6 +52,7 @@ export const ONBOARDING_ROUTE_PREFIXES = [
  */
 export const ADMIN_ROUTE_PREFIXES = [
   '/activity',
+  '/device-requests',
   '/pre-activations',
   '/activation',
   '/centers',

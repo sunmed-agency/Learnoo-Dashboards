@@ -553,7 +553,7 @@
       "support": "Support",
       "system": "System"
     },
-    "deviceApprovals": "Device requests",
+    "deviceApprovals": "Device transfer requests",
     "guardians": "Guardians",
     "examsAndResults": "Exams and results",
     "questionBank": "Question bank"
@@ -3041,6 +3041,10 @@
     "permissionProfiles": {
       "title": "Permission profiles",
       "description": "Ready permission sets you pick from when adding an account on the Supervisors page."
+    },
+    "featureControl": {
+      "title": "Feature control",
+      "description": "Turn platform features on or off: protection, library, single device and more."
     }
   },
   "electronicLibrary": {

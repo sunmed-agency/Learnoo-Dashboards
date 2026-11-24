@@ -28,7 +28,7 @@ export default function AdminLayout({
       {/* Soft Royal / Coral glow behind the dashboard */}
       <div className="student-bg-art" aria-hidden />
       {/* Sidebar - Fixed, scrollable independently */}
-      <div className={`relative z-[2] flex-shrink-0 h-dvh overflow-hidden transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <div className={`relative z-[2] flex-shrink-0 h-dvh overflow-visible transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}

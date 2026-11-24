@@ -58,6 +58,12 @@ export default function PlatformSettingsPage() {
       adminOnly: true
     },
     {
+      icon: 'ShieldCheck' as const,
+      titleKey: 'featureControl',
+      href: '/settings/features',
+      adminOnly: true
+    },
+    {
       icon: 'HardDrive' as const,
       titleKey: 'backups',
       href: '/settings/backups',

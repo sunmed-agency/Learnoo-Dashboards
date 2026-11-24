@@ -402,7 +402,7 @@ export default function Sidebar({
       </div>
 
       <aside
-        className={`sticky top-0 z-50 hidden h-screen shrink-0 border-e border-[var(--border-color)] bg-white/85 backdrop-blur-xl transition-all duration-300 md:block ${collapsed ? "w-[92px]" : "w-[252px]"
+        className={`sticky top-0 z-50 hidden h-dvh shrink-0 border-e border-[var(--border-color)] bg-white/85 backdrop-blur-xl transition-all duration-300 md:block ${collapsed ? "w-[92px]" : "w-[252px]"
           }`}
       >
         <button

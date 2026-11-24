@@ -49,7 +49,7 @@ export function ExamBanner({
             src={url}
             alt={alt}
             draggable={false}
-            className="block aspect-[4/1] max-h-[15vh] w-full shrink-0 rounded-xl object-cover object-center sm:h-[clamp(60px,11vh,96px)] sm:max-h-none sm:w-auto"
+            className="block aspect-[4/1] max-h-[15dvh] w-full shrink-0 rounded-xl object-cover object-center sm:h-[clamp(60px,11vh,96px)] sm:max-h-none sm:w-auto"
           />
         ) : null}
 

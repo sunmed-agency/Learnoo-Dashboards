@@ -862,7 +862,9 @@ export const lecturesApi = {
 
   update: (id: number, data: Partial<CreateLectureRequest>) => {
     const formData = buildFormData(data as unknown as Record<string, unknown>);
-    return putMultipart<ApiResponse<Lecture>>(`/v1/lecture/${id}`, formData);
+    // POST + _method=PUT: PHP does not read files from a multipart PUT body (the lecture picture).
+    formData.set('_method', 'PUT');
+    return postMultipart<ApiResponse<Lecture>>(`/v1/lecture/${id}`, formData);
   },
 
   delete: (id: number) => del<ApiResponse<Lecture>>(`/v1/lecture/${id}`),
@@ -1627,6 +1629,8 @@ export interface GoogleStatus {
   picker: { api_key: string | null; app_id: string | null } | null;
   /** False for connections made before the site listed forms itself (one reconnect fixes it). */
   can_list_forms?: boolean;
+  /** Only the owner links / unlinks the platform's Google account. */
+  can_manage?: boolean;
   last_backup: { ok: boolean; at: string; detail: string } | null;
 }
 export interface GoogleFormFile { id: string; name: string; modified_at: string | null; owned_by_me: boolean; owner: string | null }
@@ -1707,6 +1711,11 @@ export interface StaffActivity {
       total_phones: number; activated: number; pending: number; skipped: number;
     };
     pre_activation?: { phone: string; item: { id: number; title: string | null; type: 'course' | 'chapter' | 'library' | 'category' | 'quiz' } };
+    /** The account the action was about (student, teacher, supervisor...), and what changed in it. */
+    target_user?: { id: string; name: string; phone: string | null; email: string | null; student_code: string | null; role: number; status: number; university: string | null; faculty: string | null; centers: string | null };
+    target_changes?: { field: string; from: string | number | null; to: string | number | null }[];
+    views_adjust?: { delta: number; note: string | null };
+    student_note?: string;
     notification?: NotificationActivity;
     exam?: EditedSnapshot<ExamActivitySnapshot>;
     exam_context_current?: boolean;

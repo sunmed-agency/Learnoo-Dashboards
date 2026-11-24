@@ -188,7 +188,7 @@ export default function AdminDiscussionsPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setPreviewImageUrl(null)}
         >
-          <div className="relative max-h-[90vh] max-w-[90vw]">
+          <div className="relative max-h-[90dvh] max-w-[90vw]">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -201,7 +201,7 @@ export default function AdminDiscussionsPage() {
             <img
               src={API_BASE_URL + "/storage/" + previewImageUrl}
               alt="Full size preview"
-              className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+              className="max-h-[90dvh] max-w-[90vw] rounded-lg object-contain"
               onClick={(e) => e.stopPropagation()}
             />
           </div>

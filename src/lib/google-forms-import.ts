@@ -113,7 +113,8 @@ export function mapGoogleFormToExam(
           const answerImage = answer.image ? dataUrlToFile(answer.image.data, `google-form-${questionIndex + 1}-${answerIndex + 1}`) : null;
           return {
             id: `a-gf-${timestamp}-${questionIndex}-${answerIndex}`,
-            text: answer.text,
+            // An option that is only a picture has no words; the exam needs some text.
+            text: answer.text || (answerImage ? `(صورة ${answerIndex + 1})` : ""),
             isCorrect: answer.is_correct,
             reason: answer.reason,
             image: answerImage,
@@ -126,9 +127,11 @@ export function mapGoogleFormToExam(
     return {
       id: `new-gf-${timestamp}-${questionIndex}`,
       quizId: '',
-      text: question.text,
+      // A question that is only a picture has no title in Google; the exam needs some text.
+      text: question.text || (image || question.section ? "(سؤال بالصورة)" : ""),
       type: question.type,
-      score: question.score,
+      // A form that is not a quiz has no points: 1 mark each, so the exam total is never 0.
+      score: question.score > 0 ? question.score : 1,
       autoCorrect: question.type === 'short_answer' ? false : question.auto_correct,
       image,
       imagePreview: image ? URL.createObjectURL(image) : '',

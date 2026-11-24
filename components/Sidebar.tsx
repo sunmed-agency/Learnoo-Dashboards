@@ -173,7 +173,7 @@ const getMenuItems = (t: (key: string) => string, role: string | null | undefine
   items.push({ name: t('sidebar.deviceApprovals'), icon: Smartphone, path: owner ? '/activity#devices' : '/activity', permission: 'devices.manage' });
   items.push({ name: t('sidebar.activation'), icon: Power, path: '/activation', permission: 'activation.codes' }); // sheet activation lives in the academic plan
   // Owner tools a supervisor can be given; plain admins don't see them.
-  items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations', ...(owner ? {} : { permission: 'preactivations.manage', supervisorsOnly: true }) });
+  items.push({ name: t('sidebar.pendingActivations'), icon: KeyRound, path: '/pre-activations', ...(owner ? {} : { permission: 'preactivations.manage' }) });
   items.push({ name: t('sidebar.subscriptionRequests'), icon: Inbox, path: '/subscription-requests', ...(owner ? {} : { permission: 'subscriptions.manage', supervisorsOnly: true }) });
 
   section('community');
@@ -565,7 +565,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
       {/* Navigation Menu */}
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide flex flex-col gap-1">
+      <div className="flex-1 overflow-y-auto px-4 py-6 sidebar-scroll flex flex-col gap-1">
 
         {!isCollapsed && (
 

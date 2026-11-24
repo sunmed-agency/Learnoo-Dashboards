@@ -535,7 +535,7 @@ export default function CreateExamPage() {
           <ExamFileImport onApply={(imported, title) => {
             revokeQuestionsObjectUrls(questionsRef.current);
             setQuestions(imported);
-            setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(imported.reduce((sum, question) => sum + question.score, 0)) }));
+            setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(Math.max(1, Math.ceil(imported.reduce((sum, question) => sum + question.score, 0)))) }));
           }} />
           <GoogleFormsImport onApply={(imported, title, importedSections) => {
             // Re-importing the same form replaces its earlier unsaved questions instead of adding them twice.
@@ -543,13 +543,13 @@ export default function CreateExamPage() {
             revokeQuestionsObjectUrls(merged.removed);
             setQuestions(merged.questions);
             setSections(merged.sections);
-            setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(merged.questions.reduce((sum, question) => sum + question.score, 0)) }));
+            setExamDetails(current => ({ ...current, title: current.title || title, totalMarks: String(Math.max(1, Math.ceil(merged.questions.reduce((sum, question) => sum + question.score, 0)))) }));
           }} />
           <QuestionBankImport onApply={(imported) => {
             const merged = mergeBankImport(questionsRef.current, imported);
             revokeQuestionsObjectUrls(merged.removed);
             setQuestions(merged.questions);
-            setExamDetails(current => ({ ...current, totalMarks: String(merged.questions.reduce((sum, question) => sum + question.score, 0)) }));
+            setExamDetails(current => ({ ...current, totalMarks: String(Math.max(1, Math.ceil(merged.questions.reduce((sum, question) => sum + question.score, 0)))) }));
           }} />
           <button
             type="button"

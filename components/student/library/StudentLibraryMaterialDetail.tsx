@@ -418,7 +418,7 @@ export default function StudentLibraryMaterialDetail({ materialId }: { materialI
           ) : null}
         </aside>
 
-        <section className="order-first min-h-[min(50vh,420px)] max-h-[85vh] overflow-y-auto rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] shadow-sm lg:order-none lg:min-h-[500px]">
+        <section className="order-first min-h-[min(50vh,420px)] max-h-[85dvh] overflow-y-auto rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] shadow-sm lg:order-none lg:min-h-[500px]">
           {locked ? (
             <div className="flex min-h-[480px] flex-col items-center justify-center gap-3 bg-slate-900/5 px-6 py-16 text-center">
               <Lock className="size-14 text-[#94A3B8]" aria-hidden />

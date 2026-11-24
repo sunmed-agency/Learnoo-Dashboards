@@ -226,7 +226,7 @@ export default function SupervisorEditor({ catalog, supervisor, onClose, onSaved
         role="dialog"
         aria-modal="true"
         aria-labelledby="supervisor-editor-title"
-        className="flex max-h-[95vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
+        className="flex max-h-[95dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
         noValidate
       >
         <div className="flex items-start justify-between gap-3 border-b border-[#F3F4F6] px-5 py-4 sm:px-6">

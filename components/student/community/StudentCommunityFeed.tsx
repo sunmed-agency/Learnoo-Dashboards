@@ -484,7 +484,7 @@ export default function StudentCommunityFeed({
                       src={postImageSrc}
                       alt={post.attributes.title || ''}
                       loading="lazy"
-                      className="mx-auto max-h-[70vh] w-full object-contain"
+                      className="mx-auto max-h-[70dvh] w-full object-contain"
                     />
                   </a>
                 ) : null}

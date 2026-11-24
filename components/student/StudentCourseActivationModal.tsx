@@ -126,7 +126,7 @@ function StudentCourseActivationModalInner({
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-[#F1F5F9] bg-white shadow-xl animate-in fade-in zoom-in duration-200"
+        className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-[#F1F5F9] bg-white shadow-xl animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-[#F1F5F9] p-6">

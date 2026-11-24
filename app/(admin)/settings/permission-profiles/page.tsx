@@ -159,7 +159,7 @@ function ProfileEditor({ catalog, profile, onClose, onSaved }: { catalog: Permis
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4" onMouseDown={(e) => { if (e.target === e.currentTarget && !saving) onClose(); }}>
-      <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="profile-editor-title" noValidate className="flex max-h-[95vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl">
+      <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="profile-editor-title" noValidate className="flex max-h-[95dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl">
         <div className="flex items-center justify-between gap-3 border-b border-[#F3F4F6] px-5 py-4">
           <h2 id="profile-editor-title" className="text-[18px] font-bold text-[#111827]">{profile ? (ar ? 'تعديل ملف الصلاحيات' : 'Edit permission profile') : (ar ? 'ملف صلاحيات جديد' : 'New permission profile')}</h2>
           <button type="button" onClick={onClose} disabled={saving} aria-label={ar ? 'إغلاق' : 'Close'} className="rounded-xl p-2 text-[#6B7280] hover:bg-[#F3F4F6]"><X className="h-5 w-5" /></button>

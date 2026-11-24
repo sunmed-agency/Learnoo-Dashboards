@@ -349,7 +349,7 @@ export default function CountryCodeSelect({ value, onChange, className }: Countr
             </div>
 
             {/* List */}
-            <div id="country-code-options" ref={listRef} role="listbox" className="max-h-[50vh] sm:max-h-[240px] overflow-y-auto overscroll-contain">
+            <div id="country-code-options" ref={listRef} role="listbox" className="max-h-[50dvh] sm:max-h-[240px] overflow-y-auto overscroll-contain">
               {filteredCountries.length === 0 ? (
                 <div className="px-3 py-6 sm:py-4 text-center font-sans text-sm sm:text-xs text-text-muted">
                   {tx("No countries found")}

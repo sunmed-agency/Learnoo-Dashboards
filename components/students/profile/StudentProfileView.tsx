@@ -120,7 +120,8 @@ export default function StudentProfileView({ readOnly = false, backHref = '/stud
   const devicesQuery = useQuery({
     queryKey: ['student-profile', studentId, 'devices'],
     queryFn: () => api.studentInsights.devices(studentId),
-    enabled: Boolean(studentId),
+    // Teachers don't see devices (read-only profile).
+    enabled: Boolean(studentId) && !readOnly,
     retry: false,
   });
 
@@ -145,7 +146,7 @@ export default function StudentProfileView({ readOnly = false, backHref = '/stud
     { key: 'courses', label: tr('المواد والتفعيل', 'Subjects & activation'), icon: BookOpen },
     ...(canViews ? [{ key: 'views' as const, label: tr('المشاهدات', 'Views'), icon: Eye }] : []),
     { key: 'exams', label: tr('الاختبارات', 'Exams'), icon: ClipboardList },
-    { key: 'devices', label: tr('الأجهزة', 'Devices'), icon: Smartphone, badge: devices?.pending_device ? 1 : undefined },
+    ...(readOnly ? [] : [{ key: 'devices' as const, label: tr('الأجهزة', 'Devices'), icon: Smartphone, badge: devices?.pending_device ? 1 : undefined }]),
     { key: 'academic', label: tr('الكلية والسنتر', 'Faculty & center'), icon: Building2 },
   ];
   const requested = searchParams.get('tab');

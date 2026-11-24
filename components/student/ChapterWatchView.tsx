@@ -1861,11 +1861,11 @@ export default function ChapterWatchView({
           onClick={() => setPreviewImageUrl(undefined)}
         >
           <div
-            className="relative max-h-[90vh] max-w-[90vw] overflow-auto rounded-xl bg-slate-900 shadow-2xl ring-1 ring-white/10"
+            className="relative max-h-[90dvh] max-w-[90vw] overflow-auto rounded-xl bg-slate-900 shadow-2xl ring-1 ring-white/10"
             onClick={(e) => e.stopPropagation()}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={previewImageUrl} alt="Preview" className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain" />
+            <img src={previewImageUrl} alt="Preview" className="max-h-[85dvh] max-w-[85vw] rounded-xl object-contain" />
             <button
               type="button"
               onClick={() => setPreviewImageUrl(undefined)}

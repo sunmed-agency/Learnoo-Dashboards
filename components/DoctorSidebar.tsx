@@ -126,7 +126,7 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
 
   return (
     <aside
-      className={`bg-white/85 backdrop-blur-xl flex flex-col h-screen sticky top-0 border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
+      className={`bg-white/85 backdrop-blur-xl flex flex-col h-dvh sticky top-0 border-e border-[#E6EAF6] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
         }`}
     >
       {/* Brand Logo and Title */}
@@ -144,7 +144,7 @@ export default function DoctorSidebar({ isCollapsed, onToggle }: DoctorSidebarPr
       </div>
 
       {/* Navigation Menu */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide flex flex-col gap-1">
+      <div className="flex-1 overflow-y-auto px-4 py-6 sidebar-scroll flex flex-col gap-1">
         <nav className="flex flex-col gap-1.5">
           {menuItems.map((item) => {
             // Group headings, like the owner's sidebar (a thin line when the sidebar is collapsed).

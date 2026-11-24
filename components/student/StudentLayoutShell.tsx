@@ -97,7 +97,7 @@ export default function StudentLayoutShell({
 
       <StudentNotificationsRuntime initialNotifications={initialNotifications} />
 
-      <div className="relative z-[1] flex h-screen min-w-0 flex-1 flex-col overflow-y-auto">
+      <div className="relative z-[1] flex h-dvh min-w-0 flex-1 flex-col overflow-y-auto">
         <Navbar currentUser={currentUser} />
 
         <main className="min-w-0 flex-1 px-4 py-4 pb-6 sm:px-5 sm:py-5 lg:px-16 lg:py-5">

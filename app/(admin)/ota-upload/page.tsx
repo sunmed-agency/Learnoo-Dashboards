@@ -527,7 +527,7 @@ export default function OtaUploadPage() {
       {/* Edit Version Modal */}
       {editingVersion && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto">
             <form onSubmit={handleUpdate} className="flex flex-col">
               <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
                 <h3 className="text-lg font-bold text-[#1E293B]">{t('editVersion')}</h3>

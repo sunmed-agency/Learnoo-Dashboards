@@ -265,7 +265,7 @@ function StudentEditNoteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
+      <div className="max-h-[90dvh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-[#1E293B]">{tNs('editNote.pageTitle')}</h2>

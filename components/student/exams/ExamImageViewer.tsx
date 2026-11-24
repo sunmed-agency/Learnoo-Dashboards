@@ -178,7 +178,7 @@ export function ExamImageViewer({
             src={src}
             alt={alt || ''}
             draggable={false}
-            className="block max-h-[78vh] max-w-[94vw] rounded-lg bg-white object-contain shadow-2xl"
+            className="block max-h-[78dvh] max-w-[94vw] rounded-lg bg-white object-contain shadow-2xl"
           />
           <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden>
             {strokes.map((stroke, i) => (

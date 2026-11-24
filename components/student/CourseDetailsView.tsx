@@ -10,7 +10,10 @@ import {
   BookOpen,
   Calendar,
   CheckCircle,
+  ChevronDown,
   ChevronRight,
+  ChevronsDownUp,
+  ChevronsUpDown,
   Clock,
   Eye,
   FileText,
@@ -909,6 +912,14 @@ function LecturesTab({
     () => chapterIdsLinkedToExams(exams),
     [exams],
   );
+  // Lectures start open; "close all" leaves just their headers, one under the other.
+  const [closed, setClosed] = useState<Set<string>>(() => new Set());
+  const ar = locale === "ar";
+  const toggleLecture = (id: string) => setClosed((current) => {
+    const next = new Set(current);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
 
   if (!lectures.length) {
     return (
@@ -918,8 +929,21 @@ function LecturesTab({
     );
   }
 
+  const allClosed = lectures.every((lecture) => closed.has(String(lecture.id)));
   return (
-    <div className="flex flex-col gap-8 sm:gap-10">
+    <div className="flex flex-col gap-4 sm:gap-6">
+      {lectures.length > 1 && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => setClosed(allClosed ? new Set() : new Set(lectures.map((lecture) => String(lecture.id))))}
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-sm font-semibold text-[#334155] shadow-sm transition hover:border-[#2D46E8]/40 hover:text-[#2D46E8]"
+          >
+            {allClosed ? <ChevronsUpDown className="h-4 w-4" /> : <ChevronsDownUp className="h-4 w-4" />}
+            {allClosed ? (ar ? "فتح كل المحاضرات" : "Open all lectures") : (ar ? "قفل كل المحاضرات" : "Close all lectures")}
+          </button>
+        </div>
+      )}
       {lectures.map((lecture) => {
         // A lesson scheduled for later must not appear at all — not even greyed
         // out — so it is dropped before the rows and the part counter are built.
@@ -929,21 +953,32 @@ function LecturesTab({
           (ch) => !isChapterHiddenFromStudent(ch),
         );
         const partCount = chapters.length;
+        const isOpen = !closed.has(String(lecture.id));
+        const thumbnail = (lecture.attributes as { thumbnail?: string | null }).thumbnail || null;
 
         return (
           <div
             key={lecture.id}
             className="overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm sm:rounded-2xl"
           >
-            <div
-              className="border-b border-[#E5E7EB] px-4 py-4 sm:px-6 sm:py-5"
+            <button
+              type="button"
+              onClick={() => toggleLecture(String(lecture.id))}
+              aria-expanded={isOpen}
+              className={`flex w-full items-center gap-3 px-4 py-3 text-start sm:gap-4 sm:px-6 sm:py-4 ${isOpen ? "border-b border-[#E5E7EB]" : ""}`}
               style={{ backgroundColor: C_SECTION_BG }}
             >
-              <h2 className="min-w-0 text-base font-bold leading-snug text-[#0F172A] sm:text-lg md:text-xl">
-                {lecture.attributes.title}
-              </h2>
-            </div>
-            <div className="divide-y divide-[#E5E7EB] px-3 sm:px-6">
+              {thumbnail && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={thumbnail} alt="" loading="lazy" className="h-14 w-24 shrink-0 rounded-lg object-cover shadow-sm sm:h-16 sm:w-28" />
+              )}
+              <span className="min-w-0 flex-1">
+                <span className="block text-base font-bold leading-snug text-[#0F172A] sm:text-lg md:text-xl">{lecture.attributes.title}</span>
+                <span className="mt-0.5 block text-xs font-medium text-[#64748B] sm:text-sm">{ar ? `${partCount} درس` : `${partCount} lessons`}</span>
+              </span>
+              <ChevronDown className={`h-5 w-5 shrink-0 text-[#64748B] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+            </button>
+            {isOpen && <div className="divide-y divide-[#E5E7EB] px-3 sm:px-6">
               {chapters.length === 0 ? (
                 <p className="py-10 text-center text-sm text-[#64748B] sm:py-12">
                   {t("lectureNoParts")}
@@ -963,7 +998,7 @@ function LecturesTab({
                   />
                 ))
               )}
-            </div>
+            </div>}
           </div>
         );
       })}

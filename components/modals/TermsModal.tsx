@@ -21,7 +21,7 @@ export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] flex flex-col"
+        className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90dvh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

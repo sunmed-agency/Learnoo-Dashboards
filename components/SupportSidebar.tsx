@@ -89,7 +89,7 @@ export default function SupportSidebar({ isCollapsed, onToggle }: SupportSidebar
 
   return (
     <aside
-      className={`bg-[#F9FAFF] flex flex-col h-screen fixed left-0 top-0 border-r border-[#E5E7EB] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
+      className={`bg-[#F9FAFF] flex flex-col h-dvh fixed left-0 top-0 border-r border-[#E5E7EB] transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-64'
         }`}
     >
       {/* Brand Logo and Title */}
@@ -117,7 +117,7 @@ export default function SupportSidebar({ isCollapsed, onToggle }: SupportSidebar
       </div>
 
       {/* Navigation Menu */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-hide flex flex-col gap-1">
+      <div className="flex-1 overflow-y-auto px-4 py-6 sidebar-scroll flex flex-col gap-1">
         {!isCollapsed && (
           <p className="text-[10px] font-bold tracking-[1.5px] text-[#94A3B8] uppercase px-3 mb-4">{tx("SUPPORT PANEL")}</p>
         )}

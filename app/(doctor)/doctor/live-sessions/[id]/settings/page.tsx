@@ -249,7 +249,7 @@ export default function SessionSettingsPage() {
       {/* Chapter Tree View Popup */}
       {isChapterPopupOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-xl">
+          <div className="bg-white rounded-2xl w-full max-w-md max-h-[80dvh] overflow-hidden shadow-xl">
             <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
               <h3 className="text-lg font-bold text-[#1E293B]">{tx("Select Chapter")}</h3>
               <button
@@ -260,7 +260,7 @@ export default function SessionSettingsPage() {
               </button>
             </div>
 
-            <div className="p-4 overflow-y-auto max-h-[60vh]">
+            <div className="p-4 overflow-y-auto max-h-[60dvh]">
               {chaptersLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-6 h-6 animate-spin text-[#7C3AED]" />

@@ -36,6 +36,12 @@ const ERRORS: Record<string, { ar: string; en: string }> = {
   generic: { ar: "حدث خطأ. حاول مرة أخرى.", en: "Something went wrong. Try again." },
 };
 
+/** One Google account for the whole platform: only the owner links it (Learnoo's exams account). */
+const OWNER_ONLY = {
+  ar: "حساب Google بتاع المنصة لسه مش مربوط. المالك بس هو اللي يربطه، ومن ساعتها الاستيراد بيشتغل لكل المدرسين والإدارة.",
+  en: "The platform's Google account isn't linked yet. Only the owner links it; then importing works for every teacher and admin.",
+};
+
 function reasonFrom(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.status === 409 && /list your forms/i.test(error.message)) return "needs_scope";
@@ -181,19 +187,25 @@ export function GoogleFormsImport({ onApply }: Props) {
           ? "اربط حساب Google مرة واحدة، وبعدها نماذج Google Forms بتاعتك هتظهر هنا مباشرة وتستورد أسئلتها بالإجابات الصحيحة والدرجات والملاحظات والصور. بنقرأ محتوى النماذج اللي تختارها بس، ومن باقي ملفاتك بنشوف أسماء النماذج فقط."
           : "Connect your Google account once, and your Google Forms show up here so you can import their questions with correct answers, points, feedback and images. We only read the content of forms you choose; for the rest we only see form names."}</p>
         {status.needs_reconnect && <p className="text-sm text-amber-700">{ar ? ERRORS.reconnect.ar : ERRORS.reconnect.en}</p>}
-        <button type="button" disabled={Boolean(busy)} onClick={connect} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
-          {busy === "connect" && <Loader2 size={16} className="animate-spin" />}{ar ? "ربط حساب Google" : "Connect Google account"}
-        </button>
+        {status.can_manage ? (
+          <button type="button" disabled={Boolean(busy)} onClick={connect} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
+            {busy === "connect" && <Loader2 size={16} className="animate-spin" />}{ar ? "ربط حساب Google للمنصة" : "Connect the platform's Google account"}
+          </button>
+        ) : (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{OWNER_ONLY[ar ? "ar" : "en"]}</p>
+        )}
       </div>}
 
       {status?.connected && !preview && <div className="space-y-4">
         <p className="text-sm text-slate-600">{ar ? "الحساب المربوط:" : "Connected account:"} <bdi className="font-semibold text-slate-900">{status.email ?? "Google"}</bdi></p>
 
         {!status.can_list_forms && <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <p className="text-sm leading-6 text-amber-800">{ar ? ERRORS.needs_scope.ar : ERRORS.needs_scope.en}</p>
-          <button type="button" disabled={Boolean(busy)} onClick={connect} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
-            {busy === "connect" && <Loader2 size={16} className="animate-spin" />}{ar ? "إعادة ربط حساب Google" : "Reconnect Google account"}
-          </button>
+          {status.can_manage ? <>
+            <p className="text-sm leading-6 text-amber-800">{ar ? ERRORS.needs_scope.ar : ERRORS.needs_scope.en}</p>
+            <button type="button" disabled={Boolean(busy)} onClick={connect} className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
+              {busy === "connect" && <Loader2 size={16} className="animate-spin" />}{ar ? "إعادة ربط حساب Google" : "Reconnect Google account"}
+            </button>
+          </> : <p className="text-sm leading-6 text-amber-800">{OWNER_ONLY[ar ? "ar" : "en"]}</p>}
         </div>}
 
         {status.can_list_forms && <div className="space-y-3">
@@ -236,9 +248,9 @@ export function GoogleFormsImport({ onApply }: Props) {
 
         {busy === "preview" && <p role="status" className="flex items-center gap-2 text-sm text-slate-600"><Loader2 size={16} className="animate-spin" />{ar ? "جارٍ قراءة النموذج وتحميل الصور..." : "Reading the form and downloading images..."}</p>}
 
-        <button type="button" disabled={Boolean(busy)} onClick={disconnect} className="flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
-          <Link2Off size={16} />{ar ? "فصل حساب Google" : "Disconnect Google"}
-        </button>
+        {status.can_manage && <button type="button" disabled={Boolean(busy)} onClick={() => { if (window.confirm(ar ? "فصل حساب Google عن المنصة؟ الاستيراد هيقف عند كل المدرسين والإدارة لحد ما تربطه تاني." : "Unlink the platform's Google account? Importing stops for every author until you link it again.")) void disconnect(); }} className="flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+          <Link2Off size={16} />{ar ? "فصل حساب Google عن المنصة" : "Unlink the platform's Google account"}
+        </button>}
       </div>}
 
       {preview && <div className="space-y-4">

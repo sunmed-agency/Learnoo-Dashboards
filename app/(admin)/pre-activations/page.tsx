@@ -14,7 +14,8 @@ export default function PendingActivationsPage() {
   const ar = useLocale() === 'ar';
   const { role, user } = useCurrentUser();
   // The owner, or a supervisor the owner gave this page to.
-  const allowed = role === 'Super Admin' || (isSupervisor(user) && can(user, 'preactivations.manage'));
+  // Owner, full admins, and supervisors given the permission.
+  const allowed = role === 'Super Admin' || (role === 'Admin' && can(user, 'preactivations.manage'));
   const [phone, setPhone] = useState('');
   const [itemType, setItemType] = useState('');
   const [course, setCourse] = useState('');

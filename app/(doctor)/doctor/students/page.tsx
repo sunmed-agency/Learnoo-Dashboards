@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Search,
-  Plus,
   Eye,
   Loader2,
 } from 'lucide-react';
@@ -55,13 +54,7 @@ export default function StudentsPage() {
           <h1 className="text-2xl font-bold text-[#1E293B]">{t('pageTitle')}</h1>
           <p className="text-sm text-[#64748B] mt-1">{t('pageDescription')}</p>
         </div>
-        <Link
-          href="/doctor/students/add"
-          className="bg-[#2137D6] hover:bg-[#1a2bb3] text-white px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-semibold transition-all shadow-sm shadow-blue-100"
-        >
-          <Plus className="w-4 h-4" />
-          {t('addStudent')}
-        </Link>
+        {/* Teachers only see their own students: no adding, editing or deleting. */}
       </div>
 
       {/* Filters Section */}

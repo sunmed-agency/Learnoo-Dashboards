@@ -159,7 +159,13 @@ html[data-platform-branding="true"] :is([class~="via-[#6366F1]"], [class~="to-[#
 /* Cards in the content area: brand-tinted soft shadow */
 .staff-theme main :is(.rounded-2xl, .rounded-xl).bg-white.border { border-color: var(--lr-line); box-shadow: var(--lr-shadow); }
 .staff-theme :is(input, select, textarea):focus-visible { outline: none; border-color: var(--lr-royal-light); box-shadow: 0 0 0 3px rgba(45,70,232,.15); }
-/* Menus that scroll without showing a bar (the sidebars use it; it was never defined). */
+/* The side menus (every dashboard and the student app): a thin bar that stays visible, so the menu can be scrolled by dragging it without a mouse wheel. */
+.sidebar-scroll { scrollbar-width: thin; scrollbar-color: #B9C3EE #F1F3FB; overscroll-behavior: contain; }
+.sidebar-scroll::-webkit-scrollbar { width: 8px; display: block; }
+.sidebar-scroll::-webkit-scrollbar-track { background: #F1F3FB; border-radius: 99px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: #B9C3EE; border-radius: 99px; border: 2px solid #F1F3FB; }
+.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: #8E9CE0; }
+/* Lists that scroll without a bar. */
 .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 /* The dashboards' content area: one thin bar, space kept so pages don't shift when it appears. */
@@ -191,3 +197,9 @@ html[data-platform-branding="true"] :is([class~="via-[#6366F1]"], [class~="to-[#
 /* any opacity step of the old dark slates (e.g. bg-slate-900/50, border-slate-700/80) */
 .watch-light :is([class*=" bg-slate-900/"], [class^="bg-slate-900/"], [class*=" bg-slate-800/"], [class^="bg-slate-800/"], [class*=" bg-slate-950/"], [class^="bg-slate-950/"]):not(.watch-dark, .watch-dark *) { background-color: #F8F9FE; }
 .watch-light :is([class*=" border-slate-700/"], [class^="border-slate-700/"], [class*=" border-slate-600/"], [class^="border-slate-600/"], [class*=" border-slate-800/"], [class^="border-slate-800/"]):not(.watch-dark, .watch-dark *) { border-color: #E6EAF6; }
+
+/* Date and time fields on phones (iOS Safari gives them a fixed native width that overflows forms and modals). */
+input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"]) { min-width: 0; max-width: 100%; }
+@supports (-webkit-touch-callout: none) {
+  input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"]) { -webkit-appearance: none; appearance: none; min-height: 2.5rem; text-align: start; }
+}

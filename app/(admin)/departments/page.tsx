@@ -2885,7 +2885,7 @@ export default function DepartmentsPage() {
       {/* Viewers Modal */}
       {viewersModalOpen && viewNode && ["chapter", "course"].includes(viewNode.type) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-4 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-xl">
+          <div className="bg-white rounded-xl p-4 w-full max-w-2xl max-h-[80dvh] overflow-y-auto shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">{viewNode.type === "course" ? (ar ? "الطلاب المشتركون" : "Course subscribers") : t("departments.LessonViewers")}</h3>
@@ -2946,7 +2946,7 @@ export default function DepartmentsPage() {
 
       {noteModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-xl max-h-[90dvh] overflow-y-auto">
             {/* Header */}
 
             <div className="flex items-center justify-between mb-4">
@@ -3392,6 +3392,10 @@ function EditModal({
         return chapter.attributes.thumbnail || null;
       }
 
+      if (node.type === "lecture") {
+        return (node.data as Lecture).attributes.thumbnail || null;
+      }
+
       return null;
     },
   );
@@ -3527,8 +3531,8 @@ function EditModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-4 w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-xl">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-white rounded-xl p-4 w-full min-w-0 max-w-lg max-h-[85dvh] overflow-y-auto overflow-x-hidden shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">
             Edit {node.type === "chapter" ? "Lesson" : node.type}
@@ -4797,8 +4801,8 @@ function AddModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-4 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-xl">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-white rounded-xl p-4 w-full min-w-0 max-w-md max-h-[85dvh] overflow-y-auto overflow-x-hidden shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">{getTitle()}</h3>
 
@@ -5978,7 +5982,7 @@ function CopyMoveModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90dvh] flex flex-col">
         {/* Header */}
 
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -6152,7 +6156,7 @@ function GenerateCodeModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90dvh] flex flex-col">
         {/* Header */}
 
         <div className="flex items-center justify-between p-4 border-b border-gray-200">

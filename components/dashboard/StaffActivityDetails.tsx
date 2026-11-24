@@ -28,9 +28,47 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
     ['title', ar ? 'العنوان' : 'Title'], ['video', ar ? 'ملف الفيديو' : 'Video file'],
     ['lecture_id', ar ? 'رقم المحاضرة' : 'Lecture ID'], ['course_id', ar ? 'رقم المادة' : 'Course ID'],
     ['status', ar ? 'حالة النشر' : 'Publish status'],
-    ['max_views', ar ? 'حد المشاهدات' : 'View limit'], ['view_by_minute', ar ? 'ثانية احتساب المشاهدة' : 'View threshold (seconds)'],
+    ['max_views', ar ? 'حد المشاهدات' : 'View limit'], ['view_by_minute', ar ? 'دقايق احتساب المشاهدة' : 'View threshold (minutes)'],
   ];
+  const person = details.target_user;
+  const roleNames: Record<number, [string, string]> = { 0: ['طالب', 'Student'], 1: ['مدرّس', 'Teacher'], 2: ['أدمن / مشرف', 'Admin / supervisor'], 3: ['ولي أمر', 'Parent'], 4: ['دعم', 'Support'], 5: ['المالك', 'Owner'] };
+  const statusNames: Record<number, [string, string]> = { 0: ['موقوف', 'Stopped'], 1: ['نشط', 'Active'], 2: ['معلّق', 'Pending'] };
+  const fieldNames: Record<string, [string, string]> = {
+    name: ['الاسم', 'Name'], phone: ['التليفون', 'Phone'], email: ['الإيميل', 'Email'], student_code: ['كود الطالب', 'Student code'],
+    status: ['الحالة', 'Status'], university: ['الجامعة', 'University'], faculty: ['الكلية', 'Faculty'], centers: ['السناتر', 'Centers'],
+    role: ['نوع الحساب', 'Account type'], password: ['كلمة المرور', 'Password'],
+  };
+  const showValue = (field: string, value: string | number | null) => {
+    if (value === null || value === '') return '—';
+    if (field === 'status') return (statusNames[Number(value)] ?? [String(value), String(value)])[ar ? 0 : 1];
+    if (field === 'role') return (roleNames[Number(value)] ?? [String(value), String(value)])[ar ? 0 : 1];
+    return String(value);
+  };
+  const profileHref = person ? (person.role === 0 ? `/students/${person.id}` : person.role === 1 ? `/instructors/${person.id}/edit` : null) : null;
   return <>
+    {person && <div className="mt-2 break-words rounded-lg border border-[#2137D6]/15 bg-[#F4F5FD] p-3 text-sm">
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span className="font-semibold">{ar ? 'الحساب' : 'Account'}:</span>
+        {profileHref ? <Link href={profileHref} className="font-semibold text-primary underline">{person.name || '—'}</Link> : <span className="font-semibold">{person.name || '—'}</span>}
+        <span className="rounded-full bg-white px-2 py-0.5 text-xs">{(roleNames[person.role] ?? ['', ''])[ar ? 0 : 1]}</span>
+      </p>
+      <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-gray-700">
+        {person.phone && <span>{ar ? 'التليفون' : 'Phone'}: <bdi dir="ltr">{person.phone}</bdi></span>}
+        {person.student_code && <span>{ar ? 'الكود' : 'Code'}: <bdi>{person.student_code}</bdi></span>}
+        {person.email && <span>{ar ? 'الإيميل' : 'Email'}: <bdi dir="ltr">{person.email}</bdi></span>}
+      </p>
+      {details.target_changes?.length ? <table className="mt-2 w-full text-start text-[13px]">
+        <thead><tr className="text-gray-600"><th className="p-1 text-start">{ar ? 'اللي اتغيّر' : 'Changed'}</th><th className="p-1 text-start">{ar ? 'قبل' : 'Before'}</th><th className="p-1 text-start">{ar ? 'بعد' : 'After'}</th></tr></thead>
+        <tbody>{details.target_changes.map((change) => <tr key={change.field} className="border-t border-white">
+          <th className="p-1 text-start font-semibold">{(fieldNames[change.field] ?? [change.field, change.field])[ar ? 0 : 1]}</th>
+          {change.field === 'password'
+            ? <td className="p-1" colSpan={2}>{ar ? 'اتغيّرت (الكلمة نفسها مش بتتسجّل)' : 'Changed (never recorded)'}</td>
+            : <><td className="break-all p-1 text-gray-600">{showValue(change.field, change.from)}</td><td className="break-all p-1">{showValue(change.field, change.to)}</td></>}
+        </tr>)}</tbody>
+      </table> : null}
+      {details.views_adjust && <p className="mt-1">{ar ? 'المشاهدات' : 'Views'}: <bdi dir="ltr">{details.views_adjust.delta > 0 ? `+${details.views_adjust.delta}` : details.views_adjust.delta}</bdi>{details.views_adjust.note && <> · {details.views_adjust.note}</>}</p>}
+      {details.student_note && <p className="mt-1 whitespace-pre-wrap">{ar ? 'الملاحظة' : 'Note'}: {details.student_note}</p>}
+    </div>}
     {(course || lecture || chapter || activationImport || pendingDeleted) && <div className="mt-2 break-words rounded-lg bg-slate-50 p-3 text-sm">
       {course && <p className="font-semibold">{ar ? 'المادة' : 'Course'}: {course.title || (ar ? 'تفاصيل المادة غير متاحة' : 'Course details unavailable')} <bdi>#{course.id}</bdi></p>}
       {!!course?.category_path.length && <p className="mt-1 text-gray-600">{ar ? 'المسار الدراسي' : 'Academic path'}: {course.category_path.join(' / ')}</p>}

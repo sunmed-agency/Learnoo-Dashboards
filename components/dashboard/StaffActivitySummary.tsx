@@ -13,6 +13,6 @@ export default function StaffActivitySummary() {
   return <section className="rounded-xl border bg-white p-6">
     <h2 className="text-lg font-bold">{ar ? 'سجل النشاط — آخر ٩٠ يومًا' : 'Activity history — past 90 days'}</h2>
     {isLoading ? <p>{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : error ? <p role="alert">{ar ? 'تعذر تحميل النشاط' : 'Could not load activity'}</p> : !data?.data.length ? <p>{ar ? 'لا توجد أنشطة مسجلة' : 'No recorded activity'}</p> : <div className="mt-4 max-h-[480px] space-y-4 overflow-y-auto">{data.data.map(item => <article key={item.id} className="border-b pb-3"><p>{item.first_name} {item.last_name}</p><p className="text-sm">{formatStaffActivity(item.action, ar ? 'ar' : 'en')}</p><StaffActivityDetails details={item.details} /><time className="text-xs text-gray-500">{new Date(item.created_at).toLocaleString(ar ? 'ar' : 'en')}</time></article>)}</div>}
-    <Link href="/activity" className="mt-4 inline-block text-primary underline">{ar ? 'عرض سجل النشاط كاملًا' : 'View full activity history'}</Link>
+    <Link href="/activity" className="mt-4 inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15">{ar ? 'عرض سجل النشاط كاملًا' : 'View full activity history'}</Link>
   </section>;
 }

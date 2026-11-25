@@ -31,6 +31,7 @@ const ERRORS: Record<string, { ar: string; en: string }> = {
   POPUP_BLOCKED: { ar: "المتصفح منع نافذة Google. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى.", en: "The browser blocked the Google window. Allow pop-ups and try again." },
   denied: { ar: "تم إلغاء الربط من نافذة Google.", en: "Google sign-in was cancelled." },
   missing_scope: { ar: "يجب الموافقة على كل الصلاحيات المطلوبة حتى يعمل الاستيراد.", en: "Please allow all requested permissions for the import to work." },
+  same_account: { ar: "الحساب ده مربوط للنسخ الاحتياطي. اختار حساب Google تاني للامتحانات.", en: "This account is linked for backups. Pick another Google account for exams." },
   expired: { ar: "انتهت صلاحية طلب الربط. حاول مرة أخرى.", en: "The sign-in request expired. Try again." },
   PICKER_LOAD_FAILED: { ar: "تعذّر فتح نافذة اختيار النماذج من Google.", en: "Could not open the Google picker." },
   generic: { ar: "حدث خطأ. حاول مرة أخرى.", en: "Something went wrong. Try again." },

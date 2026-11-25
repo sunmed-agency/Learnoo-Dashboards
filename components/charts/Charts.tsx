@@ -203,17 +203,19 @@ export function Donut({ parts, format, centerLabel, emptyText, size = 160 }: {
 }
 
 /** Vertical bars for a few categories (e.g. score bands), value on top of each bar. */
-export function ColumnChart({ items, format, color = SERIES[0], height = 180, emptyText }: {
+export function ColumnChart({ items, format, color = SERIES[0], height = 180, emptyText, dir = 'ltr' }: {
   items: { label: string; value: number; color?: string }[];
   format: (n: number) => string;
   color?: string;
   height?: number;
   emptyText: string;
+  /** 'ltr' for time axes (hours, score bands); the page direction for named categories such as weekdays. */
+  dir?: 'ltr' | 'rtl';
 }) {
   const max = Math.max(1, ...items.map((i) => i.value));
   if (!items.some((i) => i.value > 0)) return <p className="py-8 text-center text-sm text-[#94A3B8]">{emptyText}</p>;
   return (
-    <div className="flex items-end gap-2" style={{ height }} dir="ltr">
+    <div className="flex items-end gap-2" style={{ height }} dir={dir}>
       {items.map((item) => (
         <div key={item.label} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${item.label}: ${format(item.value)}`}>
           <span className="text-xs font-semibold tabular-nums text-[#0F172A]">{format(item.value)}</span>

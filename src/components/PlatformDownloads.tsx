@@ -27,7 +27,7 @@ export default function PlatformDownloads() {
     {error ? <p role="alert">{ar ? 'تعذر تحميل الملفات' : 'Could not load files'}</p> : loading ? <p>{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : <>
       <h2 className="text-lg font-bold">{ar ? 'الملفات المتاحة للتحميل' : 'Available files'}</h2>
       {!files.length && <p>{ar ? 'لا توجد ملفات متاحة للتحميل' : 'No files available for download'}</p>}
-      {files.map(file => <div key={file.id} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-white p-4"><span>{file.attributes.name}</span><button disabled={busy === String(file.id)} className="text-primary underline disabled:opacity-50" onClick={async () => {
+      {files.map(file => <div key={file.id} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-white p-4"><span>{file.attributes.name}</span><button disabled={busy === String(file.id)} className="disabled:opacity-50 inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15" onClick={async () => {
         setBusy(String(file.id));
         try { await api.downloads.download(file.id, file.attributes.name); const history = await api.downloads.history(page); setRecords(history.data); }
         catch { toast.error(ar ? 'تعذر تحميل الملف' : 'Download failed'); }

@@ -11,7 +11,7 @@ function SavedContent({ heading, rows, changes, href, linkLabel, changesLabel }:
     <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">{rows.map(row => <div key={row.label} className="contents"><dt className="text-gray-600">{row.label}</dt><dd>{row.value}</dd></div>)}</dl>
     {!!changes.length && <><p className="mt-2 font-semibold">{changesLabel}</p>
       <ul className="mt-1 list-disc ps-5">{changes.map(row => <li key={row.label}>{row.label}: {row.value}</li>)}</ul></>}
-    <Link href={href} className="mt-2 inline-block text-primary underline">{linkLabel}</Link>
+    <Link href={href} className="mt-2 inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15">{linkLabel}</Link>
   </div>;
 }
 
@@ -81,7 +81,7 @@ export default function StaffActivityDetails({ details }: { details: StaffActivi
     {person && <div className="mt-2 break-words rounded-lg border border-[#2137D6]/15 bg-[#F4F5FD] p-3 text-sm">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="font-semibold">{ar ? 'الحساب' : 'Account'}:</span>
-        {profileHref ? <Link href={profileHref} className="font-semibold text-primary underline">{person.name || '—'}</Link> : <span className="font-semibold">{person.name || '—'}</span>}
+        {profileHref ? <Link href={profileHref} className="font-semibold text-[#2137D6] underline-offset-4 hover:underline">{person.name || '—'}</Link> : <span className="font-semibold">{person.name || '—'}</span>}
         <span className="rounded-full bg-white px-2 py-0.5 text-xs">{(roleNames[person.role] ?? ['', ''])[ar ? 0 : 1]}</span>
       </p>
       <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-gray-700">

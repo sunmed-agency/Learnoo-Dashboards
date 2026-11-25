@@ -65,7 +65,7 @@ export default function PendingActivationsPage() {
       <div className="flex flex-wrap gap-3"><button type="submit" disabled={loading} className="rounded-xl bg-primary px-5 py-3 text-sm text-white disabled:opacity-50">{ar ? 'بحث' : 'Search'}</button>
         <button type="button" onClick={() => { setPhone(''); setItemType(''); setCourse(''); setFilters({}); setPage(1); }} className="rounded-xl border px-4 py-3 text-sm">{ar ? 'مسح الفلاتر' : 'Reset filters'}</button></div>
     </form>
-    {loading ? <p role="status">{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : error ? <div role="alert"><p>{ar ? 'تعذر تحميل الأرقام.' : 'Could not load pending numbers.'}</p><button type="button" onClick={() => void refetch()} className="mt-2 text-primary underline">{ar ? 'إعادة المحاولة' : 'Retry'}</button></div> : result && <>
+    {loading ? <p role="status">{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : error ? <div role="alert"><p>{ar ? 'تعذر تحميل الأرقام.' : 'Could not load pending numbers.'}</p><button type="button" onClick={() => void refetch()} className="mt-2 inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15">{ar ? 'إعادة المحاولة' : 'Retry'}</button></div> : result && <>
       <p className="text-sm text-gray-600">{ar ? `التفعيلات المعلقة: ${result.total} (قد يتكرر الرقم لمواد مختلفة)` : `Pending activations: ${result.total} (one number can have different courses)`}</p>
       {!result.data.length && <p>{ar ? 'لا توجد أرقام معلقة مطابقة.' : 'No matching pending numbers.'}</p>}
       <div className="divide-y rounded-2xl border bg-white">{result.data.map(row => <article key={row.id} className="grid gap-3 p-4 sm:grid-cols-[1fr_2fr_1fr_auto]">

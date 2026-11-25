@@ -172,21 +172,27 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
       </form>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p aria-live="polite">{ar ? `النتائج: ${total}` : `Results: ${total}`}</p>
-        <button className="text-primary underline" onClick={async () => {
+        <button className="inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15" onClick={async () => {
           try { await api.notifications.readAll(); setRefresh(n => n + 1); }
           catch { toast.error(ar ? 'تعذر تحديد الإشعارات كمقروءة' : 'Could not mark notifications as read'); }
         }}>{ar ? 'تحديد كل الوارد كمقروء' : 'Mark entire inbox as read'}</button>
       </div>
-      {error ? <div role="alert"><p>{ar ? 'تعذر تحميل الإشعارات' : 'Could not load notifications'}</p><button className="text-primary underline" onClick={() => { setLoading(true); setRefresh(n => n + 1); }}>{ar ? 'إعادة المحاولة' : 'Retry'}</button></div> : loading ? <p role="status">{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : !items.length ? <p>{ar ? 'لا توجد إشعارات مطابقة' : 'No matching notifications'}</p> : items.map(item => <article key={item.id} className={`break-words rounded-2xl border p-5 ${item.read_at ? 'bg-white' : 'bg-blue-50'}`}>
-        <h2 className="font-bold">{item.data.title}</h2><p className="mt-2 whitespace-pre-wrap">{item.data.message}</p><time className="mt-2 block text-xs text-gray-500">{new Date(item.created_at).toLocaleString(ar ? 'ar' : 'en')}</time>
-        {item.data.actor_name && <p className="mt-2 text-xs text-gray-500">{ar ? 'بواسطة' : 'By'}: {item.data.actor_name}</p>}
-        {notificationHref(item.data, pathname, locale) && <Link href={notificationHref(item.data, pathname, locale)!} onClick={() => { void api.notifications.read(item.id); }} className="mt-2 block text-sm text-primary underline">{item.data.type === 'support-issue' ? (ar ? 'عرض الشكوى' : 'View complaint') : (ar ? 'فتح المحتوى' : 'Open content')}</Link>}
-        {!item.read_at && <button className="mt-2 text-sm text-primary underline" onClick={async () => {
-            try { await api.notifications.read(item.id); setRefresh(n => n + 1); }
-            catch { toast.error(ar ? 'تعذر تحديد الإشعار كمقروء' : 'Could not mark notification as read'); }
-          }}>{ar ? 'تحديد كمقروء' : 'Mark as read'}</button>}
+      {error ? <div role="alert"><p>{ar ? 'تعذر تحميل الإشعارات' : 'Could not load notifications'}</p><button className="inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15" onClick={() => { setLoading(true); setRefresh(n => n + 1); }}>{ar ? 'إعادة المحاولة' : 'Retry'}</button></div> : loading ? <p role="status">{ar ? 'جارٍ التحميل…' : 'Loading…'}</p> : !items.length ? <p>{ar ? 'لا توجد إشعارات مطابقة' : 'No matching notifications'}</p> : items.map(item => <article key={item.id} className={`break-words rounded-2xl border p-5 transition ${item.read_at ? 'border-[#E2E8F0] bg-white' : 'border-[#2137D6]/20 bg-[#2137D6]/[0.04]'}`}>
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="flex items-start gap-2 font-bold text-[#0F172A]">{!item.read_at && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#2137D6]" aria-label={ar ? 'غير مقروء' : 'Unread'} />}{item.data.title}</h2>
+          <time className="shrink-0 text-xs text-[#94A3B8]">{new Date(item.created_at).toLocaleString(ar ? 'ar' : 'en')}</time>
+        </div>
+        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[#475569]">{item.data.message}</p>
+        {item.data.actor_name && <p className="mt-2 text-xs text-[#94A3B8]">{ar ? 'بواسطة' : 'By'}: {item.data.actor_name}</p>}
+        {(notificationHref(item.data, pathname, locale) || !item.read_at) && <div className="mt-3 flex flex-wrap items-center gap-2">
+          {notificationHref(item.data, pathname, locale) && <Link href={notificationHref(item.data, pathname, locale)!} onClick={() => { void api.notifications.read(item.id); }} className="text-sm inline-flex items-center gap-1 rounded-lg bg-[#2137D6] px-3 py-1.5 font-semibold text-white no-underline transition hover:bg-[#1B2DB3]">{item.data.type === 'support-issue' ? (ar ? 'عرض الشكوى' : 'View complaint') : (ar ? 'فتح المحتوى' : 'Open content')}</Link>}
+          {!item.read_at && <button className="text-sm inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15" onClick={async () => {
+              try { await api.notifications.read(item.id); setRefresh(n => n + 1); }
+              catch { toast.error(ar ? 'تعذر تحديد الإشعار كمقروء' : 'Could not mark notification as read'); }
+            }}>{ar ? 'تحديد كمقروء' : 'Mark as read'}</button>}
+        </div>}
       </article>)}
-      <div className="flex items-center gap-4"><button disabled={loading || page <= 1} onClick={() => { setLoading(true); setPage(page - 1); }}>{ar ? 'السابق' : 'Previous'}</button><span>{page} / {lastPage}</span><button disabled={loading || page >= lastPage} onClick={() => { setLoading(true); setPage(page + 1); }}>{ar ? 'التالي' : 'Next'}</button></div>
+      <div className="flex items-center justify-center gap-3 text-sm"><button className="rounded-lg border border-[#E2E8F0] bg-white px-4 py-2 font-medium text-[#475569] hover:bg-[#F8FAFC] disabled:opacity-40" disabled={loading || page <= 1} onClick={() => { setLoading(true); setPage(page - 1); }}>{ar ? 'السابق' : 'Previous'}</button><span className="tabular-nums text-[#64748B]">{page} / {lastPage}</span><button className="rounded-lg border border-[#E2E8F0] bg-white px-4 py-2 font-medium text-[#475569] hover:bg-[#F8FAFC] disabled:opacity-40" disabled={loading || page >= lastPage} onClick={() => { setLoading(true); setPage(page + 1); }}>{ar ? 'التالي' : 'Next'}</button></div>
     </>}
   </div>;
 }

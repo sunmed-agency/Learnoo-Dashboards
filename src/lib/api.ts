@@ -1859,6 +1859,16 @@ export interface FinanceReport {
   unpriced_courses: number;
   /** The same number of days right before the chosen period (only when a start date is chosen). */
   previous?: { period: { from: string | null; to: string | null }; totals: FinanceTotals; daily?: FinanceDay[]; monthly: FinanceMonth[] };
+  /** 0 = Sunday ... 6 = Saturday. */
+  weekdays?: { weekday: number; revenue: number; activations: number }[];
+  /** Activations per hour of the day (0-23, Cairo time). */
+  hours?: number[];
+  /** How activations happened: a used code, a pre-activated phone number (sheet), or by hand. */
+  sources?: { codes: number; sheet: number; other: number };
+  /** Buyers whose first activation ever is in the period vs. earlier. */
+  buyers?: { new: number; returning: number };
+  /** Unpriced subjects students activated in the period (they count as 0). */
+  unpriced_activity?: { id: number; name: string; path: string | null; activations: number; students: number }[];
 }
 export const financeApi = {
   report: (filters: { from?: string; to?: string } = {}) => get<FinanceReport>('/v1/reports/finance', filters),

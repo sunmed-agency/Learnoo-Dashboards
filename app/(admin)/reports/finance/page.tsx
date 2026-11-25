@@ -8,7 +8,7 @@ import api, { type FinanceFigures, type FinanceGroup, type FinanceReport, type F
 import { useCurrentUser } from '@/src/hooks/useAuth';
 import { can } from '@/src/lib/permissions';
 import PeriodPicker, { presetRange, type PeriodPreset } from '@/components/charts/PeriodPicker';
-import { BarList, ChangeBadge, Donut, SERIES, TrendChart } from '@/components/charts/Charts';
+import { BarList, ChangeBadge, ColumnChart, Donut, SERIES, TrendChart } from '@/components/charts/Charts';
 import { downloadWorkbook, escapeHtml, htmlTable, openPrintableReport, shortDay, svgBars, type Cell } from '@/src/lib/report-export';
 
 const TABS: { key: FinanceGroup; ar: string; en: string; icon: typeof Landmark }[] = [
@@ -110,6 +110,34 @@ export default function FinanceReportsPage() {
     return { byDay, points: report.monthly.map((m, i) => ({ label: m.month, current: m.revenue, previous: prev[i]?.revenue ?? (report.previous ? 0 : null), previousLabel: prev[i]?.month })) };
   }, [report, from, to]);
 
+  // Week starts on Saturday in Egypt.
+  const weekRows = useMemo(() => {
+    const names = ar ? ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const list = report?.weekdays ?? [];
+    return [6, 0, 1, 2, 3, 4, 5].map(d => ({ label: names[d], activations: list.find(w => w.weekday === d)?.activations ?? 0, revenue: list.find(w => w.weekday === d)?.revenue ?? 0 }));
+  }, [report, ar]);
+  const monthRows = useMemo(() => (report?.monthly ?? []).map((m, i, all) => ({
+    ...m,
+    change: i > 0 ? change(m.revenue, all[i - 1].revenue) : null,
+    cumulative: all.slice(0, i + 1).reduce((sum, x) => sum + x.revenue, 0),
+  })), [report]);
+  // This month so far, and where it ends at the same daily pace (only when the period covers the whole month so far).
+  const projection = useMemo(() => {
+    if (!report) return null;
+    const today = new Date();
+    const monthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    if ((from && from > `${monthKey}-01`) || (to && to < `${monthKey}-${String(today.getDate()).padStart(2, '0')}`)) return null;
+    const soFar = report.monthly.find(m => m.month === monthKey)?.revenue ?? 0;
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    return { soFar, projected: Math.round((soFar / today.getDate()) * daysInMonth), day: today.getDate(), daysInMonth };
+  }, [report, from, to]);
+  const payouts = useMemo(() => [...(report?.groups.instructors ?? [])].sort((a, b) => b.teacher_share - a.teacher_share), [report]);
+  const sourceParts = report?.sources ? [
+    { label: ar ? 'بالشيت / أرقام التليفون' : 'Sheet / phone numbers', value: report.sources.sheet, color: SERIES[0] },
+    { label: ar ? 'بالأكواد' : 'Codes', value: report.sources.codes, color: SERIES[1] },
+    { label: ar ? 'يدوي من الإدارة' : 'Manually by staff', value: report.sources.other, color: SERIES[2] },
+  ] : [];
+
   // Columns of a group, the same on screen, in Excel and in the PDF.
   const columns = (group: FinanceGroup): { label: string; value: (r: FinanceRow) => string | number; money?: boolean; sum?: keyof FinanceFigures }[] => [
     { label: group === 'instructors' ? (ar ? 'المدرس' : 'Teacher') : (ar ? 'الاسم' : 'Name'), value: r => r.name },
@@ -147,6 +175,15 @@ export default function FinanceReportsPage() {
           ...trend.points.map(p => [p.label, p.current, ...(report.previous ? [p.previous ?? 0] : [])] as Cell[]),
         ], widths: [14, 16, 20] },
         { name: ar ? 'شهري' : 'Monthly', rows: [[ar ? 'الشهر' : 'Month', ar ? 'التفعيلات' : 'Activations', ar ? 'الإيراد' : 'Revenue', ar ? 'نصيب المدرسين' : 'Teachers share', ar ? 'نصيب المنصة' : 'Platform share'], ...report.monthly.map(m => [m.month, m.activations, m.revenue, m.teacher_share, m.platform_share])], widths: [12, 12, 16, 16, 16] },
+        { name: ar ? 'نمو شهري' : 'Monthly growth', rows: [[ar ? 'الشهر' : 'Month', ar ? 'التفعيلات' : 'Activations', ar ? 'الإيراد' : 'Revenue', ar ? 'التغيّر %' : 'Change %', ar ? 'التراكمي' : 'Cumulative'], ...monthRows.map(m => [m.month, m.activations, m.revenue, m.change ?? '', m.cumulative] as Cell[]), ...(projection ? [[], [ar ? 'توقع نهاية الشهر الحالي' : 'Current month projection', '', projection.projected]] : [])] },
+        { name: ar ? 'مستحقات المدرسين' : 'Teacher payouts', rows: [[ar ? 'المدرس' : 'Teacher', ar ? 'النسبة %' : 'Share %', ar ? 'إيراد مواده' : 'Revenue', ar ? 'المستحق له' : 'Payout', ar ? 'للمنصة' : 'Platform'], ...payouts.map(r => [r.name, r.share_percent ?? 0, r.revenue, r.teacher_share, r.platform_share] as Cell[])], widths: [30, 10, 16, 16, 16] },
+        { name: ar ? 'تحليل التفعيلات' : 'Activation analysis', rows: [
+          [ar ? 'طريقة التفعيل' : 'How activated', ar ? 'العدد' : 'Count'], ...sourceParts.map(p => [p.label, p.value] as Cell[]), [],
+          [ar ? 'المشترين' : 'Buyers', ar ? 'العدد' : 'Count'], [ar ? 'أول مرة' : 'First-time', report.buyers?.new ?? 0], [ar ? 'رجعوا تاني' : 'Returning', report.buyers?.returning ?? 0], [],
+          [ar ? 'اليوم' : 'Weekday', ar ? 'التفعيلات' : 'Activations', ar ? 'الإيراد' : 'Revenue'], ...weekRows.map(w => [w.label, w.activations, w.revenue] as Cell[]), [],
+          [ar ? 'الساعة' : 'Hour', ar ? 'التفعيلات' : 'Activations'], ...(report.hours ?? []).map((n, h) => [`${h}:00`, n] as Cell[]),
+        ], widths: [28, 14, 16] },
+        { name: ar ? 'مواد بدون سعر' : 'Unpriced subjects', rows: [[ar ? 'المادة' : 'Subject', ar ? 'المسار' : 'Path', ar ? 'التفعيلات' : 'Activations', ar ? 'الطلاب' : 'Students'], ...(report.unpriced_activity ?? []).map(c => [c.name, c.path ?? '', c.activations, c.students] as Cell[])], widths: [40, 60, 12, 12] },
         ...TABS.map(t => {
           const cols = columns(t.key);
           return { name: ar ? t.ar : t.en, rows: [cols.map(c => c.label), ...report.groups[t.key].map(r => cols.map(c => c.value(r)))], widths: cols.map((c, i) => i === 0 ? 34 : c.label.length > 14 ? 30 : 15) };
@@ -172,6 +209,11 @@ export default function FinanceReportsPage() {
           [ar ? 'مواد كاملة' : 'Whole subjects', fmt(report.totals.subject_revenue ?? 0), total ? `${Math.round(((report.totals.subject_revenue ?? 0) / total) * 100)}%` : '—'],
           [ar ? 'دروس منفردة' : 'Single lessons', fmt(report.totals.lesson_revenue ?? 0), total ? `${Math.round(((report.totals.lesson_revenue ?? 0) / total) * 100)}%` : '—'],
         ], '') },
+        { title: ar ? 'التفعيلات حسب أيام الأسبوع' : 'Activations by weekday', html: svgBars(weekRows.map(w => ({ label: w.label, current: w.activations })), n => count.format(n)) },
+        { title: ar ? 'طريقة التفعيل والمشترين' : 'How students activated, and buyers', html: htmlTable([ar ? 'البند' : 'Item', ar ? 'العدد' : 'Count'], [...sourceParts.map(p => [p.label, count.format(p.value)]), [ar ? 'مشترين لأول مرة' : 'First-time buyers', count.format(report.buyers?.new ?? 0)], [ar ? 'مشترين رجعوا' : 'Returning buyers', count.format(report.buyers?.returning ?? 0)]], '') },
+        { title: ar ? 'مستحقات المدرسين' : 'Teacher payouts', html: htmlTable([ar ? 'المدرس' : 'Teacher', ar ? 'النسبة' : 'Share', ar ? 'إيراد مواده' : 'Revenue', ar ? 'المستحق له' : 'Payout', ar ? 'للمنصة' : 'Platform'], payouts.map(r => [r.name, `${money.format(r.share_percent ?? 0)}%`, fmt(r.revenue), fmt(r.teacher_share), fmt(r.platform_share)]), ar ? 'لا توجد بيانات' : 'No data') },
+        { title: ar ? 'نمو الإيراد شهر بشهر' : 'Month-over-month growth', html: htmlTable([ar ? 'الشهر' : 'Month', ar ? 'التفعيلات' : 'Activations', ar ? 'الإيراد' : 'Revenue', ar ? 'التغيّر' : 'Change', ar ? 'التراكمي' : 'Cumulative'], monthRows.map(m => [m.month, count.format(m.activations), fmt(m.revenue), m.change == null ? '—' : `${m.change > 0 ? '+' : ''}${money.format(m.change)}%`, fmt(m.cumulative)]), ar ? 'لا توجد بيانات' : 'No data') + (projection ? `<p class="note">${escapeHtml(ar ? `توقع نهاية الشهر الحالي بنفس المعدل: ${fmt(projection.projected)}` : `Current month projection at the same pace: ${fmt(projection.projected)}`)}</p>` : '') },
+        ...((report.unpriced_activity?.length ?? 0) > 0 ? [{ title: ar ? 'مواد عليها تفعيلات ومن غير سعر' : 'Activated subjects without a price', html: htmlTable([ar ? 'المادة' : 'Subject', ar ? 'التفعيلات' : 'Activations', ar ? 'الطلاب' : 'Students'], report.unpriced_activity!.map(c => [c.name, count.format(c.activations), count.format(c.students)]), '') }] : []),
         { title: ar ? 'الإيرادات الشهرية' : 'Monthly revenue', html: htmlTable([ar ? 'الشهر' : 'Month', ar ? 'التفعيلات' : 'Activations', ar ? 'الإيراد' : 'Revenue', ar ? 'نصيب المدرسين' : 'Teachers share', ar ? 'نصيب المنصة' : 'Platform share'], report.monthly.map(m => [m.month, cell(m.activations), cell(m.revenue, true), cell(m.teacher_share, true), cell(m.platform_share, true)]), ar ? 'لا توجد بيانات' : 'No data', v => String(v)) },
         ...TABS.map(t => {
           const cols = columns(t.key);
@@ -264,6 +306,91 @@ export default function FinanceReportsPage() {
             </div>
           </div>
         </section>
+
+        {/* How and when students activate */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+            <h2 className="mb-3 text-sm font-bold text-[#0F172A]">{ar ? 'طريقة التفعيل' : 'How students were activated'}</h2>
+            <Donut size={130} parts={sourceParts} format={n => count.format(n)} centerLabel={ar ? 'تفعيل' : 'activations'} emptyText={ar ? 'لا توجد تفعيلات' : 'No activations'} />
+          </section>
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+            <h2 className="mb-3 text-sm font-bold text-[#0F172A]">{ar ? 'المشترين' : 'Buyers'}</h2>
+            <Donut size={130} parts={[
+              { label: ar ? 'أول مرة يفعّلوا' : 'First-time buyers', value: report.buyers?.new ?? 0, color: SERIES[2] },
+              { label: ar ? 'فعّلوا قبل كده ورجعوا' : 'Returning buyers', value: report.buyers?.returning ?? 0, color: SERIES[3] },
+            ]} format={n => count.format(n)} centerLabel={ar ? 'طالب' : 'students'} emptyText={ar ? 'لا يوجد مشترين' : 'No buyers'} />
+          </section>
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5 md:col-span-2">
+            <h2 className="mb-1 text-sm font-bold text-[#0F172A]">{ar ? 'التفعيلات حسب أيام الأسبوع' : 'Activations by weekday'}</h2>
+            <p className="mb-3 text-xs text-[#64748B]">{ar ? 'أنسب أيام للعروض وفتح المحتوى' : 'Best days for offers and releases'}</p>
+            <ColumnChart height={170} dir={ar ? 'rtl' : 'ltr'} items={weekRows.map(w => ({ label: w.label, value: w.activations }))} format={n => count.format(n)} emptyText={ar ? 'لا توجد تفعيلات' : 'No activations'} />
+          </section>
+        </div>
+
+        {report.hours && report.hours.some(h => h > 0) && <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+          <h2 className="mb-1 text-sm font-bold text-[#0F172A]">{ar ? 'ساعات الذروة' : 'Peak hours'}</h2>
+          <p className="mb-3 text-xs text-[#64748B]">{ar ? 'عدد التفعيلات في كل ساعة من اليوم (بتوقيت القاهرة)' : 'Activations per hour of the day (Cairo time)'}</p>
+          <ColumnChart height={150} items={report.hours.map((n, h) => ({ label: String(h), value: n, color: n === Math.max(...report.hours!) ? SERIES[1] : SERIES[0] }))} format={n => count.format(n)} emptyText="" />
+        </section>}
+
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+            <h2 className="mb-1 text-sm font-bold text-[#0F172A]">{ar ? 'نمو الإيراد شهر بشهر' : 'Month-over-month growth'}</h2>
+            {projection && <p className="mb-3 rounded-lg bg-[#2137D6]/5 px-3 py-2 text-xs text-[#1E293B]">{ar
+              ? `الشهر الحالي لحد يوم ${count.format(projection.day)}: ${fmt(projection.soFar)}، ولو فضل بنفس المعدل هيقفل على حوالي ${fmt(projection.projected)}.`
+              : `This month to day ${projection.day}: ${fmt(projection.soFar)}; at the same pace it ends near ${fmt(projection.projected)}.`}</p>}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-xs text-[#64748B]"><tr>
+                  {[ar ? 'الشهر' : 'Month', ar ? 'التفعيلات' : 'Activations', ar ? 'الإيراد' : 'Revenue', ar ? 'التغيّر' : 'Change', ar ? 'التراكمي' : 'Cumulative'].map(h => <th key={h} className="px-2 py-2 text-start font-semibold">{h}</th>)}
+                </tr></thead>
+                <tbody>
+                  {monthRows.length === 0 ? <tr><td colSpan={5} className="py-6 text-center text-[#94A3B8]">{ar ? 'لا توجد بيانات' : 'No data'}</td></tr>
+                    : monthRows.map(m => <tr key={m.month} className="border-t border-[#F1F5F9]">
+                      <td className="px-2 py-2 font-semibold text-[#0F172A]" dir="ltr">{m.month}</td>
+                      <td className="px-2 py-2 tabular-nums">{count.format(m.activations)}</td>
+                      <td className="px-2 py-2 tabular-nums">{fmt(m.revenue)}</td>
+                      <td className="px-2 py-2">{m.change === null && monthRows[0].month === m.month ? <span className="text-xs text-[#94A3B8]">—</span> : <ChangeBadge change={m.change} ar={ar} />}</td>
+                      <td className="px-2 py-2 tabular-nums text-[#475569]">{fmt(m.cumulative)}</td>
+                    </tr>)}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+            <h2 className="mb-1 text-sm font-bold text-[#0F172A]">{ar ? 'مستحقات المدرسين' : 'Teacher payouts'}</h2>
+            <p className="mb-3 text-xs text-[#64748B]">{ar ? 'نصيب كل مدرس من إيراد مواده في الفترة، حسب النسبة المحددة له.' : 'Each teacher’s share of their subjects’ revenue in the period, at their set percentage.'}</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-xs text-[#64748B]"><tr>
+                  {[ar ? 'المدرس' : 'Teacher', ar ? 'النسبة' : 'Share', ar ? 'إيراد مواده' : 'Revenue', ar ? 'المستحق له' : 'Payout', ar ? 'للمنصة' : 'Platform'].map(h => <th key={h} className="px-2 py-2 text-start font-semibold">{h}</th>)}
+                </tr></thead>
+                <tbody>
+                  {payouts.length === 0 ? <tr><td colSpan={5} className="py-6 text-center text-[#94A3B8]">{ar ? 'لا توجد بيانات' : 'No data'}</td></tr>
+                    : payouts.map(r => <tr key={String(r.id)} className="border-t border-[#F1F5F9]">
+                      <td className="px-2 py-2 font-semibold text-[#0F172A]"><bdi>{r.name}</bdi></td>
+                      <td className="px-2 py-2 tabular-nums">{r.share_percent ? `${money.format(r.share_percent)}%` : <span className="text-xs text-amber-700">{ar ? 'مش محددة' : 'not set'}</span>}</td>
+                      <td className="px-2 py-2 tabular-nums">{fmt(r.revenue)}</td>
+                      <td className="px-2 py-2 font-bold tabular-nums text-[#0F172A]">{fmt(r.teacher_share)}</td>
+                      <td className="px-2 py-2 tabular-nums text-[#475569]">{fmt(r.platform_share)}</td>
+                    </tr>)}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        {(report.unpriced_activity?.length ?? 0) > 0 && <section className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5">
+          <h2 className="mb-1 flex items-center gap-2 text-sm font-bold text-[#0F172A]"><AlertTriangle className="h-4 w-4 text-amber-600" />{ar ? 'مواد عليها تفعيلات ومن غير سعر' : 'Activated subjects without a price'}</h2>
+          <p className="mb-3 text-xs text-[#64748B]">{ar ? 'تفعيلات المواد دي بتتحسب بصفر. حط سعرها عشان الإيرادات تبقى صح.' : 'Activations of these subjects count as 0. Set their price so revenue is right.'}</p>
+          <ul className="divide-y divide-amber-100">
+            {report.unpriced_activity!.map(c => <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5 text-sm">
+              <span className="min-w-0"><bdi className="font-semibold text-[#0F172A]">{c.name}</bdi>{c.path && <span className="block truncate text-xs text-[#94A3B8]">{c.path}</span>}</span>
+              <span className="flex shrink-0 items-center gap-3"><span className="text-xs text-[#64748B]">{count.format(c.activations)} {ar ? 'تفعيل' : 'activations'}</span>
+                <a href={`/courses/${c.id}/edit`} className="inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 text-xs font-semibold text-[#2137D6] transition hover:bg-[#2137D6]/15">{ar ? 'حدد السعر' : 'Set price'}</a></span>
+            </li>)}
+          </ul>
+        </section>}
 
         <div className="rounded-2xl border border-[#E2E8F0] bg-white">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] p-3">

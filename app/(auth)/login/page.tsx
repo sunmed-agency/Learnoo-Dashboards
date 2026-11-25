@@ -77,7 +77,7 @@ export default function LoginPage() {
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p role="alert" className="font-sans text-xs leading-5 text-red-600">{error}</p>
-            {transferToken && !requestSent && <button type="button" disabled={requesting || loading} onClick={handleTransferRequest} className="mt-2 text-xs font-medium text-primary underline disabled:opacity-50">{requesting ? t('sendingDeviceRequest') : t('sendDeviceRequest')}</button>}
+            {transferToken && !requestSent && <button type="button" disabled={requesting || loading} onClick={handleTransferRequest} className="mt-2 text-xs font-medium disabled:opacity-50 inline-flex items-center gap-1 rounded-lg bg-[#2137D6]/10 px-3 py-1.5 font-semibold text-[#2137D6] no-underline transition hover:bg-[#2137D6]/15">{requesting ? t('sendingDeviceRequest') : t('sendDeviceRequest')}</button>}
           </div>
         )}
 

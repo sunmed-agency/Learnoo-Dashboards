@@ -6,6 +6,7 @@ const React = require('react');
 const ts = require('typescript');
 const requireWithUiText = (id) => (id === '@/src/lib/ui-text' ? { useTx: () => (text) => text, translateUiText: (text) => text } : require(id));
 const root = resolve(__dirname, '../..');
+const Stub0 = () => null;
 function load(path, role, mocks = {}) {
   const module = { exports: {} };
   const Stub = () => null;
@@ -28,17 +29,32 @@ function elements(node) { return !node || typeof node !== 'object' ? [] : [node,
 function text(node) { return React.Children.toArray(node).map(child => typeof child === 'object' ? text(child.props?.children) : String(child)).join(' '); }
 
 for (const role of ['Admin', 'Super Admin', undefined]) {
-  test(`${role || 'Loading'} dashboard student total is Owner-only despite cached response`, () => {
+  test(`${role || 'Loading'} dashboard shows student figures only when the API gives them (owner only)`, () => {
+    const owner = role === 'Super Admin';
+    const kpi = (value) => ({ value, previous: 1, change: 10 });
+    const overview = {
+      period: { from: '2026-11-01', to: '2026-11-25', days: 25, unit: 'day', previous_from: '2026-10-07', previous_to: '2026-10-31' },
+      can: { students: owner, money: owner }, currency: 'EGP',
+      kpis: { activations: kpi(5), ...(owner ? { new_students: kpi(42), revenue: kpi(900) } : {}) },
+      series: { current: [{ bucket: '2026-11-01', activations: 5 }], previous: [{ bucket: '2026-10-07', activations: 1 }] },
+      totals: { subjects_active: 3, ...(owner ? { students: 4500 } : {}) }, pending: {}, top: { subjects: [], lessons: [], exams: [], teachers: [] }, devices: [], exam_scores: [],
+    };
+    // useState order in the page: period, data, loading, failed, metric, exporting
+    const states = [{ preset: '30d', from: '2026-11-01', to: '2026-11-25' }, overview, false, false, 'activations', false];
+    let cursor = 0;
     const Page = load('app/(admin)/dashboard/page.tsx', role, {
-      '@/src/hooks/useDashboard': {
-        useDashboardStats: () => ({ data: { data: { total_students: { value: 42 }, active_courses: { value: 3 } } } }),
-        useActivityData: () => ({}), useEngagementData: () => ({}), useRecentActivity: () => ({}),
-      },
+      react: { ...React, useState: () => [states[cursor++], () => {}], useEffect() {}, useMemo: fn => fn() },
+      '@/src/hooks/useDashboard': { useRecentActivity: () => ({}) },
+      '@/src/lib/api': { __esModule: true, default: { dashboardOverview: { get: async () => overview } } },
+      '@/components/charts/Charts': { BarList: Stub0, ChangeBadge: Stub0, ColumnChart: Stub0, Donut: Stub0, SERIES: ['#000', '#111', '#222', '#333'], Sparkline: Stub0, TrendChart: Stub0 },
+      '@/src/lib/report-export': { downloadWorkbook() {}, htmlTable() {}, openPrintableReport() {}, shortDay: d => d, svgBars() {} },
     });
-    const tree = Page();
-    assert.equal(elements(tree).filter(node => node.props?.label === 'dashboard.stats.totalStudents').length, role === 'Super Admin' ? 1 : 0);
-    assert.equal(elements(tree).filter(node => node.props?.label === 'dashboard.stats.activeCourses').length, 1);
-    assert.ok(elements(tree).some(node => node.props?.href === '/students/add'));
+    const render = () => { cursor = 0; return Page(); };
+    const all = text(render());
+    assert.equal(all.includes('New students'), owner);
+    assert.equal(all.includes('All students'), owner);
+    assert.match(all, /Activations/);
+    assert.ok(elements(render()).some(node => node.props?.href === '/students/add'));
   });
   test(`${role || 'Loading'} center hides student and enrollment counts while preserving content`, () => {
     const tree = load('app/(admin)/centers/[id]/page.tsx', role)();

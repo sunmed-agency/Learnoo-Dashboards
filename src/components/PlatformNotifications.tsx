@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Inbox, Send } from 'lucide-react';
 import { notificationHref } from '@/src/lib/notification-href';
 import { CourseTreeSelect } from '@/src/components/admin/CourseTreeSelect';
 import StudentPicker, { type PickedStudent } from '@/components/notifications/StudentPicker';
@@ -15,8 +16,10 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
   const ar = locale === 'ar';
   const pathname = usePathname();
   const instructor = pathname.startsWith('/doctor/');
-  const sendForm = canSend && pathname.endsWith('/add');
   const inboxHref = instructor ? '/doctor/notifications' : '/notifications';
+  // Two separate tabs: what arrives on the platform, and sending to students (app + platform).
+  const [tab, setTab] = useState<'inbox' | 'send'>(canSend && pathname.endsWith('/add') ? 'send' : 'inbox');
+  const sendForm = canSend && tab === 'send';
   const [items, setItems] = useState<PlatformNotification[]>([]);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -43,6 +46,18 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
     ['note', 'الملاحظات', 'Notes'], ['library', 'المكتبة', 'Library'], ['timetable', 'الجداول', 'Timetables'],
     ['community', 'المجتمع', 'Community'], ['discussion', 'المناقشات', 'Discussions'], ['support-issue', 'الدعم', 'Support'], ['feedback', 'رسائل أولياء الأمور', 'Guardian messages'], ['general', 'عام', 'General'],
   ];
+
+  // ?tab=send (or ?students=...) opens the send tab.
+  useEffect(() => {
+    if (!canSend || typeof window === 'undefined') return;
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('tab') === 'send' || query.get('students')) setTab('send');
+  }, [canSend]);
+
+  const chooseTab = (next: 'inbox' | 'send') => {
+    setTab(next);
+    if (typeof window !== 'undefined') window.history.replaceState(null, '', next === 'send' ? `${inboxHref}?tab=send` : inboxHref);
+  };
 
   // ?students=id1,id2 opens the compose form with those students chosen (admins only).
   useEffect(() => {
@@ -77,9 +92,19 @@ export default function PlatformNotifications({ canSend = false }: { canSend?: b
   }, [page, filters, sendForm, refresh]);
 
   return <div className="min-w-0 space-y-6 pb-12">
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <h1 className="text-2xl font-bold">{sendForm ? (ar ? 'إرسال إشعار' : 'Send notification') : (ar ? 'الإشعارات' : 'Notifications')}</h1>
-      {canSend && <Link href={sendForm ? inboxHref : `${inboxHref}/add`} className="text-primary underline">{sendForm ? (ar ? 'العودة إلى الإشعارات' : 'Back to notifications') : (ar ? 'إرسال إشعار' : 'Send notification')}</Link>}
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">{ar ? 'الإشعارات' : 'Notifications'}</h1>
+      {canSend && <div role="tablist" aria-label={ar ? 'الإشعارات' : 'Notifications'} className="flex flex-wrap gap-1 border-b border-[#E2E8F0]">
+        {([['inbox', Inbox, 'إشعارات المنصة الواردة', 'Platform inbox'], ['send', Send, 'إرسال للطلاب (التطبيق والمنصة)', 'Send to students (app and platform)']] as const).map(([key, Icon, a, e]) => (
+          <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => chooseTab(key)}
+            className={`-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${tab === key ? 'border-[#2137D6] text-[#2137D6]' : 'border-transparent text-[#64748B] hover:text-[#0F172A]'}`}>
+            <Icon className="h-4 w-4" />{ar ? a : e}
+          </button>
+        ))}
+      </div>}
+      <p className="text-sm text-[#64748B]">{sendForm
+        ? (ar ? 'الإشعار بيوصل للطلاب على المنصة وفي تطبيق الموبايل كإشعار على الشاشة.' : 'The notification reaches students on the platform and in the mobile app as a push notification.')
+        : (ar ? 'الإشعارات اللي بتوصل لحسابك على المنصة: تفعيلات، امتحانات، دعم، رسائل أولياء الأمور وغيرها.' : 'Notifications that arrive in your platform account: activations, exams, support, guardian messages and more.')}</p>
     </div>
     {!sendForm && optionsError && <p role="alert">{ar ? 'تعذر تحميل خيارات المواد والفِرَق. أعد تحميل الصفحة للمحاولة.' : 'Could not load course and year options. Reload the page to retry.'}</p>}
     {sendForm && <form className="space-y-4 rounded-2xl border bg-white p-6" onSubmit={async e => {

@@ -1845,16 +1845,52 @@ export const ownerOperationsApi = {
 export interface FinanceFigures { activations: number; subject_activations: number; lesson_activations: number; paid_activations: number; students: number; revenue: number; teacher_share: number; platform_share: number }
 export interface FinanceRow extends FinanceFigures { id: number | string; name: string; path?: string | null; price?: number | null; teacher?: string | null; share_percent?: number }
 export type FinanceGroup = 'universities' | 'centers' | 'faculties' | 'departments' | 'courses' | 'instructors';
+export interface FinanceTotals extends FinanceFigures { subject_revenue?: number; lesson_revenue?: number }
+export interface FinanceMonth { month: string; revenue: number; teacher_share: number; platform_share: number; activations: number }
+export interface FinanceDay { day: string; revenue: number; activations: number; paid_activations: number }
 export interface FinanceReport {
   period: { from: string | null; to: string | null };
   currency: string;
-  totals: FinanceFigures;
-  monthly: { month: string; revenue: number; teacher_share: number; platform_share: number; activations: number }[];
+  totals: FinanceTotals;
+  monthly: FinanceMonth[];
+  /** One row per day that had activations. */
+  daily?: FinanceDay[];
   groups: Record<FinanceGroup, FinanceRow[]>;
   unpriced_courses: number;
+  /** The same number of days right before the chosen period (only when a start date is chosen). */
+  previous?: { period: { from: string | null; to: string | null }; totals: FinanceTotals; daily?: FinanceDay[]; monthly: FinanceMonth[] };
 }
 export const financeApi = {
   report: (filters: { from?: string; to?: string } = {}) => get<FinanceReport>('/v1/reports/finance', filters),
+};
+
+/** GET /v1/dashboard/overview: a period next to the same-length period before it. */
+export interface DashboardKpi { value: number; previous: number | null; change: number | null }
+export type DashboardKpiKey =
+  | 'activations' | 'subject_activations' | 'lesson_activations' | 'lessons_watched' | 'exam_attempts' | 'average_exam_score'
+  | 'live_sessions' | 'community_posts' | 'community_replies' | 'support_issues' | 'device_requests'
+  | 'new_students' | 'active_students' | 'buying_students' | 'revenue' | 'paid_activations';
+export type DashboardSeriesKey = 'activations' | 'lessons_watched' | 'exam_attempts' | 'new_students' | 'revenue';
+export type DashboardPoint = { bucket: string } & Partial<Record<DashboardSeriesKey, number>>;
+export interface DashboardOverview {
+  period: { from: string; to: string; days: number; unit: 'day' | 'month'; previous_from: string; previous_to: string };
+  can: { students: boolean; money: boolean };
+  currency: string;
+  kpis: Partial<Record<DashboardKpiKey, DashboardKpi>>;
+  series: { current: DashboardPoint[]; previous: DashboardPoint[] };
+  totals: Partial<Record<'subjects_active' | 'subjects_draft' | 'lessons' | 'exams' | 'instructors' | 'library_items' | 'watch_hours' | 'students' | 'guardians' | 'students_with_device', number>>;
+  pending: Partial<Record<'device_requests' | 'subscription_requests' | 'pre_activations' | 'support_issues' | 'subjects_draft', number>>;
+  top: {
+    subjects: { id: number; name: string; activations: number; revenue?: number }[];
+    lessons: { id: number; name: string; viewers: number; watch_minutes: number }[];
+    exams: { id: number; name: string; attempts: number; average: number }[];
+    teachers: { id: string; name: string; activations: number; revenue?: number }[];
+  };
+  devices: { device: string; total: number }[];
+  exam_scores: { band: string; total: number }[];
+}
+export const dashboardOverviewApi = {
+  get: (filters: { from?: string; to?: string } = {}) => get<DashboardOverview>('/v1/dashboard/overview', filters),
 };
 
 export interface GuardianStudent { id: string; first_name: string; last_name: string; phone?: string; email?: string; student_code?: string; university?: { name: string } | null; faculty?: { name: string } | null; centers?: { name: string }[]; activated_courses?: { id: string; title: string }[]; parents: { id: string; first_name: string; last_name: string; email: string; phone: string }[] }
@@ -1867,6 +1903,7 @@ export const api = {
   guardians: guardiansApi,
   ownerOperations: ownerOperationsApi,
   finance: financeApi,
+  dashboardOverview: dashboardOverviewApi,
   studentInsights: studentInsightsApi,
   supervisors: supervisorsApi,
   downloads: downloadsApi,

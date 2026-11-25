@@ -132,7 +132,14 @@ for (const path of ['/notifications', '/doctor/notifications']) {
     assert.ok(control(s, 'Academic year'));
     const nodes = elements(s.render());
     assert.ok(nodes.findIndex(n => n.type === 'form') < nodes.findIndex(n => n.type === 'article'));
-    assert.ok(nodes.some(n => n.props.href === `${path}/add`));
+    // The send form is its own tab next to the inbox.
+    const sendTab = elements(s.render()).find(n => n.props.role === 'tab' && text(n.props.children).includes('Send to students'));
+    assert.equal(sendTab.props['aria-selected'], false);
+    globalThis.window = { history: { replaceState() {} }, location: { search: '' } };
+    sendTab.props.onClick();
+    assert.ok(find(s, 'textarea'));
+    assert.equal(control(s, 'Search notifications'), undefined);
+    delete globalThis.window;
   });
 }
 
@@ -144,5 +151,6 @@ test('the separate sender page uses the academic tree without inbox filters', as
   assert.equal(button(s, 'Sent'), undefined);
   assert.ok(find(s, CourseTreeSelect));
   assert.equal(find(s, 'select'), undefined);
-  assert.ok(elements(s.render()).some(n => n.props.href === '/doctor/notifications'));
+  const inboxTab = elements(s.render()).find(n => n.props.role === 'tab' && text(n.props.children).includes('Platform inbox'));
+  assert.equal(inboxTab.props['aria-selected'], false);
 });
